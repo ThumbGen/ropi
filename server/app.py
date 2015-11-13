@@ -1,42 +1,39 @@
 #!flask/bin/python
 import time, atexit
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from pi2go import pi2go
+import carLeds, leds
 
 baseApi = '/ropi/api/v1.0/';
 
 app = Flask(__name__)
 app.debug = True
-
-vsn = 1
-LEDon = 4095
-LEDoff = 0
+vsn = 1 # robot version
 
 def init():
+	print "Initialized"
 	pi2go.init()
 	vsn = pi2go.version()
+	carLeds.init()
 	
 @app.route('/')
 def index():
 	return "Hello"
 
-@app.route(baseApi + 'leds', methods=['GET'])	
+@app.route(baseApi + 'leds', methods=['GET'])
 def get_leds():
 	return jsonify({'leds':2})
 
-@app.route(baseApi + 'leds', methods=['PUT'])	
-def put_leds():
+@app.route(baseApi + 'leds/<string:cmd_str>', methods=['PUT'])	
+def put_leds(cmd_str):
 	try:
 		if vsn == 1:
-			pi2go.setAllLEDs(LEDoff, LEDoff, LEDon)
-			time.sleep(2)
-			pi2go.setAllLEDs(LEDoff, LEDoff, LEDoff)
-    
+			if cmd_str == "set":
+				leds.set(request.json)
+			else:
+				carLeds.execute(cmd_str)
 	except KeyboardInterrupt:
-		print
-
-#	finally:
-#		pi2go.cleanup()
+		print Stopped
 	return jsonify({'leds':2})
 
 def perform_cleanup():
