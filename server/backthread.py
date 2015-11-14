@@ -10,9 +10,9 @@ ident = 0
 def execute(arg, logic_to_execute):
 	t = threading.currentThread()
 	print "Button thread started:", t.ident
-	while(not stop_event.is_set()):
+	while(t.isAlive() and not stop_event.is_set()):
 		logic_to_execute()
-		stop_event.wait(0.1)
+		stop_event.wait(0.5)
 		pass
 
 def start(app, logic_to_execute):

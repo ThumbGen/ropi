@@ -6,6 +6,7 @@ import leds
 LEDon = 2095
 LEDoff = 0
 LEDonDimmed = 150
+LEDonDimmed2 = 550
 LEDonGO = 1000 # green for orange
 
 Left = 0
@@ -26,17 +27,19 @@ FrontStatus = Off
 BlinkerStatus = BlinkNone
 
 def init():
-	global BackStatus
+	global BackStatus, FrontStatus, BlinkerStatus
 	BackStatus = Off
-	global FrontStatus
 	FrontStatus = Off
-	global LeftStatus
 	BlinkerStatus = BlinkNone
 	
 def allOff():
+	global BackStatus, FrontStatus
+	BackStatus = Off
+	FrontStatus = Off
 	pi2go.setAllLEDs(LEDoff, LEDoff, LEDoff)
-	
+		
 def back():
+	global BackStatus
 	if BackStatus == Off:
 		pi2go.setLED(Back, LEDoff, LEDoff, LEDoff)
 	if BackStatus == Dimmed:
@@ -45,16 +48,17 @@ def back():
 		pi2go.setLED(Back, LEDon, LEDoff, LEDoff)
 
 def front():
+	global FrontStatus
 	if FrontStatus == Off:
 		pi2go.setLED(Front, LEDoff, LEDoff, LEDoff)
 	if FrontStatus == Dimmed:
-		pi2go.setLED(Front, LEDonDimmed, LEDonDimmed, LEDonDimmed)
+		pi2go.setLED(Front, LEDonDimmed2, LEDonDimmed2, LEDonDimmed2)
 	if FrontStatus == Full:
 		pi2go.setLED(Front, LEDon, LEDon, LEDon)
 
 def toggleblink(direction):
+	global BlinkerStatus
 	if direction == "left":
-		global BlinkerStatus
 		if BlinkerStatus == BlinkNone:
 			pi2go.setLED(Left, LEDon, LEDonGO, LEDoff)
 			BlinkerStatus = BlinkLeft
@@ -66,7 +70,6 @@ def toggleblink(direction):
 			pi2go.setLED(Left, LEDon, LEDonGO, LEDoff)
 			BlinkerStatus = BlinkLeft
 	if direction == "right":
-		global BlinkerStatus
 		if BlinkerStatus == BlinkNone:
 			pi2go.setLED(Right, LEDon, LEDonGO, LEDoff)
 			BlinkerStatus = BlinkRight
@@ -79,11 +82,13 @@ def toggleblink(direction):
 			BlinkerStatus = BlinkRight
 		
 def execute(cmd_str):
+	global BackStatus, FrontStatus
 	if cmd_str == "off":
+		if BackStatus == Off and FrontStatus == Off:
+			return
 		allOff()
 		
 	if cmd_str == "brake":
-		global BackStatus
 		tmp = BackStatus
 		BackStatus = Full
 		back()
@@ -92,14 +97,14 @@ def execute(cmd_str):
 		back()
 		
 	if cmd_str == "dimmed":
-		global BackStatus
+		if BackStatus == Dimmed or FrontStatus == Dimmed:
+			return
 		BackStatus = Dimmed
 		FrontStatus = Dimmed
 		front()
 		back()
 		
 	if cmd_str == "flash":
-		global FrontStatus
 		tmp = FrontStatus
 		FrontStatus = Full
 		front()

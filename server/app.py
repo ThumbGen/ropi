@@ -10,19 +10,21 @@ app = Flask(__name__)
 app.debug = True
 vsn = 1 # robot version
 
-switchStatus = False
+light_threshold = 20
 
 def button_logic():
 	if pi2go.getSwitch():
-		global switchStatus
-		if switchStatus == False:
-			print "Lights ON"
-			carLeds.execute("dimmed")
-		else:
-			print "Lights OFF"
-			carLeds.execute("off")
-		switchStatus = not switchStatus
-
+		print "Button ON"
+	time.sleep(1)
+		
+def lights_logic():
+	global light_threshold
+	if pi2go.getLight(2) < light_threshold:
+		carLeds.execute("dimmed")
+	else:
+		carLeds.execute("off")
+	time.sleep(2)
+		
 def init():
 	global switchStatus
 	switchStatus = False
@@ -30,6 +32,7 @@ def init():
 	vsn = pi2go.version()
 	carLeds.init()
 	backthread.start(app, button_logic)
+	backthread.start(app, lights_logic)
 	print "Initialized"
 	
 @app.route('/')
