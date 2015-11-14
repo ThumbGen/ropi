@@ -2,7 +2,7 @@
 import time, atexit
 from flask import Flask, jsonify, request
 from pi2go import pi2go
-import carLeds, leds
+import carLeds, leds, ultrasonic
 
 baseApi = '/ropi/api/v1.0/';
 
@@ -26,17 +26,21 @@ def get_leds():
 
 @app.route(baseApi + 'leds/<string:cmd_str>', methods=['PUT'])	
 def put_leds(cmd_str):
-	try:
-		if vsn == 1:
-			if cmd_str == "set":
-				leds.set(request.json)
-			else:
-				carLeds.execute(cmd_str)
-	except KeyboardInterrupt:
-		print Stopped
+	if vsn == 1:
+		if cmd_str == "set":
+			leds.set(request.json)
+		else:
+			carLeds.execute(cmd_str)
+	
 	return jsonify({'leds':2})
 
+@app.route(baseApi + 'ultrasonic', methods=['GET'])
+def get_ultrasonic():
+	dist = ultrasonic.getDistance()
+	return jsonify({ 'dist':dist})
+	
 def perform_cleanup():
+	print "Cleanup"
 	pi2go.cleanup()
 	
 #Register the function to be called on exit
