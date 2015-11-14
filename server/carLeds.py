@@ -1,6 +1,5 @@
 #!flask/bin/python
 import time
-from flask import Flask, jsonify
 from pi2go import pi2go
 import leds
 

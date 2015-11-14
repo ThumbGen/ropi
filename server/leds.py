@@ -1,6 +1,5 @@
 #!flask/bin/python
 
-from flask import Flask, jsonify
 from pi2go import pi2go
 
 def checkIndex(idx):

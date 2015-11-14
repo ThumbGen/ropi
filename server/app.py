@@ -1,8 +1,8 @@
 #!flask/bin/python
-import time, atexit
+import time, atexit, threading
 from flask import Flask, jsonify, request
 from pi2go import pi2go
-import carLeds, leds, ultrasonic
+import carLeds, leds, ultrasonic, button
 
 baseApi = '/ropi/api/v1.0/';
 
@@ -11,10 +11,11 @@ app.debug = True
 vsn = 1 # robot version
 
 def init():
-	print "Initialized"
 	pi2go.init()
 	vsn = pi2go.version()
 	carLeds.init()
+	button.register_watch_button(app)
+	print "Initialized"
 	
 @app.route('/')
 def index():
@@ -42,6 +43,7 @@ def get_ultrasonic():
 def perform_cleanup():
 	print "Cleanup"
 	pi2go.cleanup()
+	button.unregister_watch_button(app)
 	
 #Register the function to be called on exit
 atexit.register(perform_cleanup)
