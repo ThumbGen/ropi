@@ -1,7 +1,7 @@
 #!flask/bin/python
 import time
 from pi2go import pi2go
-import leds
+import leds, backthread
 
 LEDon = 2095
 LEDoff = 0
@@ -17,6 +17,7 @@ Front = 3
 Off = 0
 Dimmed = 1
 Full = 2
+Custom = 3
 
 BlinkNone = 0
 BlinkLeft = 1
@@ -26,11 +27,22 @@ BackStatus = Off
 FrontStatus = Off
 BlinkerStatus = BlinkNone
 
-def init():
+light_threshold = 50
+
+def init(app):
 	global BackStatus, FrontStatus, BlinkerStatus
 	BackStatus = Off
 	FrontStatus = Off
 	BlinkerStatus = BlinkNone
+	backthread.start(app, lights_logic)
+
+def lights_logic():
+	global light_threshold
+	if pi2go.getLight(2) < light_threshold:
+		execute("dimmed")
+	else:
+		execute("off", source = "auto")
+	time.sleep(2)
 	
 def allOff():
 	global BackStatus, FrontStatus
@@ -81,10 +93,16 @@ def toggleblink(direction):
 			pi2go.setLED(Right, LEDon, LEDonGO, LEDoff)
 			BlinkerStatus = BlinkRight
 		
-def execute(cmd_str):
+def execute(cmd_str, LEDData = None, source = None):
 	global BackStatus, FrontStatus
+	
+	if cmd_str == "set":
+		BackStatus = Custom
+		FrontStatus = Custom
+		leds.set(LEDData)
+	
 	if cmd_str == "off":
-		if BackStatus == Off and FrontStatus == Off:
+		if (BackStatus == Off and FrontStatus == Off) or (source == "auto" and BackStatus == Custom and FrontStatus == Custom):
 			return
 		allOff()
 		
