@@ -1,8 +1,8 @@
 #!flask/bin/python
-import time, atexit, threading, subprocess
+import time, atexit, threading, subprocess, os, sys
 from flask import Flask, jsonify, request
 from pi2go import pi2go
-import carLeds, leds, ultrasonic, lights, backthread, servo, button, motor, camera
+import carLeds, leds, ultrasonic, lights, backthread, servo, button, motor, camera, emailer
 
 baseApi = '/ropi/api/v1.0/';
 
@@ -17,12 +17,18 @@ def init():
 	vsn = pi2go.version()
 	carLeds.init(app)
 	button.init(app)
+	inform_ip()
 	print "Initialized"
 	
 @app.route('/')
 def index():
 	return "Hello"
 
+@app.route(baseApi+ 'quit', methods=['PUT'])
+def quit_prog():
+	#sys.exit("User closed the server...")
+	quit()
+	
 @app.route(baseApi + 'camera/<string:cam_cmd>', methods=['PUT'])
 def put_camera(cam_cmd):
 	res = camera.execute(cam_cmd)
@@ -75,6 +81,12 @@ def get_ultrasonic():
 	dist = ultrasonic.getDistance()
 	return jsonify({ 'dist':dist})
 	
+def inform_ip():
+	f = os.popen('ifconfig wlan0 | grep "inet\ addr" | cut -d: -f2 | cut -d" " -f1')
+	ip=f.read()
+	print ip
+	emailer.send_email("raspig8@gmail.com", "G4T3C0NTR0L", "rvacaru@gmail.com", "Robot IP", ip)
+	
 def perform_cleanup():
 	print "Cleanup"
 	pi2go.cleanup()
@@ -85,6 +97,6 @@ atexit.register(perform_cleanup)
 #start...	
 init()
 if __name__ == '__main__':
-	app.run(host='0.0.0.0')
+	app.run(host='0.0.0.0', port=80)
 
 	
