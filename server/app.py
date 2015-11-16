@@ -51,7 +51,14 @@ def get_lights():
 @app.route(baseApi + 'leds/<string:cmd_str>', methods=['PUT'])	
 def put_leds(cmd_str):
 	if vsn == 1:
-		carLeds.execute(cmd_str, request.json)
+		print 'received'
+		json = None
+		try:
+			json = request.get_json(force=True)
+		except:
+			pass
+		print json
+		carLeds.execute(cmd_str, json)
 	return "OK"
 
 @app.route(baseApi + 'motor/<string:cmd_motor>', methods=['PUT'], defaults={'cmd_speed': None})	

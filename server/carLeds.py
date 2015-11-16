@@ -37,11 +37,15 @@ def init(app):
 	backthread.start(app, lights_logic)
 
 def lights_logic():
-	global light_threshold
+	global light_threshold, FrontStatus, BackStatus
 	if pi2go.getLight(2) < light_threshold:
 		execute("dimmed")
 	else:
-		execute("off", source = "auto")
+		if BackStatus != Custom and FrontStatus != Custom:
+			FrontStatus = Off
+			BackStatus = Off
+			front()
+			back()
 	time.sleep(2)
 	
 def allOff():
@@ -102,7 +106,7 @@ def execute(cmd_str, LEDData = None, source = None):
 		leds.set(LEDData)
 	
 	if cmd_str == "off":
-		if (BackStatus == Off and FrontStatus == Off) or (source == "auto" and BackStatus == Custom and FrontStatus == Custom):
+		if BackStatus == Off and FrontStatus == Off:
 			return
 		allOff()
 		
