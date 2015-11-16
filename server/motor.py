@@ -1,9 +1,15 @@
 #!flask/bin/python
 
 from pi2go import pi2go
+import carLeds
+
+BNone = 0
+BLeft = 1
+BRight = 2
 
 currentSpeed = 30
 currentCommand = None
+currentBlinker = BNone
 
 def execute(cmd, speed = None):
 	global currentCommand
@@ -27,8 +33,13 @@ def execute(cmd, speed = None):
 	currentCommand = cmd
 
 def forward():
-	global currentSpeed, currentCommand
+	global currentSpeed, currentCommand, currentBlinker
 	pi2go.forward(currentSpeed)
+	if currentBlinker == BLeft:
+		carLeds.execute("left") #toggle left off
+	if currentBlinker == BRight:
+		carLeds.execute("right") #toggle right off
+	currentBlinker = BNone
 	print "Forward ", currentSpeed
 	
 def reverse():
@@ -37,18 +48,25 @@ def reverse():
 	print "Reverse ", currentSpeed
 	
 def left():
-	global currentSpeed, currentCommand
+	global currentSpeed, currentCommand, currentBlinker
 	pi2go.spinLeft(currentSpeed)
+	if currentBlinker != BLeft:
+		carLeds.execute("left")
+	currentBlinker = BLeft
 	print "Left ", currentSpeed
 	
 def right():
-	global currentSpeed, currentCommand
+	global currentSpeed, currentCommand, currentBlinker
 	pi2go.spinRight(currentSpeed)
+	if currentBlinker != BRight:
+		carLeds.execute("right")
+	currentBlinker = BRight
 	print "Right ", currentSpeed
 	
 def stop():
 	global currentCommand
 	pi2go.stop()
+	carLeds.execute("brake")
 	print "Stopped"
 	
 def adjustSpeed(speed):
