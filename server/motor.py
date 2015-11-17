@@ -35,37 +35,37 @@ def execute(cmd, speed = None):
 def forward():
 	global currentSpeed, currentCommand, currentBlinker
 	pi2go.forward(currentSpeed)
-	if currentBlinker == BLeft:
-		carLeds.execute("left") #toggle left off
-	if currentBlinker == BRight:
-		carLeds.execute("right") #toggle right off
-	currentBlinker = BNone
+	resetBlinkers()
 	print "Forward ", currentSpeed
 	
 def reverse():
 	global currentSpeed, currentCommand
 	pi2go.reverse(currentSpeed)
+	resetBlinkers()
 	print "Reverse ", currentSpeed
 	
 def left():
 	global currentSpeed, currentCommand, currentBlinker
-	pi2go.spinLeft(currentSpeed)
-	if currentBlinker != BLeft:
-		carLeds.execute("left")
+	#pi2go.spinLeft(currentSpeed)
+	pi2go.go(currentSpeed * 60/100, currentSpeed)
+	resetBlinkers()
+	carLeds.execute("left")
 	currentBlinker = BLeft
 	print "Left ", currentSpeed
 	
 def right():
 	global currentSpeed, currentCommand, currentBlinker
-	pi2go.spinRight(currentSpeed)
-	if currentBlinker != BRight:
-		carLeds.execute("right")
+	#pi2go.spinRight(currentSpeed)
+	pi2go.go(currentSpeed, currentSpeed * 60/100)
+	resetBlinkers()
+	carLeds.execute("right")
 	currentBlinker = BRight
 	print "Right ", currentSpeed
 	
 def stop():
 	global currentCommand
 	pi2go.stop()
+	resetBlinkers()
 	carLeds.execute("brake")
 	print "Stopped"
 	
@@ -80,3 +80,11 @@ def adjustSpeed(speed):
 	if speed == 0:
 		currentSpeed = 0
 	print "Current speed:", currentSpeed
+	
+def resetBlinkers():
+	global currentBlinker
+	if currentBlinker == BLeft:
+		carLeds.execute("left")
+	if currentBlinker == BRight:
+		carLeds.execute("right")
+	currentBlinker = BNone

@@ -39,7 +39,8 @@ def init(app):
 def lights_logic():
 	global light_threshold, FrontStatus, BackStatus
 	if pi2go.getLight(2) < light_threshold:
-		execute("dimmed")
+		#execute("dimmed")
+		pass
 	else:
 		if BackStatus != Custom and FrontStatus != Custom:
 			FrontStatus = Off
