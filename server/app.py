@@ -1,16 +1,32 @@
 #!flask/bin/python
 import time, atexit, threading, subprocess, os, sys, signal
 from flask import Flask, jsonify, request
+from flask_socketio import SocketIO, emit
 from pi2go import pi2go
-import carLeds, leds, ultrasonic, lights, backthread, pantilt, button, motor, camera, emailer
+import carLeds, leds, ultrasonic, lights, backthread, pantilt, button, motor, camera, emailer, assistance
 import RPi.GPIO as GPIO
 
 baseApi = '/ropi/api/v1.0/';
 
 app = Flask(__name__)
 app.debug = False
+#app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app)
+
 vsn = 1 # robot version
 
+#@socketio.on('connect', namespace='/test')
+@socketio.on('connect')
+def handle_connect():
+	socketio.emit('connected', { 'data' : 'Welcome to RoPi!' })
+	print "Got a connect request"
+
+@socketio.on_error_default
+def default_error_handler(e):
+	print request.event["message"]	# "my error event"
+	print request.event["args"]	# (data,)
+	pass
+	
 def init():
 	global switchStatus
 	switchStatus = False
@@ -20,6 +36,7 @@ def init():
 	carLeds.init(app)
 	button.init(app)
 	pantilt.init()
+	assistance.init(app, socketio)
 	#inform_ip()
 	print "app Init done - Initialized"
 	
@@ -66,13 +83,14 @@ def get_lights():
 @app.route(baseApi + 'leds/<string:cmd_str>', methods=['PUT'])	
 def put_leds(cmd_str):
 	if vsn == 1:
-		print 'received'
+		print 'received leds request'
+		socketio.emit('ultrasonic', {'dist': '123'})
 		json = None
 		try:
 			json = request.get_json(force=True)
 		except:
 			pass
-		print json
+		print 'data:', json
 		carLeds.execute(cmd_str, json)
 	return "OK"
 
@@ -119,4 +137,5 @@ atexit.register(perform_cleanup)
 #start...	
 init()
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=80)
+	#app.run(host='0.0.0.0', port=80)
+	socketio.run(app, host='0.0.0.0', port=80)
