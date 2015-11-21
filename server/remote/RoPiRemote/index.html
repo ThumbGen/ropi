@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>RoPiRemote</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+
+    <script src="scripts/jquery-1.11.3.min.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+    <!--<script src="scripts/angular.min.js"></script>
+    <script src="scripts/angular-ui-router.min.js"></script>
+    <script src="scripts/angular-cookies.min.js"></script>-->
+    <script src="scripts/nipplejs.min.js"></script>
+    <!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>-->
+    <script src="scripts/socket.io.js"></script>
+    <script src="scripts/fabric.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <script src="https://cdn.rawgit.com/clipchamp/jquery-clipchamp-mjpeg-player-plugin/126a8cb1ffdbb2c7d90231e7dd8f9186707212fb/src/jquery.clipchamp.mjpeg.player.js"></script>
+
+    <!--<source src="http://raspberrypi:8080/stream/video.mjpeg">-->
+    <!--<script src="app/app.module.js"></script>
+    <script src="app/main/main.js"></script>-->
+
+</head>
+<body>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-static-top" style="margin-bottom: 0px">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">RoPiRemote</a>
+                <div class="navbar-left navbar-text">
+                    <span id="connectedLabel" class="label label-default">offline</span>
+                </div>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+
+                <!--<ul class="nav navbar-nav">
+                    <li class="active"><a href="#">Home</a></li>
+                    <li><a href="#">Settings</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>-->
+                <form class="navbar-form navbar-left" role="search">
+                    <div class="form-group">
+                        <input id="robotIP" type="text" class="form-control" placeholder="enter robot IP">
+                    </div>
+                    <button id="connectButton" type="button" class="btn btn-default">Connect</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- content-->
+    <div id="main" class="container fill">
+
+        <!--<img id="camera" hidden class="2imgFill"/>-->
+        <!--<video width="360" height="420" poster="http://raspberrypi:8080/stream/video.mjpeg" autoplay>
+            <source src="http://raspberrypi:8080/stream/video.mjpeg" type="multipart/x-mixed-replace; boundary=--boundary"/>
+        </video>-->
+        <!--the parking control-->
+        <canvas id="parkingControl" width="195" height="150"></canvas>
+        <label id="direction">none</label>
+    </div>
+
+    <!-- sticky footer-->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row" id="joysticksContainer">
+                <div class="col-xs-1 footerElement"></div>
+                <div class="col-xs-3 footerElement">
+                    <div id="jLeft"></div>
+                </div>
+                <div id="centerPanel" class="col-xs-4 footerElement">
+                    
+                </div>
+                <div class="col-xs-3 footerElement">
+                    <div id="jRight"></div>
+                </div>
+                <div class="col-xs-1 text-center"></div>
+            </div>
+
+        </div>
+    </footer>
+
+    <script src="app/joysticks.js"></script>
+    <script src="app/parking.js"></script>
+    <script src="app/app.js"></script>
+</body>
+</html>
