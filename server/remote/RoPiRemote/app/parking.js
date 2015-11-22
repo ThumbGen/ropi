@@ -17,9 +17,12 @@ var left = null;
 var right = null;
 var lineLeft = null;
 var lineRight = null;
+var distText = null;
+
+var parkingControl = null;
 
 var parking = {
-    
+
     update: function (msg) {
         if (canvas != null) {
             circle1.stroke = colorOff;
@@ -32,47 +35,68 @@ var parking = {
             lineRight.fill = colorOff;
 
             var dist = msg["d"];
-            
+            if (dist < 999) {
+                distText.setText(dist.toString());
+            } else {
+                distText.setText("");
+            }
+
             if (dist < 50 && dist >= 30) {
                 circle1.stroke = color1;
-            } 
+
+
+                //var sound = document.getElementById("beep");
+                //sound.addEventListener("ended", function () {
+                //    this.currentTime = 0;
+                //    this.play();
+                //}, false);
+                //sound.play();
+
+
+            }
             if (dist < 30 && dist >= 20) {
                 circle2.stroke = color2;
-            } 
+            }
             if (dist < 20 && dist >= 10) {
                 circle3.stroke = color3;
-            } 
+            }
             if (dist < 10 || msg["c"]) {
                 circle4.stroke = color4;
-            } 
+            }
             if (msg["l"]) {
                 left.stroke = color4;
-            } 
+            }
             if (msg["r"]) {
                 right.stroke = color4;
-            } 
+            }
             if (msg["ll"]) {
                 lineLeft.fill = colorLeftLine;
-            } 
+            }
             if (msg["rl"]) {
                 lineRight.fill = colorRightLine;
-            } 
-            
+            }
+
             // sample: {'d': dist, 'l': l, 'c': c,'r': r, 'll': ll, 'rl': rl}
             canvas.renderAll();
+
+
         }
     },
-    hide: function() {
-      if (canvas != null) {
-          canvas.dispose();
-      }
+    hide: function () {
+        if (canvas != null) {
+            canvas.dispose();
+        }
     },
-    init: function() {
+    init: function () {
 
         var resizeCanvas = function () {
+            if (canvas == null) return;
+            canvas.setHeight($("#main")[0].clientHeight);
+            canvas.setWidth($("#main")[0].clientWidth);
+            canvas.renderAll();
             if (window.innerWidth < 800) {
                 canvas.setZoom(0.5);
-            }else {
+            } else {
                 canvas.setZoom(1);
             }
         };
@@ -220,9 +244,52 @@ var parking = {
             selectable: false
         });
 
-        canvas.add(circle1, circle2, circle3, circle4, left, right, body, wleft, wright, lineLeft, lineRight);
+        distText = new fabric.Text("", {
+            selectable: false,
+            originX: "center",
+            left: 98,
+            top: 180,
+            fontFamily: "Arial",
+            fontSize: 24,
+            fontWeight: "bold",
+            textAlign: "center",
+            fill: "white"
 
+        });
+
+        var parkingControl = new fabric.Group([circle1, circle2, circle3, circle4, left, right, body, wleft, wright, lineLeft, lineRight, distText], {
+            left: 0,
+            top: 0,
+            width: 190,
+            height: 225,
+            scaleX: 1,
+            scaleY: 1,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockScalingFlip: true,
+            hasBorders: false,
+            hasControls: false
+        });
+
+        canvas.add(parkingControl);
+
+        if (canvas.requestFullScreen) {
+            canvas.requestFullScreen();
+        }
+        else if (canvas.webkitRequestFullScreen) {
+            canvas.webkitRequestFullScreen();
+        }
+        else if (canvas.mozRequestFullScreen) {
+            canvas.mozRequestFullScreen();
+        }
+
+        //fabric.util.requestAnimFrame(function render() {
+        //    canvas.renderAll();
+        //    fabric.util.requestAnimFrame(render);
+        //});
+
+        resizeCanvas();
     }
-   
+
 };
 

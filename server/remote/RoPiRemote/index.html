@@ -11,18 +11,19 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/bootstrap-theme.min.css" rel="stylesheet">
     <link href="css/styles.css" rel="stylesheet">
-
-    <script src="scripts/jquery-1.11.3.min.js"></script>
+    <link href="css/bootstrap-toggle.min.css" rel="stylesheet" />
+    <link href="css/nouislider.min.css" rel="stylesheet" />
+    
+    <script src="scripts/jquery-2.1.4.min.js"></script>
     <script src="scripts/bootstrap.min.js"></script>
-    <!--<script src="scripts/angular.min.js"></script>
-    <script src="scripts/angular-ui-router.min.js"></script>
-    <script src="scripts/angular-cookies.min.js"></script>-->
     <script src="scripts/nipplejs.min.js"></script>
-    <!--<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>-->
     <script src="scripts/socket.io.js"></script>
     <script src="scripts/fabric.min.js"></script>
+    <script src="scripts/bootstrap-toggle.min.js"></script>
+    <script src="scripts/wNumb.js"></script>
+    <script src="scripts/nouislider.min.js"></script>
 
-    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+
     <script src="https://cdn.rawgit.com/clipchamp/jquery-clipchamp-mjpeg-player-plugin/126a8cb1ffdbb2c7d90231e7dd8f9186707212fb/src/jquery.clipchamp.mjpeg.player.js"></script>
 
     <!--<source src="http://raspberrypi:8080/stream/video.mjpeg">-->
@@ -31,52 +32,37 @@
 
 </head>
 <body>
+    <audio id="beep" src="beep.wav" autostart="false"></audio>
+
     <!-- Fixed navbar -->
     <nav class="navbar navbar-default navbar-static-top" style="margin-bottom: 0px">
         <div class="container-fluid">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">RoPiRemote</a>
-                <div class="navbar-left navbar-text">
-                    <span id="connectedLabel" class="label label-default">offline</span>
+                <a class="navbar-brand" href="#">RoPi</a>
+                <div class="navbar-left" style="margin-top: 8px">
+                    <input id="robotIP" type="text" style="width: 100px" placeholder="enter robot IP">
+                    <input id="connectButton" type="checkbox" data-toggle="toggle" data-onstyle="success" data-on="Robot On" data-off="Robot Off">
+                    <input id="cameraButton" type="checkbox" data-toggle="toggle" data-on="Camera On" data-off="Camera Off" data-onstyle="primary">
+                    <input id="controlsButton" type="checkbox" data-toggle="toggle" data-on="&lt;i class='glyphicon glyphicon-eye-open'>" data-onstyle="warning"
+                           data-off="&lt;i class='glyphicon glyphicon-eye-close'>" />
                 </div>
-            </div>
-            <div id="navbar" class="navbar-collapse collapse">
-
-                <!--<ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#">Settings</a></li>
-                    <li><a href="#">About</a></li>
-                </ul>-->
-                <form class="navbar-form navbar-left" role="search">
-                    <div class="form-group">
-                        <input id="robotIP" type="text" class="form-control" placeholder="enter robot IP">
-                    </div>
-                    <button id="connectButton" type="button" class="btn btn-default">Connect</button>
-                </form>
             </div>
         </div>
     </nav>
 
     <!-- content-->
-    <div id="main" class="container fill">
-
-        <!--<img id="camera" hidden class="2imgFill"/>-->
+    <div id="main" class="contentFill">
+        <!--<img id="camera" class=""/>-->
         <!--<video width="360" height="420" poster="http://raspberrypi:8080/stream/video.mjpeg" autoplay>
             <source src="http://raspberrypi:8080/stream/video.mjpeg" type="multipart/x-mixed-replace; boundary=--boundary"/>
         </video>-->
         <!--the parking control-->
-        <canvas id="parkingControl" width="195" height="150"></canvas>
-        <label id="direction">none</label>
+        <canvas id="parkingControl"></canvas>
+
     </div>
 
     <!-- sticky footer-->
-    <footer class="footer">
+    <footer class="navbar-fixed-bottom">
         <div class="container-fluid">
             <div class="row" id="joysticksContainer">
                 <div class="col-xs-1 footerElement"></div>
@@ -84,18 +70,41 @@
                     <div id="jLeft"></div>
                 </div>
                 <div id="centerPanel" class="col-xs-4 footerElement">
-                    
+                    <div id="speedSlider" class="sliders speedSlider"></div>
                 </div>
                 <div class="col-xs-3 footerElement">
                     <div id="jRight"></div>
                 </div>
-                <div class="col-xs-1 text-center"></div>
+                <div class="col-xs-1 footerElement"></div>
             </div>
 
         </div>
     </footer>
 
-    <script src="app/joysticks.js"></script>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">Robot IP Address</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="ipaddress" class="control-label">Host or IP Address:</label>
+                            <input type="text" class="form-control" id="ipaddress">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Connect</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app/controls.js"></script>
     <script src="app/parking.js"></script>
     <script src="app/app.js"></script>
 </body>

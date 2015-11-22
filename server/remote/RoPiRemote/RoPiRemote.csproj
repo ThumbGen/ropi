@@ -67,16 +67,21 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app\app.js" />
-    <Content Include="app\joysticks.js" />
+    <Content Include="app\controls.js" />
     <Content Include="app\parking.js" />
+    <Content Include="beep.wav" />
+    <Content Include="css\bootstrap-toggle.min.css" />
+    <Content Include="css\nouislider.min.css" />
+    <Content Include="css\nouislider.pips.css" />
+    <Content Include="css\nouislider.tooltips.css" />
     <Content Include="packages.config" />
-    <Content Include="scripts\angular.min.js.map" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="scripts\bootstrap-toggle.min.js" />
     <Content Include="scripts\fabric.min.js" />
-    <Content Include="scripts\jquery-1.11.3.min.map" />
+    <Content Include="scripts\bootstrap-toggle.min.js.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -85,21 +90,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="app\app.module.js" />
-    <Content Include="app\main\main.js" />
-    <Content Include="app\main\main.view.html" />
     <Content Include="css\bootstrap-theme.min.css" />
     <Content Include="css\bootstrap.min.css" />
     <Content Include="css\styles.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="index.html" />
-    <Content Include="scripts\angular-cookies.min.js" />
-    <Content Include="scripts\angular-ui-router.min.js" />
-    <Content Include="scripts\angular.min.js" />
     <Content Include="scripts\bootstrap.min.js" />
-    <Content Include="scripts\jquery-1.11.3.min.js" />
+    <Content Include="scripts\jquery-2.1.4.min.js" />
     <Content Include="scripts\nipplejs.min.js" />
+    <Content Include="scripts\nouislider.min.js" />
     <Content Include="scripts\socket.io.js" />
+    <Content Include="scripts\wNumb.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
