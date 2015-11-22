@@ -8,6 +8,7 @@ LEDoff = 0
 LEDonDimmed = 150
 LEDonDimmed2 = 550
 LEDonGO = 1000 # green for orange
+LEDonLow = 10
 
 Left = 0
 Back = 1
@@ -19,22 +20,21 @@ Dimmed = 1
 Full = 2
 Custom = 3
 
-BlinkNone = 0
-BlinkLeft = 1
-BlinkRight = 2
-
 BackStatus = Off
 FrontStatus = Off
-BlinkerStatus = BlinkNone
 
 light_threshold = 50
 
 def init(app):
-	global BackStatus, FrontStatus, BlinkerStatus
+	global BackStatus, FrontStatus
 	BackStatus = Off
 	FrontStatus = Off
-	BlinkerStatus = BlinkNone
+	pi2go.setLED(Left, LEDonLow, LEDonLow, LEDonLow)
+	pi2go.setLED(Right, LEDonLow, LEDonLow, LEDonLow)
 	backthread.start(app, lights_logic)
+	
+def cleanup(app):
+	backthread.stop(app)	
 
 def lights_logic():
 	global light_threshold, FrontStatus, BackStatus
@@ -73,31 +73,6 @@ def front():
 	if FrontStatus == Full:
 		pi2go.setLED(Front, LEDon, LEDon, LEDon)
 
-def toggleblink(direction):
-	global BlinkerStatus
-	if direction == "left":
-		if BlinkerStatus == BlinkNone:
-			pi2go.setLED(Left, LEDon, LEDonGO, LEDoff)
-			BlinkerStatus = BlinkLeft
-		elif BlinkerStatus == BlinkLeft:
-			pi2go.setLED(Left, LEDoff, LEDoff, LEDoff)
-			BlinkerStatus = BlinkNone
-		elif BlinkerStatus == BlinkRight:
-			pi2go.setLED(Right, LEDoff, LEDoff, LEDoff)
-			pi2go.setLED(Left, LEDon, LEDonGO, LEDoff)
-			BlinkerStatus = BlinkLeft
-	if direction == "right":
-		if BlinkerStatus == BlinkNone:
-			pi2go.setLED(Right, LEDon, LEDonGO, LEDoff)
-			BlinkerStatus = BlinkRight
-		elif BlinkerStatus == BlinkRight:
-			pi2go.setLED(Right, LEDoff, LEDoff, LEDoff)
-			BlinkerStatus = BlinkNone
-		elif BlinkerStatus == BlinkLeft:
-			pi2go.setLED(Left, LEDoff, LEDoff, LEDoff)
-			pi2go.setLED(Right, LEDon, LEDonGO, LEDoff)
-			BlinkerStatus = BlinkRight
-		
 def execute(cmd_str, LEDData = None, source = None):
 	global BackStatus, FrontStatus
 	
@@ -134,8 +109,4 @@ def execute(cmd_str, LEDData = None, source = None):
 		time.sleep(1)
 		FrontStatus = tmp
 		front()
-		
-	if cmd_str == "left" or cmd_str == "right":
-		toggleblink(cmd_str)
-			
-		
+	

@@ -3,7 +3,7 @@ import time, atexit, threading, subprocess, os, sys, signal
 from flask import Flask, jsonify, request
 from flask_socketio import SocketIO, emit
 from pi2go import pi2go
-import carLeds, leds, ultrasonic, lights, backthread, pantilt, button, motor, camera, emailer, assistance
+import carLeds, leds, ultrasonic, lights, pantilt, button, motor, camera, emailer, assistance
 import RPi.GPIO as GPIO
 
 baseApi = '/ropi/api/v1.0/';
@@ -14,6 +14,13 @@ app.debug = False
 socketio = SocketIO(app)
 
 vsn = 1 # robot version
+
+@app.after_request
+def after_request(response):
+  response.headers.add('Access-Control-Allow-Origin', '*')
+  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+  return response
 
 #@socketio.on('connect', namespace='/test')
 @socketio.on('connect')
@@ -39,6 +46,14 @@ def init():
 	assistance.init(app, socketio)
 	#inform_ip()
 	print "app Init done - Initialized"
+	
+def perform_cleanup():
+	print "Cleaning..."
+	pi2go.cleanup()
+	button.cleanup(app)
+	carLeds.cleanup(app)
+	assistance.cleanup(app)	
+	print "Cleaned"
 	
 @app.route('/')
 def index():
@@ -94,21 +109,24 @@ def put_leds(cmd_str):
 		carLeds.execute(cmd_str, json)
 	return "OK"
 
+#speed argument can be either speed or angle (for 'move' is angle)
 @app.route(baseApi + 'motor/<string:cmd_motor>', methods=['PUT'], defaults={'cmd_speed': None})	
 @app.route(baseApi + 'motor/<string:cmd_motor>/<int:cmd_speed>', methods=['PUT'])	
 def put_motor(cmd_motor, cmd_speed):
 	if vsn == 1:
 		motor.execute(cmd_motor, cmd_speed)
 	return "OK"
-	
+
 @app.route(baseApi + 'system/<string:cmd_system>', methods=['PUT'])
 def put_system(cmd_system):
 	if cmd_system == "reboot":
+		perform_cleanup()
 		command = "/usr/bin/sudo /sbin/shutdown -r now"
 		process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
 		output = process.communicate()[0]
 		print output
 	if cmd_system == "shutdown":
+		perform_cleanup()
 		command = "/usr/bin/sudo /sbin/shutdown now"
 		process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
 		output = process.communicate()[0]
@@ -126,12 +144,7 @@ def inform_ip():
 	ip=f.read()
 	print ip
 	emailer.send_email("raspig8@gmail.com", "G4T3C0NTR0L", "rvacaru@gmail.com", "Robot IP", ip)
-	
-def perform_cleanup():
-	print "Cleanup"
-	pi2go.cleanup()
-	backthread.stop(app)
-	
+
 #Register the function to be called on exit
 atexit.register(perform_cleanup)
 #start...	
