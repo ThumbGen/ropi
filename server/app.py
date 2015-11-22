@@ -55,6 +55,7 @@ def perform_cleanup():
 	assistance.cleanup(app)	
 	print "Cleaned"
 
+	
 @app.route('/', defaults={'path': 'index.html'})	
 @app.route('/<path:path>')
 def getFile(path):
@@ -62,6 +63,7 @@ def getFile(path):
 		path = 'index.html'
 	return app.send_static_file(path)
 
+	
 @app.route(baseApi+ 'quit', methods=['PUT'])
 def quit_prog():
 	#sys.exit("User closed the server...")

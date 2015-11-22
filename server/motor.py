@@ -6,6 +6,7 @@ import carLeds
 currentSpeed = 30
 currentCommand = None
 
+
 def execute(cmd, arg = None):
 	global currentCommand
 	# if cmd is "speed" just execute adjustSpeed
