@@ -1,15 +1,27 @@
 ﻿var socket = null;
-var robotIp = "raspberrypi";
 var baseServerUrl = "";
 var robotIpEntry = null;
 var cameraButton = null;
 var connectButton = null;
 var controlsButton = null;
+var robotIpCookieName = "RobotIP";
 
 $(document).ready(function () {
 
     var getRobotIp = function () {
-        return robotIpEntry.val();
+        var tmp = robotIpEntry.val();
+        if (tmp == null || tmp === "") {
+            tmp = Cookies.get(robotIpCookieName);
+            if (tmp == null || tmp === "") {
+                tmp = "raspberrypi";
+            }
+        }
+        return tmp;
+    }
+
+    var storeRobotIp = function () {
+        var tmp = robotIpEntry.val();
+        Cookies.set(robotIpCookieName, tmp);
     }
 
     var getToggleStatus = function (toggle) {
@@ -89,8 +101,7 @@ $(document).ready(function () {
     var processRobotToggle = function () {
         if (getIsConnected()) {
 
-            //todo save the robotIp to cookies
-            robotIp = getRobotIp();
+            storeRobotIp();
 
             // ask IP , abandon on Cancel
             $('#exampleModal').modal({ backdrop: 'static', keyboard: false });
@@ -114,9 +125,8 @@ $(document).ready(function () {
     };
 
     var run = function () {
-        //TODO load it from cookies
         robotIpEntry = $("#robotIP");
-        robotIpEntry.val(robotIp);
+        robotIpEntry.val(getRobotIp());
 
         cameraButton = $("#cameraButton");
         cameraButton.bootstrapToggle();

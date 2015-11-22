@@ -97,6 +97,7 @@
     <Content Include="index.html" />
     <Content Include="scripts\bootstrap.min.js" />
     <Content Include="scripts\jquery-2.1.4.min.js" />
+    <Content Include="scripts\js.cookie.js" />
     <Content Include="scripts\nipplejs.min.js" />
     <Content Include="scripts\nouislider.min.js" />
     <Content Include="scripts\socket.io.js" />
