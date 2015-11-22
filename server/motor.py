@@ -12,7 +12,7 @@ def execute(cmd, arg = None):
 	if cmd != "move":
 		adjustSpeed(arg) # for 'move' the arg is the angle not the speed
 	if cmd == "speed":
-		if currentCommand != None:
+		if currentCommand != None and currentCommand != "stop":
 			execute(currentCommand)
 		return
 	currentCommand = None

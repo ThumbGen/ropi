@@ -8,7 +8,7 @@ import RPi.GPIO as GPIO
 
 baseApi = '/ropi/api/v1.0/';
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='remote/RoPiRemote')
 app.debug = False
 #app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
@@ -54,10 +54,13 @@ def perform_cleanup():
 	carLeds.cleanup(app)
 	assistance.cleanup(app)	
 	print "Cleaned"
-	
-@app.route('/')
-def index():
-	return "Hello"
+
+@app.route('/', defaults={'path': 'index.html'})	
+@app.route('/<path:path>')
+def getFile(path):
+	if path == '':
+		path = 'index.html'
+	return app.send_static_file(path)
 
 @app.route(baseApi+ 'quit', methods=['PUT'])
 def quit_prog():
