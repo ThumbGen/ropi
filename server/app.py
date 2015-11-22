@@ -3,7 +3,7 @@ import time, atexit, threading, subprocess, os, sys, signal
 from flask import Flask, jsonify, request
 from flask_socketio import SocketIO, emit
 from pi2go import pi2go
-import carLeds, leds, ultrasonic, lights, pantilt, button, motor, camera, emailer, assistance
+import carLeds, leds, ultrasonic, lights, pantilt, button, motor, camera, assistance
 import RPi.GPIO as GPIO
 
 baseApi = '/ropi/api/v1.0/';
@@ -44,7 +44,6 @@ def init():
 	button.init(app)
 	pantilt.init()
 	assistance.init(app, socketio)
-	#inform_ip()
 	print "app Init done - Initialized"
 	
 def perform_cleanup():
@@ -143,12 +142,6 @@ def put_system(cmd_system):
 def get_ultrasonic():
 	dist = ultrasonic.getDistance()
 	return jsonify({ 'dist':dist})
-	
-def inform_ip():
-	f = os.popen('ifconfig wlan0 | grep "inet\ addr" | cut -d: -f2 | cut -d" " -f1')
-	ip=f.read()
-	print ip
-	emailer.send_email("raspig8@gmail.com", "G4T3C0NTR0L", "rvacaru@gmail.com", "Robot IP", ip)
 
 #Register the function to be called on exit
 atexit.register(perform_cleanup)
