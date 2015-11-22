@@ -20,7 +20,7 @@ var controls = {
         }).on("start end", function (evt, data) {
             if (evt.type === "end") {
                 $.ajax({
-                    url: baseServerUrl + "motor/stop",
+                    url: settings.getBaseAPIUrl() + "motor/stop",
                     type: "PUT",
                     success: function (result) {
                         console.log("STOP");
@@ -34,7 +34,7 @@ var controls = {
                 var angle = Math.floor(data["angle"]["degree"] / 10) * 10;
                 if (angle !== currentDirectionAngle) {
                     $.ajax({
-                        url: baseServerUrl + "motor/move/" + angle,
+                        url: settings.getBaseAPIUrl() + "motor/move/" + angle,
                         type: "PUT",
                         success: function (result) {
                             console.log(angle);
@@ -76,7 +76,7 @@ var controls = {
         speedSlider.on("change", function (value) {
             var speed = Math.floor(value);
             $.ajax({
-                url: baseServerUrl + "motor/speed/" + speed,
+                url: settings.getBaseAPIUrl() + "motor/speed/" + speed,
                 type: "PUT",
                 success: function (result) {
                     console.log(speed + result);

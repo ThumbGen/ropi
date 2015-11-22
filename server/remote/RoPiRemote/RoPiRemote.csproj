@@ -69,16 +69,21 @@
     <Content Include="app\app.js" />
     <Content Include="app\controls.js" />
     <Content Include="app\parking.js" />
+    <Content Include="app\settings.js" />
     <Content Include="beep.wav" />
+    <Content Include="css\bootstrap-dialog.min.css" />
     <Content Include="css\bootstrap-toggle.min.css" />
     <Content Include="css\nouislider.min.css" />
     <Content Include="css\nouislider.pips.css" />
     <Content Include="css\nouislider.tooltips.css" />
+    <Content Include="images\back1.jpg" />
+    <Content Include="images\back1.png" />
     <Content Include="packages.config" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="scripts\bootstrap-dialog.min.js" />
     <Content Include="scripts\bootstrap-toggle.min.js" />
     <Content Include="scripts\fabric.min.js" />
     <Content Include="scripts\bootstrap-toggle.min.js.map" />
@@ -102,6 +107,7 @@
     <Content Include="scripts\nouislider.min.js" />
     <Content Include="scripts\socket.io.js" />
     <Content Include="scripts\wNumb.js" />
+    <Content Include="settings.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

@@ -13,7 +13,8 @@
     <link href="css/styles.css" rel="stylesheet">
     <link href="css/bootstrap-toggle.min.css" rel="stylesheet" />
     <link href="css/nouislider.min.css" rel="stylesheet" />
-    
+    <link href="css/bootstrap-dialog.min.css" rel="stylesheet" />
+
     <script src="scripts/jquery-2.1.4.min.js"></script>
     <script src="scripts/bootstrap.min.js"></script>
     <script src="scripts/nipplejs.min.js"></script>
@@ -23,30 +24,29 @@
     <script src="scripts/wNumb.js"></script>
     <script src="scripts/nouislider.min.js"></script>
     <script src="scripts/js.cookie.js"></script>
+    <script src="scripts/bootstrap-dialog.min.js"></script>
 
 
     <script src="https://cdn.rawgit.com/clipchamp/jquery-clipchamp-mjpeg-player-plugin/126a8cb1ffdbb2c7d90231e7dd8f9186707212fb/src/jquery.clipchamp.mjpeg.player.js"></script>
 
     <!--<source src="http://raspberrypi:8080/stream/video.mjpeg">-->
-    <!--<script src="app/app.module.js"></script>
-    <script src="app/main/main.js"></script>-->
 
 </head>
 <body>
     <audio id="beep" src="beep.wav" autostart="false"></audio>
 
     <!-- Fixed navbar -->
-    <nav class="navbar navbar-default navbar-static-top" style="margin-bottom: 0px">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">RoPi</a>
-                <div class="navbar-left" style="margin-top: 8px">
-                    <input id="robotIP" type="text" style="width: 100px" placeholder="enter robot IP">
-                    <input id="connectButton" type="checkbox" data-toggle="toggle" data-onstyle="success" data-on="Robot On" data-off="Robot Off">
-                    <input id="cameraButton" type="checkbox" data-toggle="toggle" data-on="Camera On" data-off="Camera Off" data-onstyle="primary">
-                    <input id="controlsButton" type="checkbox" data-toggle="toggle" data-on="&lt;i class='glyphicon glyphicon-eye-open'>" data-onstyle="warning"
-                           data-off="&lt;i class='glyphicon glyphicon-eye-close'>" />
-                </div>
+    <nav class="navbar navbar-default navbar-static-top test1" >
+        <div class="container-fluid dark" >
+            <div class="navbar-left navBarPadding">
+                <a class="label label-primary" href="#">RoPi Remote</a>
+                <input id="connectButton" type="checkbox" data-toggle="toggle" data-onstyle="success" data-on="Robot On" data-off="Robot Off">
+                <input id="cameraButton" type="checkbox" data-toggle="toggle" data-on="Camera On" data-off="Camera Off" data-onstyle="primary">
+                <input id="controlsButton" type="checkbox" data-toggle="toggle" data-on="&lt;i class='glyphicon glyphicon-eye-open'>" data-onstyle="primary"
+                       data-off="&lt;i class='glyphicon glyphicon-eye-close'>" />
+                <button id="settingsButton" type="button" class="btn btn-primary" style="position: absolute; right: 12px; top: 8px">
+                    <span class="glyphicon glyphicon-cog"></span>
+                </button>
             </div>
         </div>
     </nav>
@@ -82,29 +82,7 @@
         </div>
     </footer>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="exampleModalLabel">Robot IP Address</h4>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="ipaddress" class="control-label">Host or IP Address:</label>
-                            <input type="text" class="form-control" id="ipaddress">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Connect</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <script src="app/settings.js"></script>
     <script src="app/controls.js"></script>
     <script src="app/parking.js"></script>
     <script src="app/app.js"></script>

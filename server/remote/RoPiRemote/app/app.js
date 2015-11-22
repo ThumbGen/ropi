@@ -1,5 +1,4 @@
 ﻿var socket = null;
-var baseServerUrl = "";
 var robotIpEntry = null;
 var cameraButton = null;
 var connectButton = null;
@@ -7,22 +6,6 @@ var controlsButton = null;
 var robotIpCookieName = "RobotIP";
 
 $(document).ready(function () {
-
-    var getRobotIp = function () {
-        var tmp = robotIpEntry.val();
-        if (tmp == null || tmp === "") {
-            tmp = Cookies.get(robotIpCookieName);
-            if (tmp == null || tmp === "") {
-                tmp = "raspberrypi";
-            }
-        }
-        return tmp;
-    }
-
-    var storeRobotIp = function () {
-        var tmp = robotIpEntry.val();
-        Cookies.set(robotIpCookieName, tmp);
-    }
 
     var getToggleStatus = function (toggle) {
         return toggle != null && toggle.prop("checked");
@@ -53,20 +36,19 @@ $(document).ready(function () {
     }
 
     var connect = function () {
-        socket = io.connect("http://" + getRobotIp() + ":80/", { 'forceNew': true });
+        socket = io.connect(settings.getBaseServerUrl() + ":80/", { 'forceNew': true });
         socket.on("connected", function (msg) {
             //updateConnectionStatus(true, msg);
         });
         socket.on("disconnected", function (msg) {
-            //updateConnectionStatus(false, msg);
+            connectButton.bootstrapToggle("off");
+            cameraButton.bootstrapToggle("off");
         });
         socket.on("parking", function (msg) {
             parking.update(msg);
         });
 
         socket.emit("connect");
-
-        baseServerUrl = "http://" + getRobotIp() + ":80/ropi/api/v1.0/";
     };
 
     var disconnect = function () {
@@ -87,7 +69,7 @@ $(document).ready(function () {
     var processToggleCamera = function () {
         var camera = $("#camera");
         if (getIsCameraActive()) {
-            camera.attr("src", "http://" + getRobotIp() + ":8080/stream/video.mjpeg");
+            camera.attr("src", settings.getBaseServerUrl() + ":8080/stream/video.mjpeg");
             camera.show();
             enableControlsButton();
         } else {
@@ -100,21 +82,13 @@ $(document).ready(function () {
 
     var processRobotToggle = function () {
         if (getIsConnected()) {
-
-            storeRobotIp();
-
-            // ask IP , abandon on Cancel
-            $('#exampleModal').modal({ backdrop: 'static', keyboard: false });
-            $('#exampleModal').on('hidden.bs.modal', function(e) {
-                connect();
-                controls.showRobotControls();
-                if (!getIsCameraActive()) {
-                    cameraButton.bootstrapToggle("toggle");
-                }
-                enableControlsButton();
-            });
-
-
+            connect();
+            controls.showRobotControls();
+            // optionally switch on camera if not already running
+            if (!getIsCameraActive()) {
+                cameraButton.bootstrapToggle("toggle");
+            }
+            enableControlsButton();
         } else {
             controls.hideRobotControls();
             disconnect();
@@ -125,9 +99,6 @@ $(document).ready(function () {
     };
 
     var run = function () {
-        robotIpEntry = $("#robotIP");
-        robotIpEntry.val(getRobotIp());
-
         cameraButton = $("#cameraButton");
         cameraButton.bootstrapToggle();
         cameraButton.change(function () {
@@ -146,6 +117,11 @@ $(document).ready(function () {
             processToggleControls();
         });
         controlsButton.bootstrapToggle("disable");
+
+        var settingsButton = $("#settingsButton");
+        settingsButton.click(function() {
+            settings.show();
+        });
     }
 
     // go!
