@@ -11,3 +11,6 @@ def button_logic():
 
 def init(app):
 	backthread.start(app, button_logic)
+
+def cleanup(app):
+	backthread.stop(app)
