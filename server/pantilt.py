@@ -26,6 +26,7 @@ def init():
 	
 def center():
 	setPanValue(PANCENTER)
+	time.sleep(1)
 	setTiltValue(TILTCENTER)
 		
 def setPanValue(deg):
