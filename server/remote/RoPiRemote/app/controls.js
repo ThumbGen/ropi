@@ -11,7 +11,7 @@ var controls = {
         var evts = "plain:up";
 
         var currentDirectionAngle = 0;
-
+        
         joystickLeft = nipplejs.create({
             zone: document.getElementById("jLeft"),
             mode: "static",
@@ -100,11 +100,31 @@ var controls = {
     showCameraControls: function () {
         if (joystickRight != null) return;
 
+        var currentPanAngle = 0;
+        var currentTiltAngle = 0;
+
         joystickRight = nipplejs.create({
             zone: document.getElementById("jRight"),
             mode: "static",
             position: { left: "50%", top: "50%" },
             color: "blue"
+        }).on("move", function (evt, data) {
+            // ignore movement smaller than 20
+            //var dist = data["distance"];
+            //if (dist > 10) {
+            //    var angle = Math.floor(data["angle"]["degree"] / 10) * 10;
+            //    if (angle !== currentPanAngle) {
+            //        $.ajax({
+            //            url: settings.getBaseAPIUrl() + "motor/move/" + angle,
+            //            type: "PUT",
+            //            success: function (result) {
+            //                console.log(angle);
+            //            }
+            //        });
+
+            //        currentDirectionAngle = angle;
+            //    }
+            //}
         })/*.on('pressure', function (evt, data) {
                 console.log({ pressure: data });
             })*/;
