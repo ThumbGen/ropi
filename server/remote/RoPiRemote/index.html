@@ -36,8 +36,8 @@
     <audio id="beep" src="beep.wav" autostart="false"></audio>
 
     <!-- Fixed navbar -->
-    <nav class="navbar navbar-default navbar-static-top test1" >
-        <div class="container-fluid dark" >
+    <nav class="navbar navbar-default navbar-static-top test1">
+        <div class="container-fluid dark">
             <div class="navbar-left navBarPadding">
                 <a class="label label-primary" href="#">RoPi Remote</a>
                 <input id="connectButton" type="checkbox" data-toggle="toggle" data-onstyle="success" data-on="Robot On" data-off="Robot Off">
@@ -53,7 +53,7 @@
 
     <!-- content-->
     <div id="main" class="contentFill">
-        <img id="camera" class="contentFill"/>
+        <img id="camera" class="contentFill" />
         <!--<video width="360" height="420" poster="http://raspberrypi:8080/stream/video.mjpeg" autoplay>
             <source src="http://raspberrypi:8080/stream/video.mjpeg" type="multipart/x-mixed-replace; boundary=--boundary"/>
         </video>-->
@@ -71,7 +71,44 @@
                     <div id="jLeft"></div>
                 </div>
                 <div id="centerPanel" class="col-xs-4 footerElement">
-                    <div id="jRight"></div>
+                    <!--<div id="jRight"></div>-->
+                    <table style="margin: 0 auto">
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button id="tiltUpButton" type="button" class="btn btn-primary cameraButton">
+                                    <span class="glyphicon glyphicon-triangle-top"></span>
+                                </button>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button id="panLeftButton" type="button" class="btn btn-primary cameraButton">
+                                    <span class="glyphicon glyphicon-triangle-left"></span>
+                                </button>
+                            </td>
+                            <td>
+                                <button id="centerButton" type="button" class="btn btn-primary cameraButton">
+                                    <span class="glyphicon glyphicon-record"></span>
+                                </button>
+                            </td>
+                            <td>
+                                <button id="panRightButton" type="button" class="btn btn-primary cameraButton">
+                                    <span class="glyphicon glyphicon-triangle-right"></span>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button id="tiltDownButton" type="button" class="btn btn-primary cameraButton">
+                                    <span class="glyphicon glyphicon-triangle-bottom"></span>
+                                </button>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </table>
                 </div>
                 <div class="col-xs-4 footerElement">
                     <div id="speedSlider" class="sliders speedSlider"></div>

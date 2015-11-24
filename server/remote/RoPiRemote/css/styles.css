@@ -16,7 +16,12 @@
     position: fixed;
 }
 
-
+.cameraButton {
+    height:45px;
+    width: 45px;
+    margin: 1px;
+    display: none;
+}
 
 .footerElement {
     height: 150px;

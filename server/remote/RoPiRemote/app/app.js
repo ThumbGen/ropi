@@ -99,12 +99,14 @@ $(document).ready(function () {
     };
 
     var run = function () {
+        controls.init();
+
         cameraButton = $("#cameraButton");
         cameraButton.bootstrapToggle();
         cameraButton.change(function () {
             processToggleCamera();
         });
-
+        
         connectButton = $("#connectButton");
         connectButton.bootstrapToggle();
         connectButton.change(function () {
