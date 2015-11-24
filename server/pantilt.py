@@ -15,7 +15,7 @@ TILTMAX = 180
 TILTMIN = 0
 
 PANCENTER = 90
-TILTCENTER = 90
+TILTCENTER = 95
 
 servo = None
 
@@ -26,19 +26,20 @@ def init():
 	
 def center():
 	setPanValue(PANCENTER)
+	time.sleep(1)
 	setTiltValue(TILTCENTER)
 		
 def setPanValue(deg):
 	if deg < PANMIN or deg > PANMAX:
 		return
 	turn(PAN, PANOFFSET + deg)
-	print "pan:", deg
+	#print "pan:", deg
 
 def setTiltValue(deg):
 	if deg < TILTMIN or deg > TILTMAX:
 		return
 	turn(TILT, TILTOFFSET + deg)
-	print "tilt:", deg
+	#print "tilt:", deg
 	
 def turn(pin,deg):
 	pwm = 570.0 + ((deg/180.0) * 1700.0)

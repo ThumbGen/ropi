@@ -8,7 +8,7 @@ def button_logic():
 	if pi2go.getSwitch():
 		print "Send IP"
 		inform_ip()
-		carLeds.execute("flash")
+		carLeds.alert()
 	time.sleep(0.5)
 
 def init(app):
@@ -22,4 +22,4 @@ def inform_ip():
 	f = os.popen('ifconfig wlan0 | grep "inet\ addr" | cut -d: -f2 | cut -d" " -f1')
 	ip=f.read()
 	print ip
-	emailer.send_email("raspig8@gmail.com", "G4T3C0NTR0L", "rvacaru@gmail.com", "Robot IP", ip)
+	emailer.send_email("raspig8@gmail.com", "G4T3C0NTR0L", "rvacaru@gmail.com", "Robot IP", "RoPiRemote: http://" + ip + "\r\n\r\n" + ip)
