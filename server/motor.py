@@ -37,6 +37,7 @@ def execute(cmd, arg = None):
 def forward():
 	global currentSpeed, currentCommand
 	pi2go.forward(currentSpeed)
+	carLeds.execute("forward")
 	#print "Forward ", currentSpeed
 	
 def reverse():

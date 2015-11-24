@@ -27,15 +27,26 @@ light_threshold = 50
 
 def init(app):
 	global BackStatus, FrontStatus
-	BackStatus = Off
-	FrontStatus = Off
-	pi2go.setLED(Left, LEDonLow, LEDonLow, LEDonLow)
-	pi2go.setLED(Right, LEDonLow, LEDonLow, LEDonLow)
-	backthread.start(app, lights_logic)
-	
+	BackStatus = Dimmed
+	back()
+	FrontStatus = Dimmed
+	front()
+	standby()
+	#backthread.start(app, lights_logic)
+		
 def cleanup(app):
 	backthread.stop(app)	
 
+def standby():
+	pi2go.setLED(Left, LEDoff, LEDonLow, LEDoff)
+	pi2go.setLED(Right, LEDoff, LEDonLow, LEDoff)
+
+def alert():
+	pi2go.setLED(Left, LEDoff, LEDon, LEDoff)
+	pi2go.setLED(Right, LEDoff, LEDon, LEDoff)
+	time.sleep(2)
+	standby()
+	
 def lights_logic():
 	global light_threshold, FrontStatus, BackStatus
 	if pi2go.getLight(2) < light_threshold:
@@ -93,7 +104,9 @@ def execute(cmd_str, LEDData = None, source = None):
 		time.sleep(1)
 		BackStatus = tmp
 		back()
-		
+		FrontStatus = Dimmed
+		front()
+				
 	if cmd_str == "dimmed":
 		if BackStatus == Dimmed or FrontStatus == Dimmed:
 			return
@@ -109,4 +122,7 @@ def execute(cmd_str, LEDData = None, source = None):
 		time.sleep(1)
 		FrontStatus = tmp
 		front()
-	
+
+	if cmd_str == "forward":
+		FrontStatus = Full
+		front()
