@@ -15,6 +15,7 @@ var controls = {
         joystickLeft = nipplejs.create({
             zone: document.getElementById("jLeft"),
             mode: "static",
+            size: 120,
             position: { left: "50%", top: "50%" },
             color: "green"
         }).on("start end", function (evt, data) {
