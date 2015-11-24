@@ -82,18 +82,18 @@ def put_camera(cam_cmd):
 	
 @app.route(baseApi + 'servos/tilt/<int:value>', methods=['PUT'])
 def set_servos_tilt_value(value):
-	pantilt.setTiltValue(value)
-	return "OK"
+	res = pantilt.setTiltValue(value)
+	return jsonify(res)
 
 @app.route(baseApi + 'servos/pan/<int:value>', methods=['PUT'])
 def set_servos_pan_value(value):
-	pantilt.setPanValue(value)
-	return "OK"
+	res = pantilt.setPanValue(value)
+	return jsonify(res)
 
 @app.route(baseApi + 'servos/center', methods=['PUT'])
 def set_servos_center():
-	pantilt.center()
-	return "OK" 
+	res = pantilt.center()
+	return jsonify(res)
 	
 @app.route(baseApi + 'lights', methods=['GET'])
 def get_lights():

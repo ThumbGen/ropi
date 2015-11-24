@@ -28,17 +28,20 @@ def center():
 	setPanValue(PANCENTER)
 	time.sleep(1)
 	setTiltValue(TILTCENTER)
+	return { "tilt": TILTCENTER, "pan": PANCENTER }
 		
 def setPanValue(deg):
 	if deg < PANMIN or deg > PANMAX:
-		return
+		return { "pan": -1 }
 	turn(PAN, PANOFFSET + deg)
+	return { "pan": deg }
 	#print "pan:", deg
 
 def setTiltValue(deg):
 	if deg < TILTMIN or deg > TILTMAX:
-		return
+		return { "tilt": -1 }
 	turn(TILT, TILTOFFSET + deg)
+	return { "tilt": deg }
 	#print "tilt:", deg
 	
 def turn(pin,deg):
