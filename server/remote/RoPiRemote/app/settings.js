@@ -96,7 +96,10 @@ var settings = {
         if (robotIP == null || robotIP === "" || robotIP === "undefined") {
             robotIP = Cookies.get(robotIpCookieName);
             if (robotIP == null || robotIP === "" || robotIP === "undefined") {
-                robotIP = "localhost";
+                robotIP = window.location.hostname;
+            }
+            if (robotIP == null || robotIP === "" || robotIP === "undefined") {
+                robotIP = "raspberrypi";
             }
         }
         return robotIP;
