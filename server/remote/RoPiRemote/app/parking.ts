@@ -1,4 +1,5 @@
-//http://jsfiddle.net/xk6ny85d/15/
+﻿//http://jsfiddle.net/xk6ny85d/15/
+
 var colorOff = "whitesmoke";
 var color1 = "yellow";
 var color2 = "orange";
@@ -6,6 +7,7 @@ var color3 = "orangered";
 var color4 = "red";
 var colorLeftLine = "red";
 var colorRightLine = "green";
+
 var canvas = null;
 var circle1 = null;
 var circle2 = null;
@@ -16,9 +18,11 @@ var right = null;
 var lineLeft = null;
 var lineRight = null;
 var distText = null;
+
 var parkingControl = null;
+
 var parking = {
-    update: function (msg) {
+    update(msg) {
         if (canvas != null) {
             circle1.stroke = colorOff;
             circle2.stroke = colorOff;
@@ -28,15 +32,25 @@ var parking = {
             right.stroke = colorOff;
             lineLeft.fill = colorOff;
             lineRight.fill = colorOff;
-            var dist = msg["d"];
+            const dist = msg["d"];
             if (dist < 999) {
                 distText.setText(dist.toString());
-            }
-            else {
+            } else {
                 distText.setText("");
             }
+
             if (dist < 50 && dist >= 30) {
                 circle1.stroke = color1;
+
+
+                //var sound = document.getElementById("beep");
+                //sound.addEventListener("ended", function () {
+                //    this.currentTime = 0;
+                //    this.play();
+                //}, false);
+                //sound.play();
+
+
             }
             if (dist < 30 && dist >= 20) {
                 circle2.stroke = color2;
@@ -59,30 +73,34 @@ var parking = {
             if (msg["rl"]) {
                 lineRight.fill = colorRightLine;
             }
+
             // sample: {'d': dist, 'l': l, 'c': c,'r': r, 'll': ll, 'rl': rl}
             canvas.renderAll();
+
+
         }
     },
-    hide: function () {
+    hide() {
         if (canvas != null) {
             canvas.dispose();
         }
     },
-    init: function () {
+    init() {
+
         var resizeCanvas = function () {
-            if (canvas == null)
-                return;
+            if (canvas == null) return;
             canvas.setHeight($("#main")[0].clientHeight);
             canvas.setWidth($("#main")[0].clientWidth);
             canvas.renderAll();
             if (window.innerWidth < 800) {
                 canvas.setZoom(0.5);
-            }
-            else {
+            } else {
                 canvas.setZoom(1);
             }
         };
+
         $(window).resize(resizeCanvas);
+
         //var video1 = new fabric.Image($("#camera"), {
         //    left: 350,
         //    top: 300,
@@ -90,14 +108,17 @@ var parking = {
         //    originX: 'center',
         //    originY: 'center'
         //});
+
         var startAngle = -2.618; // 30deg
         var endAngle = -0.5235;
         startAngle = -2.35619; // 45deg
         endAngle = -0.785398;
+
         canvas = new fabric.Canvas("parkingControl");
         canvas.selection = false;
         canvas.allowTouchScrolling = true;
         canvas.setZoom(0.5);
+
         circle1 = new fabric.Circle({
             radius: 100,
             left: -10,
@@ -110,6 +131,7 @@ var parking = {
             fill: "",
             selectable: false
         });
+
         circle2 = new fabric.Circle({
             radius: 80,
             left: 10,
@@ -122,6 +144,7 @@ var parking = {
             fill: "",
             selectable: false
         });
+
         circle3 = new fabric.Circle({
             radius: 60,
             left: 30,
@@ -134,6 +157,7 @@ var parking = {
             fill: "",
             selectable: false
         });
+
         circle4 = new fabric.Circle({
             radius: 40,
             left: 50,
@@ -146,6 +170,7 @@ var parking = {
             fill: "",
             selectable: false
         });
+
         left = new fabric.Circle({
             radius: 40,
             left: 50,
@@ -158,6 +183,7 @@ var parking = {
             fill: "",
             selectable: false
         });
+
         right = new fabric.Circle({
             radius: 40,
             left: 50,
@@ -170,6 +196,7 @@ var parking = {
             fill: "",
             selectable: false
         });
+
         var body = new fabric.Rect({
             top: 115,
             left: 73,
@@ -178,6 +205,7 @@ var parking = {
             fill: "gray",
             selectable: false
         });
+
         var wleft = new fabric.Rect({
             top: 180,
             left: 45,
@@ -186,6 +214,7 @@ var parking = {
             fill: "dimgray",
             selectable: false
         });
+
         var wright = new fabric.Rect({
             top: 180,
             left: 126,
@@ -194,6 +223,7 @@ var parking = {
             fill: "dimgray",
             selectable: false
         });
+
         lineLeft = new fabric.Rect({
             top: 130,
             left: 80,
@@ -202,6 +232,7 @@ var parking = {
             fill: colorOff,
             selectable: false
         });
+
         lineRight = new fabric.Rect({
             top: 130,
             left: 106,
@@ -210,6 +241,7 @@ var parking = {
             fill: colorOff,
             selectable: false
         });
+
         distText = new fabric.Text("", {
             selectable: false,
             originX: "center",
@@ -220,7 +252,9 @@ var parking = {
             fontWeight: "bold",
             textAlign: "center",
             fill: "white"
+
         });
+
         var parkingControl = new fabric.Group([circle1, circle2, circle3, circle4, left, right, body, wleft, wright, lineLeft, lineRight, distText], {
             left: 0,
             top: 0,
@@ -234,7 +268,9 @@ var parking = {
             hasBorders: false,
             hasControls: false
         });
+
         canvas.add(parkingControl);
+
         if (canvas.requestFullScreen) {
             canvas.requestFullScreen();
         }
@@ -244,10 +280,13 @@ var parking = {
         else if (canvas.mozRequestFullScreen) {
             canvas.mozRequestFullScreen();
         }
+
         //fabric.util.requestAnimFrame(function render() {
         //    canvas.renderAll();
         //    fabric.util.requestAnimFrame(render);
         //});
+
         resizeCanvas();
     }
 };
+

@@ -1,3 +1,4 @@
+﻿
 var joystickLeft = null;
 var joystickRight = null;
 var speedSlider = null;
@@ -6,21 +7,26 @@ var panRightButton = null;
 var tiltUpButton = null;
 var tiltDownButton = null;
 var centerButton = null;
+
 var currentTilt = 95;
 var currentPan = 90;
-var sendCameraCommand = function (command) {
+
+var sendCameraCommand = command => {
     $.ajax({
         url: settings.getBaseAPIUrl() + "servos/" + command,
         type: "PUT",
-        success: function (result) {
+        success(result) {
             console.log(result);
             processResult(result);
         }
     });
-};
-var adjustTilt = function (offset) { return (currentTilt + offset); };
-var adjustPan = function (offset) { return (currentPan + offset); };
-var processResult = function (data) {
+}
+
+var adjustTilt = offset => (currentTilt + offset);
+
+var adjustPan = offset => (currentPan + offset);
+
+var processResult = data => {
     var pan = data["pan"];
     var tilt = data["tilt"];
     if (pan != null && pan !== -1) {
@@ -29,31 +35,34 @@ var processResult = function (data) {
     if (tilt != null && tilt !== -1) {
         currentTilt = data["tilt"];
     }
-};
+}
+
 var controls = {
-    showRobotControls: function () {
-        if (joystickLeft != null)
-            return;
+    showRobotControls() {
+        if (joystickLeft != null) return;
+
         //var evts = "dir:up plain:up dir:left plain:left dir:down plain:down dir:right plain:right";
         var evts = "plain:up";
+
         var currentDirectionAngle = 0;
+
         joystickLeft = nipplejs.create({
             zone: document.getElementById("jLeft"),
             mode: "static",
             size: 120,
             position: { left: "50%", top: "50%" },
             color: "green"
-        }).on("start end", function (evt, data) {
+        }).on("start end", (evt, data) => {
             if (evt.type === "end") {
                 $.ajax({
                     url: settings.getBaseAPIUrl() + "motor/stop",
                     type: "PUT",
-                    success: function (result) {
+                    success(result) {
                         console.log("STOP");
                     }
                 });
             }
-        }).on("move", function (evt, data) {
+        }).on("move", (evt, data) => {
             // ignore movement smaller than 20
             var dist = data["distance"];
             if (dist > 10) {
@@ -62,16 +71,19 @@ var controls = {
                     $.ajax({
                         url: settings.getBaseAPIUrl() + "motor/move/" + angle,
                         type: "PUT",
-                        success: function (result) {
+                        success(result) {
                             console.log(angle);
                         }
                     });
+
                     currentDirectionAngle = angle;
                 }
             }
-        }).on(evts, function (evt, data) {
-            console.log(evt.type);
-        });
+        }).on(evts,
+            (evt, data) => {
+                console.log(evt.type);
+            }
+        );
         speedSlider = noUiSlider.create(document.getElementById("speedSlider"), {
             start: 30,
             step: 10,
@@ -85,6 +97,8 @@ var controls = {
             },
             format: wNumb({
                 decimals: 0,
+                //thousand: '.',
+                //postfix: ' (US $)'
             }),
             pips: {
                 mode: 'positions',
@@ -93,19 +107,21 @@ var controls = {
                 stepped: true
             }
         });
-        speedSlider.on("change", function (value) {
+
+        speedSlider.on("change", value => {
             var speed = Math.floor(value);
             $.ajax({
                 url: settings.getBaseAPIUrl() + "motor/speed/" + speed,
                 type: "PUT",
-                success: function (result) {
+                success(result) {
                     console.log(speed + result);
                 }
             });
         });
+
         parking.init();
     },
-    hideRobotControls: function () {
+    hideRobotControls() {
         if (joystickLeft != null) {
             joystickLeft.destroy();
             joystickLeft = null;
@@ -116,16 +132,18 @@ var controls = {
         }
         parking.hide();
     },
-    showCameraControls: function () {
-        if (joystickRight != null)
-            return;
+    showCameraControls() {
+        if (joystickRight != null) return;
+
         tiltUpButton.show();
         tiltDownButton.show();
         centerButton.show();
         panLeftButton.show();
         panRightButton.show();
+
         var currentPanAngle = 0;
         var currentTiltAngle = 0;
+
         //joystickRight = nipplejs.create({
         //    zone: document.getElementById("jRight"),
         //    mode: "static",
@@ -144,6 +162,7 @@ var controls = {
         //    //                console.log(angle);
         //    //            }
         //    //        });
+
         //    //        currentDirectionAngle = angle;
         //    //    }
         //    //}
@@ -151,7 +170,7 @@ var controls = {
         //        console.log({ pressure: data });
         //    })*/;
     },
-    hideCameraControls: function () {
+    hideCameraControls() {
         if (joystickRight != null) {
             joystickRight.destroy();
             joystickRight = null;
@@ -162,26 +181,29 @@ var controls = {
         panLeftButton.hide();
         panRightButton.hide();
     },
-    init: function () {
+    init() {
         tiltUpButton = $("#tiltUpButton");
-        tiltUpButton.click(function () {
-            sendCameraCommand("tilt/" + adjustTilt(-10));
+        tiltUpButton.click(() => {
+            sendCameraCommand(`tilt/${adjustTilt(-10)}`);
         });
+
         tiltDownButton = $("#tiltDownButton");
-        tiltDownButton.click(function () {
-            sendCameraCommand("tilt/" + adjustTilt(+10));
+        tiltDownButton.click(() => {
+            sendCameraCommand(`tilt/${adjustTilt(+10)}`);
         });
+
         centerButton = $("#centerButton");
-        centerButton.click(function () {
+        centerButton.click(() => {
             sendCameraCommand("center");
         });
+
         panLeftButton = $("#panLeftButton");
-        panLeftButton.click(function () {
-            sendCameraCommand("pan/" + adjustPan(+10));
+        panLeftButton.click(() => {
+            sendCameraCommand(`pan/${adjustPan(+10)}`);
         });
         panRightButton = $("#panRightButton");
-        panRightButton.click(function () {
-            sendCameraCommand("pan/" + adjustPan(-10));
+        panRightButton.click(() => {
+            sendCameraCommand(`pan/${adjustPan(-10)}`);
         });
     }
-};
+}

@@ -1,7 +1,5 @@
-﻿var robotIP = null;
-
-var executeAction = function(action)
-{
+var robotIP = null;
+var executeAction = function (action) {
     $.ajax({
         url: settings.getBaseAPIUrl() + action,
         type: "PUT",
@@ -9,56 +7,49 @@ var executeAction = function(action)
             console.log(action);
         }
     });
-}
-
-var executeShutdown = function() {
+};
+var executeShutdown = function () {
     BootstrapDialog.confirm({
-            title: "WARNING",
-            message: "You are about to shutdown the Robot.\r\n You won't be able to reach it anymore (power on required)",
-            type: BootstrapDialog.TYPE_DANGER,
-            btnOKLabel: "Yes, shutdown!",
-            btnOKClass: "btn-danger",
-            callback: function(result) {
-                if (result) {
-                    executeAction("system/shutdown");
-                }
+        title: "WARNING",
+        message: "You are about to shutdown the Robot.\r\n You won't be able to reach it anymore (power on required)",
+        type: BootstrapDialog.TYPE_DANGER,
+        btnOKLabel: "Yes, shutdown!",
+        btnOKClass: "btn-danger",
+        callback: function (result) {
+            if (result) {
+                executeAction("system/shutdown");
             }
         }
-    );
-}
-
-var executeReboot = function() {
+    });
+};
+var executeReboot = function () {
     BootstrapDialog.confirm({
-            title: "WARNING",
-            message: "You are about to reboot the Robot.\r\n Please wait few minutes then reconnect to the Robot.",
-            type: BootstrapDialog.TYPE_WARNING,
-            btnOKLabel: "Yes, reboot!",
-            btnOKClass: "btn-warning",
-            callback: function(result) {
-                if (result) {
-                    executeAction("system/reboot");
-                }
+        title: "WARNING",
+        message: "You are about to reboot the Robot.\r\n Please wait few minutes then reconnect to the Robot.",
+        type: BootstrapDialog.TYPE_WARNING,
+        btnOKLabel: "Yes, reboot!",
+        btnOKClass: "btn-warning",
+        callback: function (result) {
+            if (result) {
+                executeAction("system/reboot");
             }
         }
-    );
-}
-
-var executeStop = function() {
+    });
+};
+var executeStop = function () {
     BootstrapDialog.confirm({
-            title: "WARNING",
-            message: "You are about to stop the server running on the Robot.\r\n You won't be able to reach it anymore (hard reset required)",
-            type: BootstrapDialog.TYPE_DANGER,
-            btnOKLabel: "Yes, stop it!",
-            btnOKClass: "btn-danger",
-            callback: function(result) {
-                if (result) {
-                    executeAction("quit");
-                }
+        title: "WARNING",
+        message: "You are about to stop the server running on the Robot.\r\n You won't be able to reach it anymore (hard reset required)",
+        type: BootstrapDialog.TYPE_DANGER,
+        btnOKLabel: "Yes, stop it!",
+        btnOKClass: "btn-danger",
+        callback: function (result) {
+            if (result) {
+                executeAction("quit");
             }
         }
-    );
-}
-
+    });
+};
 var settings = {
     show: function () {
         BootstrapDialog.show({
@@ -69,7 +60,6 @@ var settings = {
             closeByKeyboard: true,
             data: {},
             onshow: function (dialogRef) {
-
             },
             onshown: function (dialogRef) {
                 //update ui
@@ -79,12 +69,12 @@ var settings = {
                 $("#stopButton").click(executeStop);
             },
             buttons: [
-                 {
-                     label: "Close",
-                     action: function (dialogItself) {
-                         dialogItself.close();
-                     }
-                 }
+                {
+                    label: "Close",
+                    action: function (dialogItself) {
+                        dialogItself.close();
+                    }
+                }
             ],
             onhide: function (dialogRef) {
                 robotIP = $("#robotIP").val();
@@ -107,7 +97,7 @@ var settings = {
     storeRobotIp: function () {
         Cookies.set(robotIpCookieName, robotIP);
     },
-    getBaseServerUrl: function() {
+    getBaseServerUrl: function () {
         return "http://" + settings.getRobotIp();
     },
     getBaseAPIUrl: function () {
