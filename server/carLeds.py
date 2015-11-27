@@ -27,10 +27,8 @@ light_threshold = 50
 
 def init(app):
 	global BackStatus, FrontStatus
-	BackStatus = Dimmed
-	back()
-	FrontStatus = Dimmed
-	front()
+	BackStatus = Off
+	FrontStatus = Off
 	standby()
 	#backthread.start(app, lights_logic)
 		
@@ -98,15 +96,15 @@ def execute(cmd_str, LEDData = None, source = None):
 		allOff()
 		
 	if cmd_str == "brake":
+		FrontStatus = Off
+		front()
 		tmp = BackStatus
 		BackStatus = Full
 		back()
 		time.sleep(1)
 		BackStatus = tmp
 		back()
-		FrontStatus = Dimmed
-		front()
-				
+						
 	if cmd_str == "dimmed":
 		if BackStatus == Dimmed or FrontStatus == Dimmed:
 			return
