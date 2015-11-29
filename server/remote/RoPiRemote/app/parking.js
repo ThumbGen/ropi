@@ -251,3 +251,4 @@ var parking = {
         resizeCanvas();
     }
 };
+//# sourceMappingURL=parking.js.map

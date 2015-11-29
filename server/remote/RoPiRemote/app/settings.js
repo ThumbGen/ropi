@@ -104,3 +104,4 @@ var settings = {
         return "http://" + settings.getRobotIp() + ":80/ropi/api/v1.0/";
     }
 };
+//# sourceMappingURL=settings.js.map
