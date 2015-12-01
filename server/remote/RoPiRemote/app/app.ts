@@ -1,123 +1,133 @@
-﻿var socketio = null;
-var robotIpEntry = null;
-var cameraButton = null;
-var connectButton = null;
-var controlsButton = null;
-var robotIpCookieName = "RobotIP";
+﻿$(document).ready(() => {
 
-$(document).ready(() => {
+    new Application().run();
 
-    var getToggleStatus = toggle => (toggle != null && toggle.prop("checked"));
+});
 
-    var getIsConnected = () => getToggleStatus(connectButton);
+class Application {
+    socketio = null;
+    robotIpEntry = null;
+    cameraButton = null;
+    connectButton = null;
+    controlsButton = null;
+    
+    private robotControls = new RobotControls();
+    private cameraControls = new CameraControls();
 
-    var getIsCameraActive = () => getToggleStatus(cameraButton);
+    private parking = new Parking();
 
-    var getIsControlsActive = () => getToggleStatus(controlsButton);
 
-    var disableControlsButton = () => {
-        controlsButton.bootstrapToggle("off");
-        controlsButton.bootstrapToggle("disable");
-    }
+    run = () => {
+        this.robotControls.init();
+        this.cameraControls.init();
 
-    var enableControlsButton = () => {
-        controlsButton.bootstrapToggle("enable");
-        if (!getIsControlsActive()) {
-            controlsButton.bootstrapToggle("on");
-        }
-    }
-
-    var connect = () => {
-        socketio = io.connect(settings.getBaseServerUrl() + ":80/", { 'forceNew': true });
-        socketio.on("connected", msg => {
-            //updateConnectionStatus(true, msg);
-        });
-        socketio.on("disconnected", msg => {
-            connectButton.bootstrapToggle("off");
-            cameraButton.bootstrapToggle("off");
-        });
-        socketio.on("parking", msg => {
-            parking.update(msg);
+        this.cameraButton = $("#cameraButton");
+        this.cameraButton.bootstrapToggle();
+        this.cameraButton.change(() => {
+            this.processToggleCamera();
         });
 
-        socketio.emit("connect");
-    };
-
-    var disconnect = () => {
-        if (socketio !== null) {
-            socketio.disconnect();
-        }
-    };
-
-    var processToggleControls = () => {
-        if (!getIsCameraActive()) return;
-        if (getIsControlsActive()) {
-            controls.showCameraControls();
-        } else {
-            controls.hideCameraControls();
-        }
-    };
-
-    var processToggleCamera = () => {
-        var camera = $("#camera");
-        if (getIsCameraActive()) {
-            camera.attr("src", settings.getBaseServerUrl() + ":8080/stream/video.mjpeg");
-            camera.show();
-            enableControlsButton();
-        } else {
-            camera.attr("src", "");
-            camera.hide();
-            controls.hideCameraControls();
-            disableControlsButton();
-        }
-    };
-
-    var processRobotToggle = () => {
-        if (getIsConnected()) {
-            connect();
-            controls.showRobotControls();
-            // optionally switch on camera if not already running
-            if (!getIsCameraActive()) {
-                cameraButton.bootstrapToggle("toggle");
-            }
-            enableControlsButton();
-        } else {
-            controls.hideRobotControls();
-            disconnect();
-            if (!getIsCameraActive()) {
-                disableControlsButton();
-            }
-        }
-    };
-
-    var run = () => {
-        controls.init();
-
-        cameraButton = $("#cameraButton");
-        cameraButton.bootstrapToggle();
-        cameraButton.change(() => {
-            processToggleCamera();
-        });
-        
-        connectButton = $("#connectButton");
-        connectButton.bootstrapToggle();
-        connectButton.change(() => {
-            processRobotToggle();
+        this.connectButton = $("#connectButton");
+        this.connectButton.bootstrapToggle();
+        this.connectButton.change(() => {
+            this.processRobotToggle();
         });
 
-        controlsButton = $("#controlsButton");
-        controlsButton.bootstrapToggle();
-        controlsButton.change(() => {
-            processToggleControls();
+        this.controlsButton = $("#controlsButton");
+        this.controlsButton.bootstrapToggle();
+        this.controlsButton.change(() => {
+            this.processToggleControls();
         });
-        controlsButton.bootstrapToggle("disable");
+        this.controlsButton.bootstrapToggle("disable");
 
         var settingsButton = $("#settingsButton");
         settingsButton.click(() => {
-            settings.show();
+            Settings.Current.show();
         });
     }
 
-    // go!
-    run();
-})
+    private getToggleStatus = toggle => (toggle != null && toggle.prop("checked"));
+
+    private getIsConnected = () => this.getToggleStatus(this.connectButton);
+
+    private getIsCameraActive = () => this.getToggleStatus(this.cameraButton);
+
+    private getIsControlsActive = () => this.getToggleStatus(this.controlsButton);
+
+    private disableControlsButton = () => {
+        this.controlsButton.bootstrapToggle("off");
+        this.controlsButton.bootstrapToggle("disable");
+    }
+
+    private enableControlsButton = () => {
+        this.controlsButton.bootstrapToggle("enable");
+        if (!this.getIsControlsActive()) {
+            this.controlsButton.bootstrapToggle("on");
+        }
+    }
+
+    private connect = () => {
+        this.socketio = io.connect(Settings.Current.getBaseServerUrl() + ":80/", { 'forceNew': true });
+        this.socketio.on("connected", msg => {
+            //updateConnectionStatus(true, msg);
+        });
+        this.socketio.on("disconnected", msg => {
+            this.connectButton.bootstrapToggle("off");
+            this.cameraButton.bootstrapToggle("off");
+        });
+        this.socketio.on("parking", msg => {
+            this.parking.update(msg);
+        });
+
+        this.socketio.emit("connect");
+    }
+
+    private disconnect = () => {
+        if (this.socketio !== null) {
+            this.socketio.disconnect();
+        }
+    }
+
+    private processToggleControls = () => {
+        if (!this.getIsCameraActive()) return;
+        if (this.getIsControlsActive()) {
+            this.cameraControls.show();
+        } else {
+            this.cameraControls.hide();
+        }
+    }
+
+    private processToggleCamera = () => {
+        var camera = $("#camera");
+        if (this.getIsCameraActive()) {
+            camera.attr("src", Settings.Current.getBaseServerUrl() + ":8080/stream/video.mjpeg");
+            camera.show();
+            this.enableControlsButton();
+        } else {
+            camera.attr("src", "");
+            camera.hide();
+            this.cameraControls.hide();
+            this.disableControlsButton();
+        }
+    }
+
+    private processRobotToggle = () => {
+        if (this.getIsConnected()) {
+            this.connect();
+            this.robotControls.show();
+            this.parking.init();
+            // optionally switch on camera if not already running
+            if (!this.getIsCameraActive()) {
+                this.cameraButton.bootstrapToggle("toggle");
+            }
+            this.enableControlsButton();
+        } else {
+            this.robotControls.hide();
+            this.parking.hide();
+            this.disconnect();
+            if (!this.getIsCameraActive()) {
+                this.disableControlsButton();
+            }
+        }
+    }
+}
