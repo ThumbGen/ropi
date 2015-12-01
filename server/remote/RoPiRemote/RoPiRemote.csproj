@@ -67,10 +67,14 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="app\app.ts" />
-    <TypeScriptCompile Include="app\controls.ts" />
-    <TypeScriptCompile Include="app\parking.ts" />
-    <TypeScriptCompile Include="app\settings.ts" />
+    <TypeScriptCompile Include="app\App.ts" />
+    <TypeScriptCompile Include="app\CameraControls.ts" />
+    <TypeScriptCompile Include="app\IControls.ts" />
+    <TypeScriptCompile Include="app\Parking.ts" />
+    <TypeScriptCompile Include="app\RequestsHelper.ts" />
+    <TypeScriptCompile Include="app\RobotControls.ts" />
+    <TypeScriptCompile Include="app\Settings.ts" />
+    <Content Include="application.js" />
     <Content Include="beep.wav" />
     <Content Include="css\bootstrap-dialog.min.css" />
     <Content Include="css\bootstrap-toggle.min.css" />
@@ -88,6 +92,7 @@
     <Content Include="scripts\bootstrap-toggle.min.js" />
     <Content Include="scripts\fabric.min.js" />
     <Content Include="scripts\bootstrap-toggle.min.js.map" />
+    <Content Include="application.js.map" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -133,6 +138,21 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptModuleKind>None</TypeScriptModuleKind>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile>application.js</TypeScriptOutFile>
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />

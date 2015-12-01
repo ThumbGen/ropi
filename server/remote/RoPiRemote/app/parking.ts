@@ -1,46 +1,47 @@
 ﻿//http://jsfiddle.net/xk6ny85d/15/
 
-var colorOff = "whitesmoke";
-var color1 = "yellow";
-var color2 = "orange";
-var color3 = "orangered";
-var color4 = "red";
-var colorLeftLine = "red";
-var colorRightLine = "green";
+class Parking {
 
-var canvas = null;
-var circle1 = null;
-var circle2 = null;
-var circle3 = null;
-var circle4 = null;
-var left = null;
-var right = null;
-var lineLeft = null;
-var lineRight = null;
-var distText = null;
+    private colorOff = "whitesmoke";
+    private color1 = "yellow";
+    private color2 = "orange";
+    private color3 = "orangered";
+    private color4 = "red";
+    private colorLeftLine = "red";
+    private colorRightLine = "green";
 
-var parkingControl = null;
+    private canvas = null;
+    private circle1: fabric.ICircle = null;
+    private circle2: fabric.ICircle = null;
+    private circle3: fabric.ICircle = null;
+    private circle4: fabric.ICircle = null;
+    private left: fabric.ICircle = null;
+    private right: fabric.ICircle = null;
+    private lineLeft: fabric.IRect = null;
+    private lineRight: fabric.IRect = null;
+    private distText: fabric.IText = null;
 
-var parking = {
-    update(msg) {
-        if (canvas != null) {
-            circle1.stroke = colorOff;
-            circle2.stroke = colorOff;
-            circle3.stroke = colorOff;
-            circle4.stroke = colorOff;
-            left.stroke = colorOff;
-            right.stroke = colorOff;
-            lineLeft.fill = colorOff;
-            lineRight.fill = colorOff;
+    //private parkingControl = null;
+
+    update = (msg) => {
+        if (this.canvas != null) {
+            this.circle1.stroke = this.colorOff;
+            this.circle2.stroke = this.colorOff;
+            this.circle3.stroke = this.colorOff;
+            this.circle4.stroke = this.colorOff;
+            this.left.stroke = this.colorOff;
+            this.right.stroke = this.colorOff;
+            this.lineLeft.fill = this.colorOff;
+            this.lineRight.fill = this.colorOff;
             const dist = msg["d"];
             if (dist < 999) {
-                distText.setText(dist.toString());
+                this.distText.setText(dist.toString());
             } else {
-                distText.setText("");
+                this.distText.setText("");
             }
 
             if (dist < 50 && dist >= 30) {
-                circle1.stroke = color1;
+                this.circle1.stroke = this.color1;
 
 
                 //var sound = document.getElementById("beep");
@@ -53,49 +54,49 @@ var parking = {
 
             }
             if (dist < 30 && dist >= 20) {
-                circle2.stroke = color2;
+                this.circle2.stroke = this.color2;
             }
             if (dist < 20 && dist >= 10) {
-                circle3.stroke = color3;
+                this.circle3.stroke = this.color3;
             }
             if (dist < 10 || msg["c"]) {
-                circle4.stroke = color4;
+                this.circle4.stroke = this.color4;
             }
             if (msg["l"]) {
-                left.stroke = color4;
+                this.left.stroke = this.color4;
             }
             if (msg["r"]) {
-                right.stroke = color4;
+                this.right.stroke = this.color4;
             }
             if (msg["ll"]) {
-                lineLeft.fill = colorLeftLine;
+                this.lineLeft.fill = this.colorLeftLine;
             }
             if (msg["rl"]) {
-                lineRight.fill = colorRightLine;
+                this.lineRight.fill = this.colorRightLine;
             }
 
             // sample: {'d': dist, 'l': l, 'c': c,'r': r, 'll': ll, 'rl': rl}
-            canvas.renderAll();
-
-
+            this.canvas.renderAll();
         }
-    },
-    hide() {
-        if (canvas != null) {
-            canvas.dispose();
-        }
-    },
-    init() {
+    }
 
-        var resizeCanvas = function () {
-            if (canvas == null) return;
-            canvas.setHeight($("#main")[0].clientHeight);
-            canvas.setWidth($("#main")[0].clientWidth);
-            canvas.renderAll();
+    hide = () => {
+        if (this.canvas != null) {
+            this.canvas.dispose();
+        }
+    }
+
+    init = () => {
+
+        var resizeCanvas = () => {
+            if (this.canvas == null) return;
+            this.canvas.setHeight($("#main")[0].clientHeight);
+            this.canvas.setWidth($("#main")[0].clientWidth);
+            this.canvas.renderAll();
             if (window.innerWidth < 800) {
-                canvas.setZoom(0.5);
+                this.canvas.setZoom(0.5);
             } else {
-                canvas.setZoom(1);
+                this.canvas.setZoom(1);
             }
         };
 
@@ -114,84 +115,84 @@ var parking = {
         startAngle = -2.35619; // 45deg
         endAngle = -0.785398;
 
-        canvas = new fabric.Canvas("parkingControl");
-        canvas.selection = false;
-        canvas.allowTouchScrolling = true;
-        canvas.setZoom(0.5);
+        this.canvas = new fabric.Canvas("parkingControl");
+        this.canvas.selection = false;
+        this.canvas.allowTouchScrolling = true;
+        this.canvas.setZoom(0.5);
 
-        circle1 = new fabric.Circle({
+        this.circle1 = new fabric.Circle({
             radius: 100,
             left: -10,
             top: 20,
             angle: 0,
             startAngle: startAngle,
             endAngle: endAngle,
-            stroke: colorOff,
+            stroke: this.colorOff,
             strokeWidth: 17,
             fill: "",
             selectable: false
         });
 
-        circle2 = new fabric.Circle({
+        this.circle2 = new fabric.Circle({
             radius: 80,
             left: 10,
             top: 40,
             angle: 0,
             startAngle: startAngle,
             endAngle: endAngle,
-            stroke: colorOff,
+            stroke: this.colorOff,
             strokeWidth: 17,
             fill: "",
             selectable: false
         });
 
-        circle3 = new fabric.Circle({
+        this.circle3 = new fabric.Circle({
             radius: 60,
             left: 30,
             top: 60,
             angle: 0,
             startAngle: startAngle,
             endAngle: endAngle,
-            stroke: colorOff,
+            stroke: this.colorOff,
             strokeWidth: 17,
             fill: "",
             selectable: false
         });
 
-        circle4 = new fabric.Circle({
+        this.circle4 = new fabric.Circle({
             radius: 40,
             left: 50,
             top: 80,
             angle: 0,
             startAngle: startAngle,
             endAngle: endAngle,
-            stroke: colorOff,
+            stroke: this.colorOff,
             strokeWidth: 17,
             fill: "",
             selectable: false
         });
 
-        left = new fabric.Circle({
+        this.left = new fabric.Circle({
             radius: 40,
             left: 50,
             top: 80,
             angle: 0,
             startAngle: startAngle - 0.8,
             endAngle: endAngle - 1.65,
-            stroke: colorOff,
+            stroke: this.colorOff,
             strokeWidth: 17,
             fill: "",
             selectable: false
         });
 
-        right = new fabric.Circle({
+        this.right = new fabric.Circle({
             radius: 40,
             left: 50,
             top: 80,
             angle: 0,
             startAngle: startAngle + 1.65,
             endAngle: endAngle + 0.8,
-            stroke: colorOff,
+            stroke: this.colorOff,
             strokeWidth: 17,
             fill: "",
             selectable: false
@@ -224,25 +225,25 @@ var parking = {
             selectable: false
         });
 
-        lineLeft = new fabric.Rect({
+        this.lineLeft = new fabric.Rect({
             top: 130,
             left: 80,
             width: 10,
             height: 20,
-            fill: colorOff,
+            fill: this.colorOff,
             selectable: false
         });
 
-        lineRight = new fabric.Rect({
+        this.lineRight = new fabric.Rect({
             top: 130,
             left: 106,
             width: 10,
             height: 20,
-            fill: colorOff,
+            fill: this.colorOff,
             selectable: false
         });
 
-        distText = new fabric.Text("", {
+        this.distText = new fabric.Text("", {
             selectable: false,
             originX: "center",
             left: 98,
@@ -255,7 +256,10 @@ var parking = {
 
         });
 
-        var parkingControl = new fabric.Group([circle1, circle2, circle3, circle4, left, right, body, wleft, wright, lineLeft, lineRight, distText], {
+        var parkingControl = new fabric.Group([
+            this.circle1, this.circle2, this.circle3, this.circle4, this.left, this.right,
+            body, wleft, wright, this.lineLeft, this.lineRight, this.distText
+        ], {
             left: 0,
             top: 0,
             width: 190,
@@ -269,16 +273,16 @@ var parking = {
             hasControls: false
         });
 
-        canvas.add(parkingControl);
+        this.canvas.add(parkingControl);
 
-        if (canvas.requestFullScreen) {
-            canvas.requestFullScreen();
+        if (this.canvas.requestFullScreen) {
+            this.canvas.requestFullScreen();
         }
-        else if (canvas.webkitRequestFullScreen) {
-            canvas.webkitRequestFullScreen();
+        else if (this.canvas.webkitRequestFullScreen) {
+            this.canvas.webkitRequestFullScreen();
         }
-        else if (canvas.mozRequestFullScreen) {
-            canvas.mozRequestFullScreen();
+        else if (this.canvas.mozRequestFullScreen) {
+            this.canvas.mozRequestFullScreen();
         }
 
         //fabric.util.requestAnimFrame(function render() {
