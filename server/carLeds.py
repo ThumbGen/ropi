@@ -102,6 +102,8 @@ def execute(cmd_str, LEDData = None, source = None):
 		BackStatus = Full
 		back()
 		time.sleep(1)
+		if tmp == Full:
+			tmp = Off
 		BackStatus = tmp
 		back()
 						
