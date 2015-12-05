@@ -44,6 +44,33 @@ def setTiltValue(deg):
 	return { "tilt": deg }
 	#print "tilt:", deg
 	
+def setPanTiltPercent(percentPan, percentTilt):
+	panToSet = -1
+	tiltToSet = -1
+	if percentPan == 0:
+		panToSet = PANCENTER
+	if percentTilt == 0:
+		tiltToSet = TILTCENTER
+		
+	if percentPan > 0 and percentPan <= 100:
+		panToSet = PANCENTER + int((PANMAX-PANCENTER)*percentPan/100)
+	if percentPan < 0 and percentPan >= -100:
+		panToSet = PANCENTER + int((PANCENTER-PANMIN)*percentPan/100)
+		
+	if percentTilt > 0 and percentTilt <= 100:
+		tiltToSet = TILTCENTER + int((TILTMAX-TILTCENTER)*percentTilt/100)
+	if percentTilt < 0 and percentTilt >= -100:
+		tiltToSet = TILTCENTER + int((TILTCENTER-TILTMIN)*percentTilt/100)
+		
+	if panToSet != -1:
+		print "setting pan: ", panToSet
+		setPanValue(panToSet)
+	if tiltToSet != -1:
+		print "setting tilt: ", tiltToSet
+		setTiltValue(tiltToSet)
+		
+	return { "pan": panToSet, "tilt": tiltToSet }
+	
 def turn(pin,deg):
 	pwm = 570.0 + ((deg/180.0) * 1700.0)
 

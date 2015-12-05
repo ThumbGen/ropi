@@ -90,6 +90,12 @@ def set_servos_pan_value(value):
 	res = pantilt.setPanValue(value)
 	return jsonify(res)
 
+# parser does not support negative numbers (!!) therefore we use string
+@app.route(baseApi + 'servos/percent/<string:pan>/<string:tilt>', methods=['PUT'])
+def set_servos_pan_tilt_percent(pan, tilt):
+	res = pantilt.setPanTiltPercent(int(pan), int(tilt))
+	return jsonify(res)	
+	
 @app.route(baseApi + 'servos/center', methods=['PUT'])
 def set_servos_center():
 	res = pantilt.center()
