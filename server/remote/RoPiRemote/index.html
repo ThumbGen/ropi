@@ -28,7 +28,6 @@
 
 
     <!--<script src="https://cdn.rawgit.com/clipchamp/jquery-clipchamp-mjpeg-player-plugin/126a8cb1ffdbb2c7d90231e7dd8f9186707212fb/src/jquery.clipchamp.mjpeg.player.js"></script>-->
-
     <!--<source src="http://raspberrypi:8080/stream/video.mjpeg">-->
 
 </head>
@@ -65,13 +64,23 @@
     <!-- sticky footer-->
     <footer class="navbar-fixed-bottom">
         <div class="container-fluid">
-            <div class="row" id="joysticksContainer">
+            <div class="row">
+                <div class="col-xs-4 footerElement">
+
+                </div>
+                <div id="centerPanelTop" class="col-xs-4 footerElement">
+
+                </div>
+                <div class="col-xs-4 footerElement">
+                    <div id="jRight"></div>
+                </div>
+            </div>
+            <div class="row">
                 <!--<div class="col-xs-1 footerElement"></div>-->
                 <div class="col-xs-4 footerElement">
                     <div id="jLeft"></div>
                 </div>
                 <div id="centerPanel" class="col-xs-4 footerElement">
-                    <!--<div id="jRight"></div>-->
                     <table style="margin: 0 auto">
                         <tr>
                             <td></td>

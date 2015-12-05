@@ -8,7 +8,7 @@ class Settings {
     static Current = new Settings();
 
     show = () => {
-        
+
         BootstrapDialog.show({
             title: "Settings",
             message: $("<div></div>").load("settings.html"),
@@ -42,13 +42,13 @@ class Settings {
     }
 
     getRobotIp() {
-        if (this.robotIP == null || this.robotIP === "" || this.robotIP === "undefined") {
+        if (!this.checkRobotIp(this.robotIP)) {
             this.robotIP = Cookies.get(this.robotIpCookieName);
-            if (this.robotIP == null || this.robotIP === "" || this.robotIP === "undefined") {
+            if (!this.checkRobotIp(this.robotIP)) {
                 this.robotIP = window.location.hostname;
-            }
-            if (this.robotIP == null || this.robotIP === "" || this.robotIP === "undefined") {
-                this.robotIP = "raspberrypi";
+                if (!this.checkRobotIp(this.robotIP)) {
+                    this.robotIP = "raspberrypi";
+                }
             }
         }
         return this.robotIP;
@@ -66,51 +66,55 @@ class Settings {
         return `http://${this.getRobotIp() }:80/ropi/api/v1.0/`;
     }
 
+    private checkRobotIp(ip: string): boolean {
+        return ip != null && ip !== "" && ip !== "undefined";
+    }
+
     private executeShutdown() {
         BootstrapDialog.confirm({
-                title: "WARNING",
-                message: "You are about to shutdown the Robot.\r\n You won't be able to reach it anymore (power on required)",
-                type: BootstrapDialog.TYPE_DANGER,
-                btnOKLabel: "Yes, shutdown!",
-                btnOKClass: "btn-danger",
-                callback(result) {
-                    if (result) {
-                        RequestsHelper.Current.put("system/shutdown");
-                    }
+            title: "WARNING",
+            message: "You are about to shutdown the Robot.\r\n You won't be able to reach it anymore (power on required)",
+            type: BootstrapDialog.TYPE_DANGER,
+            btnOKLabel: "Yes, shutdown!",
+            btnOKClass: "btn-danger",
+            callback(result) {
+                if (result) {
+                    RequestsHelper.Current.put("system/shutdown");
                 }
             }
+        }
         );
     }
 
     private executeReboot() {
         BootstrapDialog.confirm({
-                title: "WARNING",
-                message: "You are about to reboot the Robot.\r\n Please wait few minutes then reconnect to the Robot.",
-                type: BootstrapDialog.TYPE_WARNING,
-                btnOKLabel: "Yes, reboot!",
-                btnOKClass: "btn-warning",
-                callback(result) {
-                    if (result) {
-                        RequestsHelper.Current.put("system/reboot");
-                    }
+            title: "WARNING",
+            message: "You are about to reboot the Robot.\r\n Please wait few minutes then reconnect to the Robot.",
+            type: BootstrapDialog.TYPE_WARNING,
+            btnOKLabel: "Yes, reboot!",
+            btnOKClass: "btn-warning",
+            callback(result) {
+                if (result) {
+                    RequestsHelper.Current.put("system/reboot");
                 }
             }
+        }
         );
     }
 
     private executeStop() {
         BootstrapDialog.confirm({
-                title: "WARNING",
-                message: "You are about to stop the server running on the Robot.\r\n You won't be able to reach it anymore (hard reset required)",
-                type: BootstrapDialog.TYPE_DANGER,
-                btnOKLabel: "Yes, stop it!",
-                btnOKClass: "btn-danger",
-                callback(result) {
-                    if (result) {
-                        RequestsHelper.Current.put("quit");
-                    }
+            title: "WARNING",
+            message: "You are about to stop the server running on the Robot.\r\n You won't be able to reach it anymore (hard reset required)",
+            type: BootstrapDialog.TYPE_DANGER,
+            btnOKLabel: "Yes, stop it!",
+            btnOKClass: "btn-danger",
+            callback(result) {
+                if (result) {
+                    RequestsHelper.Current.put("quit");
                 }
             }
+        }
         );
     }
 }

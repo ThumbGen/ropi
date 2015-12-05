@@ -127,7 +127,14 @@ var CameraControls = (function () {
         this.centerButton = null;
         this.currentTilt = 95;
         this.currentPan = 90;
+        this.step = 10;
+        this.isBusy = false;
         this.sendCameraCommand = function (command) {
+            if (_this.isBusy && command !== "center") {
+                console.log("Skipped request...");
+                return;
+            }
+            _this.isBusy = true;
             RequestsHelper.Current.put("servos/" + command, _this.processResult);
         };
         this.processResult = function (data) {
@@ -139,6 +146,7 @@ var CameraControls = (function () {
             if (tilt != null && tilt !== -1) {
                 _this.currentTilt = data["tilt"];
             }
+            _this.isBusy = false;
         };
         this.adjustTilt = function (offset) { return (_this.currentTilt + offset); };
         this.adjustPan = function (offset) { return (_this.currentPan + offset); };
@@ -147,11 +155,11 @@ var CameraControls = (function () {
         var _this = this;
         this.tiltUpButton = $("#tiltUpButton");
         this.tiltUpButton.click(function () {
-            _this.sendCameraCommand("tilt/" + _this.adjustTilt(-10));
+            _this.sendCameraCommand("tilt/" + _this.adjustTilt(-_this.step));
         });
         this.tiltDownButton = $("#tiltDownButton");
         this.tiltDownButton.click(function () {
-            _this.sendCameraCommand("tilt/" + _this.adjustTilt(+10));
+            _this.sendCameraCommand("tilt/" + _this.adjustTilt(+_this.step));
         });
         this.centerButton = $("#centerButton");
         this.centerButton.click(function () {
@@ -159,14 +167,15 @@ var CameraControls = (function () {
         });
         this.panLeftButton = $("#panLeftButton");
         this.panLeftButton.click(function () {
-            _this.sendCameraCommand("pan/" + _this.adjustPan(+10));
+            _this.sendCameraCommand("pan/" + _this.adjustPan(+_this.step));
         });
         this.panRightButton = $("#panRightButton");
         this.panRightButton.click(function () {
-            _this.sendCameraCommand("pan/" + _this.adjustPan(-10));
+            _this.sendCameraCommand("pan/" + _this.adjustPan(-_this.step));
         });
     };
     CameraControls.prototype.show = function () {
+        var _this = this;
         if (this.joystickRight != null)
             return;
         this.tiltUpButton.show();
@@ -174,32 +183,50 @@ var CameraControls = (function () {
         this.centerButton.show();
         this.panLeftButton.show();
         this.panRightButton.show();
-        var currentPanAngle = 0;
-        var currentTiltAngle = 0;
-        //joystickRight = nipplejs.create({
-        //    zone: document.getElementById("jRight"),
-        //    mode: "static",
-        //    position: { left: "50%", top: "50%" },
-        //    color: "blue"
-        //}).on("move", function (evt, data) {
-        //    // ignore movement smaller than 20
-        //    //var dist = data["distance"];
-        //    //if (dist > 10) {
-        //    //    var angle = Math.floor(data["angle"]["degree"] / 10) * 10;
-        //    //    if (angle !== currentPanAngle) {
-        //    //        $.ajax({
-        //    //            url: settings.getBaseAPIUrl() + "motor/move/" + angle,
-        //    //            type: "PUT",
-        //    //            success: function (result) {
-        //    //                console.log(angle);
-        //    //            }
-        //    //        });
-        //    //        currentDirectionAngle = angle;
-        //    //    }
-        //    //}
-        //})/*.on('pressure', function (evt, data) {
-        //        console.log({ pressure: data });
-        //    })*/;
+        var currentDirection = null;
+        var currentDistance = 0;
+        var currentPanPercent = 0;
+        var currentTiltPercent = 0;
+        var joystickSize = 120;
+        var distanceMax = Math.floor(joystickSize / 2);
+        var centerX = 0;
+        var centerY = 0;
+        this.joystickRight = nipplejs.create({
+            zone: document.getElementById("jRight"),
+            size: joystickSize,
+            mode: "static",
+            position: { left: "50%", top: "50%" },
+            color: "blue"
+        }).on("start end", function (evt, data) {
+            if (evt.type === "start") {
+                centerX = data["position"]["x"];
+                centerY = data["position"]["y"];
+                console.log("centerX:" + centerX + "  centerY:" + centerY);
+            }
+            else {
+                centerX = 0;
+                centerY = 0;
+                _this.sendCameraCommand("center");
+            }
+            currentDirection = null;
+            currentDistance = 0;
+        }).on("move", function (evt, data) {
+            if (data === null || data["direction"] === null || data["position"] === null)
+                return;
+            var panPercent = -Math.floor(((data["position"]["x"] - centerX) / distanceMax) * 100);
+            var tiltPercent = Math.floor(((data["position"]["y"] - centerY) / distanceMax) * 100);
+            if (panPercent > 100 || panPercent < -100 || tiltPercent > 100 || tiltPercent < -100) {
+                return;
+            }
+            if (panPercent % 2 === 0 || tiltPercent % 2 === 0) {
+                if (currentPanPercent !== panPercent || currentTiltPercent !== tiltPercent) {
+                    currentPanPercent = panPercent;
+                    currentTiltPercent = tiltPercent;
+                    _this.sendCameraCommand("percent/" + panPercent + "/" + tiltPercent);
+                    console.log("percent/" + panPercent + "/" + tiltPercent);
+                }
+            }
+        });
     };
     CameraControls.prototype.hide = function () {
         if (this.joystickRight != null) {
@@ -627,19 +654,22 @@ var Settings = (function () {
         };
     }
     Settings.prototype.getRobotIp = function () {
-        if (this.robotIP == null || this.robotIP === "" || this.robotIP === "undefined") {
+        if (!this.checkRobotIp(this.robotIP)) {
             this.robotIP = Cookies.get(this.robotIpCookieName);
-            if (this.robotIP == null || this.robotIP === "" || this.robotIP === "undefined") {
+            if (!this.checkRobotIp(this.robotIP)) {
                 this.robotIP = window.location.hostname;
-            }
-            if (this.robotIP == null || this.robotIP === "" || this.robotIP === "undefined") {
-                this.robotIP = "raspberrypi";
+                if (!this.checkRobotIp(this.robotIP)) {
+                    this.robotIP = "raspberrypi";
+                }
             }
         }
         return this.robotIP;
     };
     Settings.prototype.storeRobotIp = function () {
         Cookies.set(this.robotIpCookieName, this.robotIP);
+    };
+    Settings.prototype.checkRobotIp = function (ip) {
+        return ip != null && ip !== "" && ip !== "undefined";
     };
     Settings.prototype.executeShutdown = function () {
         BootstrapDialog.confirm({
