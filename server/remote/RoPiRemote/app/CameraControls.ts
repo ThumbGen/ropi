@@ -1,18 +1,26 @@
+enum CameraControl {
+    None,
+    Joystick,
+    Buttons
+}
+
 class CameraControls implements IControls {
 
-    joystickRight: nipplejs.Manager = null;
+    private joystickRight: nipplejs.Manager = null;
 
-    panLeftButton = null;
-    panRightButton = null;
-    tiltUpButton = null;
-    tiltDownButton = null;
-    centerButton = null;
+    private panLeftButton = null;
+    private panRightButton = null;
+    private tiltUpButton = null;
+    private tiltDownButton = null;
+    private centerButton = null;
 
-    currentTilt = 95;
-    currentPan = 90;
-    step = 10;
+    private currentTilt = 95;
+    private currentPan = 90;
+    private step = 10;
 
-    isBusy = false;
+    private isBusy = false;
+
+    currentCameraControls = CameraControl.None;
 
     init() {
         this.tiltUpButton = $("#tiltUpButton");
@@ -40,14 +48,11 @@ class CameraControls implements IControls {
         });
     }
 
-    show() {
-        if (this.joystickRight != null) return;
+    show(cameraControl?: CameraControl) {
 
-        this.tiltUpButton.show();
-        this.tiltDownButton.show();
-        this.centerButton.show();
-        this.panLeftButton.show();
-        this.panRightButton.show();
+        if (this.currentCameraControls === cameraControl) {
+            return;
+        }
 
         var currentDirection = null;
         var currentDistance = 0;
@@ -58,61 +63,87 @@ class CameraControls implements IControls {
         var centerX = 0;
         var centerY = 0;
 
-        this.joystickRight = nipplejs.create({
-            zone: document.getElementById("jRight"),
-            size: joystickSize,
-            mode: "static",
-            position: { left: "50%", top: "50%" },
-            color: "blue"
-        }).on("start end", (evt, data) => {
-            if (evt.type === "start") {
-                centerX = data["position"]["x"];
-                centerY = data["position"]["y"];
-                console.log(`centerX:${centerX}  centerY:${centerY}`);
-            } else {
-                centerX = 0;
-                centerY = 0;
-                this.sendCameraCommand("center");
-            }
-            currentDirection = null;
-            currentDistance = 0;
-            
-        }).on("move", (evt, data) => {
-            
-            if (data === null || data["direction"] === null || data["position"] === null) return;
-            
-            var panPercent = -Math.floor(((data["position"]["x"] - centerX) / distanceMax) * 100);
-            var tiltPercent = Math.floor(((data["position"]["y"] - centerY) / distanceMax) * 100);
+        this.hide();
+        
+        switch (cameraControl) {
+            case CameraControl.Joystick:
+                this.currentCameraControls = CameraControl.Joystick;
+                if (this.joystickRight != null) return;
+                this.joystickRight = nipplejs.create({
+                    zone: document.getElementById("jRight"),
+                    size: joystickSize,
+                    mode: "static",
+                    position: { left: "50%", top: "50%" },
+                    color: "blue"
+                }).on("start end", (evt, data) => {
+                    if (evt.type === "start") {
+                        centerX = data["position"]["x"];
+                        centerY = data["position"]["y"];
+                        console.log(`centerX:${centerX}  centerY:${centerY}`);
+                    } else {
+                        centerX = 0;
+                        centerY = 0;
+                        this.sendCameraCommand("center");
+                    }
+                    currentDirection = null;
+                    currentDistance = 0;
 
-            if (panPercent > 100 || panPercent < -100 || tiltPercent > 100 || tiltPercent < -100) {
-                return;
-            }
+                }).on("move", (evt, data) => {
 
-            if (panPercent % 2 === 0 || tiltPercent % 2 === 0) {
+                    if (data === null || data["direction"] === null || data["position"] === null) return;
 
-                if (currentPanPercent !== panPercent || currentTiltPercent !== tiltPercent) {
-                    currentPanPercent = panPercent;
-                    currentTiltPercent = tiltPercent;
+                    var panPercent = -Math.floor(((data["position"]["x"] - centerX) / distanceMax) * 100);
+                    var tiltPercent = Math.floor(((data["position"]["y"] - centerY) / distanceMax) * 100);
 
-                    this.sendCameraCommand(`percent/${panPercent}/${tiltPercent}`);
-                    console.log(`percent/${panPercent}/${tiltPercent}`);
-                }
-            }
-        })
-        /*.on('pressure', function (evt, data) {
-                console.log({ pressure: data });*/;
+                    if (panPercent > 100 || panPercent < -100 || tiltPercent > 100 || tiltPercent < -100) {
+                        return;
+                    }
+
+                    if (panPercent % 2 === 0 || tiltPercent % 2 === 0) {
+
+                        if (currentPanPercent !== panPercent || currentTiltPercent !== tiltPercent) {
+                            currentPanPercent = panPercent;
+                            currentTiltPercent = tiltPercent;
+
+                            this.sendCameraCommand(`percent/${panPercent}/${tiltPercent}`);
+                            console.log(`percent/${panPercent}/${tiltPercent}`);
+                        }
+                    }
+                });
+                break;
+            case CameraControl.Buttons:
+                this.currentCameraControls = CameraControl.Buttons;
+                this.tiltUpButton.show();
+                this.tiltDownButton.show();
+                this.centerButton.show();
+                this.panLeftButton.show();
+                this.panRightButton.show();
+
+                break;
+            default:
+                this.currentCameraControls = CameraControl.None;
+                break;
+        }
     }
 
     hide() {
-        if (this.joystickRight != null) {
-            this.joystickRight.destroy();
-            this.joystickRight = null;
+
+        if (this.currentCameraControls === CameraControl.Joystick) {
+            if (this.joystickRight != null) {
+                this.joystickRight.destroy();
+                this.joystickRight = null;
+            }    
         }
-        this.tiltUpButton.hide();
-        this.tiltDownButton.hide();
-        this.centerButton.hide();
-        this.panLeftButton.hide();
-        this.panRightButton.hide();
+
+        if (this.currentCameraControls === CameraControl.Buttons) {
+            this.tiltUpButton.hide();
+            this.tiltDownButton.hide();
+            this.centerButton.hide();
+            this.panLeftButton.hide();
+            this.panRightButton.hide();
+        }
+
+        this.currentCameraControls = CameraControl.None;
     }
 
     private sendCameraCommand = command => {

@@ -5,12 +5,15 @@
 });
 
 class Application {
-    socketio = null;
-    robotIpEntry = null;
-    cameraButton = null;
-    connectButton = null;
-    controlsButton = null;
-    
+    private socketio = null;
+    private robotIpEntry = null;
+    private cameraButton = null;
+    private connectButton = null;
+    private cameraControlsButton = null;
+    private cameraControlsOff = null;
+    private cameraControlsJoystick = null;
+    private cameraControlsButtons = null;
+
     private robotControls = new RobotControls();
     private cameraControls = new CameraControls();
 
@@ -33,12 +36,17 @@ class Application {
             this.processRobotToggle();
         });
 
-        this.controlsButton = $("#controlsButton");
-        this.controlsButton.bootstrapToggle();
-        this.controlsButton.change(() => {
-            this.processToggleControls();
+        this.cameraControlsButton = $("#controlsButtonOptions");
+        this.cameraControlsOff = $("#controlsOff").click(() => {
+            this.cameraControls.hide();
         });
-        this.controlsButton.bootstrapToggle("disable");
+        this.cameraControlsJoystick = $("#controlsJoystick").click(() => {
+            this.cameraControls.show(CameraControl.Joystick);
+        });
+        this.cameraControlsButtons = $("#controlsButtons").click(() => {
+            this.cameraControls.show(CameraControl.Buttons);
+        });
+        this.disableControlsButton();
 
         var settingsButton = $("#settingsButton");
         settingsButton.click(() => {
@@ -52,17 +60,17 @@ class Application {
 
     private getIsCameraActive = () => this.getToggleStatus(this.cameraButton);
 
-    private getIsControlsActive = () => this.getToggleStatus(this.controlsButton);
+    private getIsControlsActive = () => this.cameraControls.currentCameraControls !== CameraControl.None;
 
     private disableControlsButton = () => {
-        this.controlsButton.bootstrapToggle("off");
-        this.controlsButton.bootstrapToggle("disable");
+        this.cameraControls.hide();
+        this.cameraControlsButton.prop("disabled", true);
     }
 
     private enableControlsButton = () => {
-        this.controlsButton.bootstrapToggle("enable");
+        this.cameraControlsButton.prop("disabled", false);
         if (!this.getIsControlsActive()) {
-            this.controlsButton.bootstrapToggle("on");
+            this.cameraControls.show(CameraControl.Joystick);
         }
     }
 
