@@ -52,6 +52,8 @@ class Application {
         settingsButton.click(() => {
             Settings.Current.show();
         });
+
+        $(window).resize(() => { this.resizeImage(); });
     }
 
     private getToggleStatus = toggle => (toggle != null && toggle.prop("checked"));
@@ -72,6 +74,16 @@ class Application {
         if (!this.getIsControlsActive()) {
             this.cameraControls.show(CameraControl.Joystick);
         }
+    }
+
+    private resizeImage = () => {
+        return;
+        //the width is larger
+        //resize the image to the div
+        $("#camera").height("0px").width("0px");
+        var h = $("#main").innerHeight();
+        $("#camera").height(h + "px").width("auto");
+        console.log(`h:${h} cam:${$("#camera").width() }x${$("#camera").height()}`);
     }
 
     private connect = () => {
@@ -110,6 +122,7 @@ class Application {
         if (this.getIsCameraActive()) {
             camera.attr("src", Settings.Current.getBaseServerUrl() + ":8080/stream/video.mjpeg");
             camera.show();
+            this.resizeImage();
             this.enableControlsButton();
         } else {
             camera.attr("src", "");

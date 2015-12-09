@@ -26,74 +26,76 @@
     <script src="scripts/js.cookie.js"></script>
     <script src="scripts/bootstrap-dialog.min.js"></script>
 
-
     <!--<script src="https://cdn.rawgit.com/clipchamp/jquery-clipchamp-mjpeg-player-plugin/126a8cb1ffdbb2c7d90231e7dd8f9186707212fb/src/jquery.clipchamp.mjpeg.player.js"></script>-->
     <!--<source src="http://raspberrypi:8080/stream/video.mjpeg">-->
 
 </head>
 <body>
     <audio id="beep" src="beep.wav" autostart="false"></audio>
-
-    <!-- Fixed navbar -->
-    <nav class="navbar navbar-default navbar-static-top test1">
-        <div class="container-fluid dark">
-            <div class="navbar-left navBarPadding">
-                <a class="label label-primary" href="#">RoPi Remote</a>
-                <input id="connectButton" type="checkbox" data-toggle="toggle" data-onstyle="success" data-on="On" data-off="Off">
-                <input id="cameraButton" type="checkbox" data-toggle="toggle" data-on="Cam On" data-off="Cam Off" data-onstyle="primary">
-                <!--<input id="controlsButton" type="checkbox" data-toggle="toggle" data-on="&lt;i class='glyphicon glyphicon-eye-open'>" data-onstyle="primary"
-                           data-off="&lt;i class='glyphicon glyphicon-eye-close'>"/>-->
-                <div class="btn-group">
-                    <button id="controlsButtonOptions" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class='glyphicon glyphicon-eye-close'></i> <span class="caret"></span>
+    <div id="wrap">
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-default navbar-static-top">
+            <div class="container-fluid dark">
+                <div class="navbar-left navBarPadding">
+                    <a class="label label-primary" href="#">RoPi Remote</a>
+                    <input id="connectButton" type="checkbox" data-toggle="toggle" data-onstyle="success" data-on="On" data-off="Off">
+                    <input id="cameraButton" type="checkbox" data-toggle="toggle" data-on="Cam On" data-off="Cam Off" data-onstyle="primary">
+                    <!--<input id="controlsButton" type="checkbox" data-toggle="toggle" data-on="&lt;i class='glyphicon glyphicon-eye-open'>" data-onstyle="primary"
+                               data-off="&lt;i class='glyphicon glyphicon-eye-close'>"/>-->
+                    <div class="btn-group">
+                        <button id="controlsButtonOptions" type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class='glyphicon glyphicon-eye-close'></i> <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" id="controlsOff">Controls Off</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="#" id="controlsJoystick">Joystick</a></li>
+                            <li><a href="#" id="controlsButtons">Step-Buttons</a></li>
+                        </ul>
+                    </div>
+                    <button id="settingsButton" type="button" class="btn btn-primary" style="position: absolute; right: 12px; top: 8px">
+                        <span class="glyphicon glyphicon-cog"></span>
                     </button>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" id="controlsOff">Controls Off</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#" id="controlsJoystick">Joystick</a></li>
-                        <li><a href="#" id="controlsButtons">Step-Buttons</a></li>
-                    </ul>
                 </div>
-                <button id="settingsButton" type="button" class="btn btn-primary" style="position: absolute; right: 12px; top: 8px">
-                    <span class="glyphicon glyphicon-cog"></span>
-                </button>
             </div>
+        </nav>
+
+        <!-- content-->
+        <div id="main" class="center-container">
+            <div class="row center-row">
+                <div class="col-xs-4 col-sm-3 col-md-3 col-lg4 center-col">
+                    <!--the parking control-->
+                    <canvas id="parkingControl"></canvas>
+                </div>
+
+                <div id="cameraContainer" class="col-xs-4 col-sm-6 col-md-6 col-lg4 embed-responsive embed-responsive-4by3">
+                    <img id="camera" class="cameraImage "/>
+                </div>
+
+                <div class="col-xs-4 col-sm-3 col-md-3 col-lg4">
+                </div>
+            </div>
+
+            <!--<video width="360" height="420" poster="http://raspberrypi:8080/stream/video.mjpeg" autoplay>
+                <source src="http://raspberrypi:8080/stream/video.mjpeg" type="multipart/x-mixed-replace; boundary=--boundary"/>
+            </video>-->
+
         </div>
-    </nav>
-
-    <!-- content-->
-    <div id="main" class="contentFill">
-        <img id="camera" class="contentFill" />
-        <!--<video width="360" height="420" poster="http://raspberrypi:8080/stream/video.mjpeg" autoplay>
-            <source src="http://raspberrypi:8080/stream/video.mjpeg" type="multipart/x-mixed-replace; boundary=--boundary"/>
-        </video>-->
-        <!--the parking control-->
-        <canvas id="parkingControl"></canvas>
-
+        <div class="footerElement"></div>
     </div>
-
     <!-- sticky footer-->
     <footer class="navbar-fixed-bottom">
         <div class="container-fluid">
-            <!--<div class="row">
-                <div class="col-xs-4 footerElement">
-
-                </div>
-                <div id="centerPanelTop" class="col-xs-4 footerElement">
-
-                </div>
-                <div class="col-xs-4 footerElement">
-                    <div id="speedSlider" class="sliders speedSlider"></div>                    
-                </div>
-            </div>-->
             <div class="row">
-                <!--<div class="col-xs-1 footerElement"></div>-->
-                <div class="col-xs-4 footerElement">
+                <div class="col-xs-4 col-sm-3 col-md-3 footerElement">
                     <div id="jLeft"></div>
                 </div>
-                <div id="centerPanel" class="col-xs-4 footerElement">
-                    <div id="speedSlider" class="sliders speedSlider"></div>                    
+
+                <div id="centerPanel" class="col-xs-1 col-sm-4 col-md-6 footerElement">
+
                 </div>
-                <div class="col-xs-4 footerElement">
+
+                <div class="col-xs-4 col-sm-3 col-md-1 footerElement">
                     <div id="jRight"></div>
                     <table style="margin: 0 auto">
                         <tr>
@@ -133,9 +135,10 @@
                         </tr>
                     </table>
                 </div>
-                <!--<div class="col-xs-1 footerElement"></div>-->
+                <div class="col-xs-3 col-sm-2 col-md-2 footerElement">
+                    <div id="speedSlider" class="speedSlider"></div>
+                </div>
             </div>
-
         </div>
     </footer>
 

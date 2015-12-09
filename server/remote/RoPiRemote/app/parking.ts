@@ -87,9 +87,12 @@ class Parking {
     }
 
     init = () => {
-
+        
         var resizeCanvas = () => {
             if (this.canvas == null) return;
+            this.canvas.setHeight(0);
+            this.canvas.setWidth(0);
+
             this.canvas.setHeight($("#main")[0].clientHeight);
             this.canvas.setWidth($("#main")[0].clientWidth);
             this.canvas.renderAll();
@@ -117,7 +120,7 @@ class Parking {
 
         this.canvas = new fabric.Canvas("parkingControl");
         this.canvas.selection = false;
-        this.canvas.allowTouchScrolling = true;
+        this.canvas.allowTouchScrolling = false;
         this.canvas.setZoom(0.5);
 
         this.circle1 = new fabric.Circle({

@@ -6,7 +6,7 @@ enum CameraControl {
 
 class CameraControls implements IControls {
 
-    private joystickRight: nipplejs.Manager = null;
+    private joystickRight= null;
 
     private panLeftButton = null;
     private panRightButton = null;
@@ -70,6 +70,7 @@ class CameraControls implements IControls {
                 this.currentCameraControls = CameraControl.Joystick;
                 if (this.joystickRight != null) return;
                 this.joystickRight = nipplejs.create({
+                    maxNumberOfNipples: 1,
                     zone: document.getElementById("jRight"),
                     size: joystickSize,
                     mode: "static",
@@ -106,7 +107,6 @@ class CameraControls implements IControls {
                             currentTiltPercent = tiltPercent;
 
                             this.sendCameraCommand(`percent/${panPercent}/${tiltPercent}`);
-                            console.log(`percent/${panPercent}/${tiltPercent}`);
                         }
                     }
                 });

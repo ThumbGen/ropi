@@ -43,6 +43,7 @@ var Application = (function () {
             settingsButton.click(function () {
                 Settings.Current.show();
             });
+            $(window).resize(function () { _this.resizeImage(); });
         };
         this.getToggleStatus = function (toggle) { return (toggle != null && toggle.prop("checked")); };
         this.getIsConnected = function () { return _this.getToggleStatus(_this.connectButton); };
@@ -57,6 +58,15 @@ var Application = (function () {
             if (!_this.getIsControlsActive()) {
                 _this.cameraControls.show(CameraControl.Joystick);
             }
+        };
+        this.resizeImage = function () {
+            return;
+            //the width is larger
+            //resize the image to the div
+            $("#camera").height("0px").width("0px");
+            var h = $("#main").innerHeight();
+            $("#camera").height(h + "px").width("auto");
+            console.log("h:" + h + " cam:" + $("#camera").width() + "x" + $("#camera").height());
         };
         this.connect = function () {
             _this.socketio = io.connect(Settings.Current.getBaseServerUrl() + ":80/", { 'forceNew': true });
@@ -92,6 +102,7 @@ var Application = (function () {
             if (_this.getIsCameraActive()) {
                 camera.attr("src", Settings.Current.getBaseServerUrl() + ":8080/stream/video.mjpeg");
                 camera.show();
+                _this.resizeImage();
                 _this.enableControlsButton();
             }
             else {
@@ -209,6 +220,7 @@ var CameraControls = (function () {
                 if (this.joystickRight != null)
                     return;
                 this.joystickRight = nipplejs.create({
+                    maxNumberOfNipples: 1,
                     zone: document.getElementById("jRight"),
                     size: joystickSize,
                     mode: "static",
@@ -240,7 +252,6 @@ var CameraControls = (function () {
                             currentPanPercent = panPercent;
                             currentTiltPercent = tiltPercent;
                             _this.sendCameraCommand("percent/" + panPercent + "/" + tiltPercent);
-                            console.log("percent/" + panPercent + "/" + tiltPercent);
                         }
                     }
                 });
@@ -352,6 +363,8 @@ var Parking = (function () {
             var resizeCanvas = function () {
                 if (_this.canvas == null)
                     return;
+                _this.canvas.setHeight(0);
+                _this.canvas.setWidth(0);
                 _this.canvas.setHeight($("#main")[0].clientHeight);
                 _this.canvas.setWidth($("#main")[0].clientWidth);
                 _this.canvas.renderAll();
@@ -376,7 +389,7 @@ var Parking = (function () {
             endAngle = -0.785398;
             _this.canvas = new fabric.Canvas("parkingControl");
             _this.canvas.selection = false;
-            _this.canvas.allowTouchScrolling = true;
+            _this.canvas.allowTouchScrolling = false;
             _this.canvas.setZoom(0.5);
             _this.circle1 = new fabric.Circle({
                 radius: 100,
@@ -576,6 +589,7 @@ var RobotControls = (function () {
             var evts = "plain:up";
             var currentDirectionAngle = 0;
             _this.joystickLeft = nipplejs.create({
+                maxNumberOfNipples: 1,
                 zone: document.getElementById("jLeft"),
                 mode: "static",
                 size: 120,
@@ -614,12 +628,6 @@ var RobotControls = (function () {
                 format: wNumb({
                     decimals: 0
                 }),
-                pips: {
-                    mode: 'positions',
-                    values: [0, 50, 100],
-                    density: 10,
-                    stepped: true
-                }
             });
             _this.speedSlider.on("change", function (value) {
                 var speed = Math.floor(value);

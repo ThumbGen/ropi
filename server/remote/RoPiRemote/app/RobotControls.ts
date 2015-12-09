@@ -1,6 +1,6 @@
 class RobotControls implements IControls {
 
-    joystickLeft : nipplejs.Manager = null;
+    joystickLeft = null;
     speedSlider = null;
 
     init() {
@@ -32,6 +32,7 @@ class RobotControls implements IControls {
         var currentDirectionAngle = 0;
 
         this.joystickLeft = nipplejs.create({
+            maxNumberOfNipples: 1,
             zone: document.getElementById("jLeft"),
             mode: "static",
             size: 120,
@@ -73,12 +74,12 @@ class RobotControls implements IControls {
             format: wNumb({
                 decimals: 0
             }),
-            pips: {
-                mode: 'positions',
-                values: [0, 50, 100],
-                density: 10,
-                stepped: true
-            }
+            //pips: {
+            //    mode: 'positions',
+            //    values: [0, 50, 100],
+            //    density: 10,
+            //    stepped: true
+            //}
         });
 
         this.speedSlider.on("change", value => {
