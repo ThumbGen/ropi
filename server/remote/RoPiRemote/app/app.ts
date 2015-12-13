@@ -17,9 +17,6 @@ class Application {
     private robotControls = new RobotControls();
     private cameraControls = new CameraControls();
 
-    private parking = new Parking();
-
-
     run = () => {
         this.robotControls.init();
         this.cameraControls.init();
@@ -53,7 +50,7 @@ class Application {
             Settings.Current.show();
         });
 
-        $(window).resize(() => { this.resizeImage(); });
+        Dashboard.getInstance().show();
     }
 
     private getToggleStatus = toggle => (toggle != null && toggle.prop("checked"));
@@ -76,27 +73,26 @@ class Application {
         }
     }
 
-    private resizeImage = () => {
-        return;
-        //the width is larger
-        //resize the image to the div
-        $("#camera").height("0px").width("0px");
-        var h = $("#main").innerHeight();
-        $("#camera").height(h + "px").width("auto");
-        console.log(`h:${h} cam:${$("#camera").width() }x${$("#camera").height()}`);
-    }
-
     private connect = () => {
         this.socketio = io.connect(Settings.Current.getBaseServerUrl() + ":80/", { 'forceNew': true });
         this.socketio.on("connected", msg => {
             //updateConnectionStatus(true, msg);
+            Dashboard.getInstance().hideIcon(DashboardIcons.Engine);
         });
         this.socketio.on("disconnected", msg => {
             this.connectButton.bootstrapToggle("off");
             this.cameraButton.bootstrapToggle("off");
         });
         this.socketio.on("parking", msg => {
-            this.parking.update(msg);
+            Dashboard.getInstance().parkingControl.update(msg);
+        });
+
+        this.socketio.on("error", msg => {
+            Dashboard.getInstance().showIcon(DashboardIcons.Engine);
+        });
+
+        this.socketio.on("reconnect_error", msg => {
+            Dashboard.getInstance().showIcon(DashboardIcons.Engine);
         });
 
         this.socketio.emit("connect");
@@ -118,15 +114,11 @@ class Application {
     }
 
     private processToggleCamera = () => {
-        var camera = $("#camera");
         if (this.getIsCameraActive()) {
-            camera.attr("src", Settings.Current.getBaseServerUrl() + ":8080/stream/video.mjpeg");
-            camera.show();
-            this.resizeImage();
+            Dashboard.getInstance().startCamera();
             this.enableControlsButton();
         } else {
-            camera.attr("src", "");
-            camera.hide();
+            Dashboard.getInstance().stopCamera();
             this.cameraControls.hide();
             this.disableControlsButton();
         }
@@ -134,21 +126,23 @@ class Application {
 
     private processRobotToggle = () => {
         if (this.getIsConnected()) {
-            this.connect();
-            this.robotControls.show();
-            this.parking.init();
-            // optionally switch on camera if not already running
-            if (!this.getIsCameraActive()) {
-                this.cameraButton.bootstrapToggle("toggle");
-            }
-            this.enableControlsButton();
+            Dashboard.getInstance().startEngine(() => {
+                this.connect();
+                this.robotControls.show();
+                // optionally switch on camera if not already running
+                if (!this.getIsCameraActive()) {
+                    this.cameraButton.bootstrapToggle("toggle");
+                }
+                this.enableControlsButton();
+            });
         } else {
-            this.robotControls.hide();
-            this.parking.hide();
-            this.disconnect();
-            if (!this.getIsCameraActive()) {
-                this.disableControlsButton();
-            }
+            Dashboard.getInstance().stopEngine(() => {
+                this.robotControls.hide();
+                this.disconnect();
+                if (!this.getIsCameraActive()) {
+                    this.disableControlsButton();
+                }
+            });
         }
     }
 }

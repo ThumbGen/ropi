@@ -1,15 +1,26 @@
 class RobotControls implements IControls {
 
-    joystickLeft = null;
-    speedSlider = null;
+    private joystickLeft = null;
+    private accButton = null;
+    private brakeButton = null;
+
+    private currentSpeed: number = 40;
 
     init() {
-
+        this.accButton = $("#accButton");
+        this.accButton.click(() => {
+            this.modifySpeed(+10);
+        });
+        this.brakeButton = $("#brakeButton");
+        this.brakeButton.click(() => {
+            this.modifySpeed(-10);
+        });
     }
 
     show() {
         this.showDirectionJoystick();
-        this.showSpeedSlider();
+        this.accButton.show();
+        this.brakeButton.show();
     }
 
     hide() {
@@ -17,9 +28,11 @@ class RobotControls implements IControls {
             this.joystickLeft.destroy();
             this.joystickLeft = null;
         }
-        if (this.speedSlider != null) {
-            this.speedSlider.destroy();
-            this.speedSlider = null;
+        if (this.accButton != null) {
+            this.accButton.hide();
+        }
+        if (this.brakeButton != null) {
+            this.brakeButton.hide();
         }
     }
 
@@ -31,16 +44,20 @@ class RobotControls implements IControls {
 
         var currentDirectionAngle = 0;
 
+        Dashboard.getInstance().setCruiseControlSpeed(this.currentSpeed);
+
         this.joystickLeft = nipplejs.create({
+
             maxNumberOfNipples: 1,
             zone: document.getElementById("jLeft"),
-            mode: "static",
+            mode: "dynamic",
             size: 120,
             position: { left: "50%", top: "50%" },
             color: "green"
         }).on("start end", (evt, data) => {
             if (evt.type === "end") {
                 RequestsHelper.Current.put("motor/stop");
+                Dashboard.getInstance().stop();
             }
         }).on("move", (evt, data) => {
             // ignore movement smaller than 10
@@ -50,41 +67,26 @@ class RobotControls implements IControls {
                 if (angle !== currentDirectionAngle) {
                     RequestsHelper.Current.put(`motor/move/${angle}`);
                     currentDirectionAngle = angle;
+                    Dashboard.getInstance().move();
+                    if ((angle > 100 && angle < 260) || angle < 80 || angle > 280) {
+                        Dashboard.getInstance().showIcon(DashboardIcons.TurnSignals);
+                    } else {
+                        Dashboard.getInstance().hideIcon(DashboardIcons.TurnSignals);
+                    }
                 }
+
             }
         }).on(evts,
             (evt, data) => {
                 console.log(evt.type);
             }
-        );
+            );
     }
-
-    private showSpeedSlider = () => {
-        this.speedSlider = noUiSlider.create(document.getElementById("speedSlider"), {
-            start: 30,
-            step: 10,
-            connect: "lower",
-            tooltips: true,
-            direction: "rtl",
-            orientation: "vertical",
-            range: {
-                "min": 0,
-                "max": 100
-            },
-            format: wNumb({
-                decimals: 0
-            }),
-            //pips: {
-            //    mode: 'positions',
-            //    values: [0, 50, 100],
-            //    density: 10,
-            //    stepped: true
-            //}
-        });
-
-        this.speedSlider.on("change", value => {
-            var speed = Math.floor(value);
-            RequestsHelper.Current.put(`motor/speed/${speed}`);
+    
+    private modifySpeed(speed: number) {
+        RequestsHelper.Current.put(`motor/speed/${this.currentSpeed + speed}`, (data) => {
+            this.currentSpeed = data["speed"];
+            Dashboard.getInstance().setCruiseControlSpeed(this.currentSpeed);
         });
     }
 }

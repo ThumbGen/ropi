@@ -42,6 +42,8 @@ class Settings {
     }
 
     getRobotIp() {
+        //this.robotIP = "raspberrypi";
+        
         if (!this.checkRobotIp(this.robotIP)) {
             this.robotIP = Cookies.get(this.robotIpCookieName);
             if (!this.checkRobotIp(this.robotIP)) {

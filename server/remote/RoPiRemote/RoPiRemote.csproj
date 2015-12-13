@@ -69,6 +69,9 @@
   <ItemGroup>
     <TypeScriptCompile Include="app\App.ts" />
     <TypeScriptCompile Include="app\CameraControls.ts" />
+    <TypeScriptCompile Include="app\Dashboard.ts" />
+    <TypeScriptCompile Include="app\DashboardClockController.ts" />
+    <TypeScriptCompile Include="app\DashboardIconsController.ts" />
     <TypeScriptCompile Include="app\IControls.ts" />
     <TypeScriptCompile Include="app\Parking.ts" />
     <TypeScriptCompile Include="app\RequestsHelper.ts" />
@@ -78,11 +81,18 @@
     <Content Include="beep.wav" />
     <Content Include="css\bootstrap-dialog.min.css" />
     <Content Include="css\bootstrap-toggle.min.css" />
-    <Content Include="css\nouislider.min.css" />
-    <Content Include="css\nouislider.pips.css" />
-    <Content Include="css\nouislider.tooltips.css" />
     <Content Include="images\back1.jpg" />
     <Content Include="images\back1.png" />
+    <Content Include="images\Engine.svg" />
+    <Content Include="images\Frontassist.svg" />
+    <Content Include="images\Headlights.svg" />
+    <Content Include="images\Laneassist.svg" />
+    <Content Include="images\Parkingbrake.svg" />
+    <Content Include="images\Parkingsensors.svg" />
+    <Content Include="images\Seatbelt.svg" />
+    <Content Include="images\Temperature.svg" />
+    <Content Include="images\Tempomat.svg" />
+    <Content Include="images\Turnsignal.svg" />
     <Content Include="packages.config" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
@@ -106,10 +116,8 @@
     <TypeScriptCompile Include="scripts\typings\js-cookie\js-cookie.d.ts" />
     <TypeScriptCompile Include="scripts\typings\mynipplejs\nipplejs.d.ts" />
     <TypeScriptCompile Include="scripts\typings\node\node.d.ts" />
-    <TypeScriptCompile Include="scripts\typings\nouislider\nouislider-7.0.10.d.ts" />
-    <TypeScriptCompile Include="scripts\typings\nouislider\nouislider.d.ts" />
     <TypeScriptCompile Include="scripts\typings\socket.io-client\socket.io-client.d.ts" />
-    <TypeScriptCompile Include="scripts\typings\wnumb\wnumb.d.ts" />
+    <TypeScriptCompile Include="scripts\typings\steelseries\steelseries.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\bootstrap-theme.min.css" />
@@ -121,9 +129,9 @@
     <Content Include="scripts\jquery-2.1.4.min.js" />
     <Content Include="scripts\js.cookie.js" />
     <Content Include="scripts\nipplejs.min.js" />
-    <Content Include="scripts\nouislider.min.js" />
     <Content Include="scripts\socket.io.js" />
-    <Content Include="scripts\wNumb.js" />
+    <Content Include="scripts\steelseries-min.js" />
+    <Content Include="scripts\tween-min.js" />
     <Content Include="settings.html" />
     <Content Include="Web.config" />
   </ItemGroup>

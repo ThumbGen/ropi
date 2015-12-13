@@ -2,7 +2,7 @@
 
 class Parking {
 
-    private colorOff = "whitesmoke";
+    private colorOff = "lightGray";
     private color1 = "yellow";
     private color2 = "orange";
     private color3 = "orangered";
@@ -10,7 +10,10 @@ class Parking {
     private colorLeftLine = "red";
     private colorRightLine = "green";
 
-    private canvas = null;
+    private miniDisplay;
+    private miniDisplayImage;
+    private isOff = true;
+    private canvas: fabric.IStaticCanvas;
     private circle1: fabric.ICircle = null;
     private circle2: fabric.ICircle = null;
     private circle3: fabric.ICircle = null;
@@ -19,11 +22,9 @@ class Parking {
     private right: fabric.ICircle = null;
     private lineLeft: fabric.IRect = null;
     private lineRight: fabric.IRect = null;
-    private distText: fabric.IText = null;
+    //private distText: fabric.IText = null;
 
-    //private parkingControl = null;
-
-    update = (msg) => {
+    public update = (msg) => {
         if (this.canvas != null) {
             this.circle1.stroke = this.colorOff;
             this.circle2.stroke = this.colorOff;
@@ -34,16 +35,13 @@ class Parking {
             this.lineLeft.fill = this.colorOff;
             this.lineRight.fill = this.colorOff;
             const dist = msg["d"];
-            if (dist < 999) {
-                this.distText.setText(dist.toString());
-            } else {
-                this.distText.setText("");
+            if (!this.isOff) {
+                this.miniDisplay.setValue(dist);
             }
 
             if (dist < 50 && dist >= 30) {
                 this.circle1.stroke = this.color1;
-
-
+                
                 //var sound = document.getElementById("beep");
                 //sound.addEventListener("ended", function () {
                 //    this.currentTime = 0;
@@ -80,48 +78,27 @@ class Parking {
         }
     }
 
-    hide = () => {
-        if (this.canvas != null) {
-            this.canvas.dispose();
-        }
+    public turnOff = () => {
+        this.isOff = true;
+        this.update({ "d": 10000 });
+        this.drawMiniDisplay();
     }
 
-    init = () => {
-        
-        var resizeCanvas = () => {
-            if (this.canvas == null) return;
-            this.canvas.setHeight(0);
-            this.canvas.setWidth(0);
+    public turnOn = () => {
+        this.isOff = false;
+        this.drawMiniDisplay();
+    }
 
-            this.canvas.setHeight($("#main")[0].clientHeight);
-            this.canvas.setWidth($("#main")[0].clientWidth);
-            this.canvas.renderAll();
-            if (window.innerWidth < 800) {
-                this.canvas.setZoom(0.5);
-            } else {
-                this.canvas.setZoom(1);
-            }
-        };
-
-        $(window).resize(resizeCanvas);
-
-        //var video1 = new fabric.Image($("#camera"), {
-        //    left: 350,
-        //    top: 300,
-        //    angle: -15,
-        //    originX: 'center',
-        //    originY: 'center'
-        //});
+    public init = (canvas: any) => {
 
         var startAngle = -2.618; // 30deg
         var endAngle = -0.5235;
         startAngle = -2.35619; // 45deg
         endAngle = -0.785398;
 
-        this.canvas = new fabric.Canvas("parkingControl");
-        this.canvas.selection = false;
+        this.canvas = canvas;//new fabric.Canvas("parkingControl");
         this.canvas.allowTouchScrolling = false;
-        this.canvas.setZoom(0.5);
+        this.canvas.setZoom(1);
 
         this.circle1 = new fabric.Circle({
             radius: 100,
@@ -246,6 +223,7 @@ class Parking {
             selectable: false
         });
 
+        /*
         this.distText = new fabric.Text("", {
             selectable: false,
             originX: "center",
@@ -256,44 +234,64 @@ class Parking {
             fontWeight: "bold",
             textAlign: "center",
             fill: "white"
-
         });
+        */
 
         var parkingControl = new fabric.Group([
             this.circle1, this.circle2, this.circle3, this.circle4, this.left, this.right,
-            body, wleft, wright, this.lineLeft, this.lineRight, this.distText
+            body, wleft, wright, this.lineLeft, this.lineRight/*, this.distText*/
         ], {
-            left: 0,
-            top: 0,
-            width: 190,
-            height: 225,
-            scaleX: 1,
-            scaleY: 1,
-            lockScalingX: true,
-            lockScalingY: true,
-            lockScalingFlip: true,
-            hasBorders: false,
-            hasControls: false
-        });
+                left: 1078,
+                top: 140,
+                width: 150,
+                //height: 225,
+                scaleX: 1,
+                scaleY: 1,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockScalingFlip: true,
+                hasBorders: false,
+                hasControls: false
+            });
 
         this.canvas.add(parkingControl);
 
-        if (this.canvas.requestFullScreen) {
-            this.canvas.requestFullScreen();
-        }
-        else if (this.canvas.webkitRequestFullScreen) {
-            this.canvas.webkitRequestFullScreen();
-        }
-        else if (this.canvas.mozRequestFullScreen) {
-            this.canvas.mozRequestFullScreen();
+        this.drawMiniDisplay();
+    }
+
+    private drawMiniDisplay = () => {
+
+        if (this.miniDisplayImage != null) {
+            this.canvas.remove(this.miniDisplayImage);
         }
 
-        //fabric.util.requestAnimFrame(function render() {
-        //    canvas.renderAll();
-        //    fabric.util.requestAnimFrame(render);
-        //});
+        if (this.isOff) {
+            this.miniDisplay = new steelseries.DisplaySingle("gMini", {
+                width: 160,
+                height: 60,
+                valuesNumeric: false,
+                value: "off ",
+                lcdDecimals: 0
+            });
+        } else {
+            this.miniDisplay = new steelseries.DisplaySingle("gMini", {
+                width: 160,
+                height: 60,
+                unitString: "cm",
+                lcdDecimals: 0,
+                unitStringVisible: true
+            });
+        }
 
-        resizeCanvas();
+        var factor = Dashboard.getInstance().zoomFactor;
+        this.miniDisplayImage = new fabric.Image(document.getElementById("gMini"), {
+            left: 1073 * factor,
+            top: 360 * factor,
+            width: 160 * factor,
+            height: 60 * factor
+            
+        });
+        this.canvas.add(this.miniDisplayImage);
     }
 };
 

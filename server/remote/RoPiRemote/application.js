@@ -14,7 +14,6 @@ var Application = (function () {
         this.cameraControlsButtons = null;
         this.robotControls = new RobotControls();
         this.cameraControls = new CameraControls();
-        this.parking = new Parking();
         this.run = function () {
             _this.robotControls.init();
             _this.cameraControls.init();
@@ -43,7 +42,7 @@ var Application = (function () {
             settingsButton.click(function () {
                 Settings.Current.show();
             });
-            $(window).resize(function () { _this.resizeImage(); });
+            Dashboard.getInstance().show();
         };
         this.getToggleStatus = function (toggle) { return (toggle != null && toggle.prop("checked")); };
         this.getIsConnected = function () { return _this.getToggleStatus(_this.connectButton); };
@@ -59,26 +58,24 @@ var Application = (function () {
                 _this.cameraControls.show(CameraControl.Joystick);
             }
         };
-        this.resizeImage = function () {
-            return;
-            //the width is larger
-            //resize the image to the div
-            $("#camera").height("0px").width("0px");
-            var h = $("#main").innerHeight();
-            $("#camera").height(h + "px").width("auto");
-            console.log("h:" + h + " cam:" + $("#camera").width() + "x" + $("#camera").height());
-        };
         this.connect = function () {
             _this.socketio = io.connect(Settings.Current.getBaseServerUrl() + ":80/", { 'forceNew': true });
             _this.socketio.on("connected", function (msg) {
                 //updateConnectionStatus(true, msg);
+                Dashboard.getInstance().hideIcon(DashboardIcons.Engine);
             });
             _this.socketio.on("disconnected", function (msg) {
                 _this.connectButton.bootstrapToggle("off");
                 _this.cameraButton.bootstrapToggle("off");
             });
             _this.socketio.on("parking", function (msg) {
-                _this.parking.update(msg);
+                Dashboard.getInstance().parkingControl.update(msg);
+            });
+            _this.socketio.on("error", function (msg) {
+                Dashboard.getInstance().showIcon(DashboardIcons.Engine);
+            });
+            _this.socketio.on("reconnect_error", function (msg) {
+                Dashboard.getInstance().showIcon(DashboardIcons.Engine);
             });
             _this.socketio.emit("connect");
         };
@@ -98,38 +95,36 @@ var Application = (function () {
             }
         };
         this.processToggleCamera = function () {
-            var camera = $("#camera");
             if (_this.getIsCameraActive()) {
-                camera.attr("src", Settings.Current.getBaseServerUrl() + ":8080/stream/video.mjpeg");
-                camera.show();
-                _this.resizeImage();
+                Dashboard.getInstance().startCamera();
                 _this.enableControlsButton();
             }
             else {
-                camera.attr("src", "");
-                camera.hide();
+                Dashboard.getInstance().stopCamera();
                 _this.cameraControls.hide();
                 _this.disableControlsButton();
             }
         };
         this.processRobotToggle = function () {
             if (_this.getIsConnected()) {
-                _this.connect();
-                _this.robotControls.show();
-                _this.parking.init();
-                // optionally switch on camera if not already running
-                if (!_this.getIsCameraActive()) {
-                    _this.cameraButton.bootstrapToggle("toggle");
-                }
-                _this.enableControlsButton();
+                Dashboard.getInstance().startEngine(function () {
+                    _this.connect();
+                    _this.robotControls.show();
+                    // optionally switch on camera if not already running
+                    if (!_this.getIsCameraActive()) {
+                        _this.cameraButton.bootstrapToggle("toggle");
+                    }
+                    _this.enableControlsButton();
+                });
             }
             else {
-                _this.robotControls.hide();
-                _this.parking.hide();
-                _this.disconnect();
-                if (!_this.getIsCameraActive()) {
-                    _this.disableControlsButton();
-                }
+                Dashboard.getInstance().stopEngine(function () {
+                    _this.robotControls.hide();
+                    _this.disconnect();
+                    if (!_this.getIsCameraActive()) {
+                        _this.disableControlsButton();
+                    }
+                });
             }
         };
     }
@@ -287,18 +282,484 @@ var CameraControls = (function () {
     };
     return CameraControls;
 })();
+//http://jsfiddle.net/mentosan/o3nxs401/146/
+var Dashboard = (function () {
+    function Dashboard() {
+        var _this = this;
+        this.parkingControl = new Parking();
+        this.canvas = new fabric.StaticCanvas("dashboard");
+        this.zoomFactor = 1;
+        this.originalWidth = 1408;
+        this.originalHeight = 513;
+        this.isCameraVisible = false;
+        this.cruiseControlSpeed = 0;
+        this.isMoving = false;
+        this.cameraUrl = null;
+        this.show = function () {
+            _this.canvas.setBackgroundColor("black", function () { });
+            _this.canvas.setHeight(_this.originalHeight);
+            _this.canvas.setWidth(_this.originalWidth);
+            _this.clockController = new DashboardClockController(_this.canvas);
+            _this.iconsController = new DashboardIconsController(_this.canvas);
+            _this.drawMiddleDisplay();
+            _this.drawCameraAndGauges();
+            setInterval(function () {
+                //leftGauge.setValueAnimated(Math.random() * 100); 
+                //rightGauge.setValueAnimated(Math.random() * 100); 
+                //leftGauge.setOdoValue(Math.random() * 30000.2)
+                _this.clockController.updateTime();
+                if (_this.cameraInterval == null) {
+                    _this.canvas.renderAll();
+                }
+            }, 1000);
+            window.onresize = _this.resizeCanvas;
+            _this.tempInterval = setInterval(function () {
+                clearInterval(_this.tempInterval);
+                _this.resizeCanvas();
+            }, 500);
+        };
+        this.startEngine = function (callback) {
+            _this.iconsController.showAllIcons();
+            _this.leftGauge.setValue(100);
+            _this.rightGauge.setValue(90);
+            setTimeout(function () {
+                _this.iconsController.hideAllIcons();
+                _this.leftGauge.setValue(0);
+                _this.rightGauge.setValue(0);
+                _this.parkingControl.turnOn();
+                _this.showIcon(DashboardIcons.ParkingSensors);
+                _this.showIcon(DashboardIcons.Headlights);
+                _this.showIcon(DashboardIcons.ParkingBrake);
+                if (callback != null) {
+                    callback();
+                }
+            }, 1500);
+        };
+        this.stopEngine = function (callback) {
+            _this.iconsController.hideAllIcons();
+            _this.parkingControl.turnOff();
+            if (callback != null) {
+                callback();
+            }
+        };
+        this.setCruiseControlSpeed = function (speed) {
+            if (_this.leftGauge != null) {
+                var needMove = false;
+                if (_this.cruiseControlSpeed !== speed && _this.isMoving) {
+                    needMove = true;
+                }
+                _this.cruiseControlSpeed = speed;
+                _this.leftGauge.setThreshold(_this.cruiseControlSpeed);
+                if (needMove) {
+                    _this.move();
+                }
+            }
+            if (_this.cruiseControlSpeed === 0) {
+                _this.hideIcon(DashboardIcons.Tempomat);
+            }
+            else {
+                _this.showIcon(DashboardIcons.Tempomat);
+            }
+        };
+        this.move = function () {
+            if (_this.leftGauge != null && _this.cruiseControlSpeed != null && !_this.isMoving) {
+                _this.hideIcon(DashboardIcons.ParkingBrake);
+                _this.isMoving = true;
+                _this.leftGauge.setValueAnimated(_this.cruiseControlSpeed);
+            }
+        };
+        this.stop = function () {
+            if (_this.leftGauge != null) {
+                _this.isMoving = false;
+                _this.leftGauge.setValueAnimated(0);
+                _this.showIcon(DashboardIcons.ParkingBrake);
+                _this.hideIcon(DashboardIcons.TurnSignals);
+            }
+        };
+        this.showIcon = function (icon) {
+            _this.iconsController.showIcon(icon);
+        };
+        this.hideIcon = function (icon) {
+            _this.iconsController.hideIcon(icon);
+        };
+        this.startCamera = function () {
+            //this.cameraUrl = "http://img.izismile.com/img/img5/20120809/video/definitely_not_what_youd_expect_to_see_from_a_russian_dashcam_400x300_01.jpg";
+            _this.cameraUrl = Settings.Current.getBaseServerUrl() + ":8080/stream/video.mjpeg";
+            var img = document.getElementById("camera");
+            img.onload = function () {
+                _this.clockController.hideClock();
+                _this.cameraImage.setElement(img);
+                _this.cameraImage.width = 500;
+                _this.cameraImage.height = 375;
+            };
+            img.onerror = function () {
+                _this.clockController.showClock();
+            };
+            img.src = _this.cameraUrl;
+            _this.cameraInterval = setInterval(function () {
+                _this.canvas.renderAll();
+            }, 250);
+        };
+        this.stopCamera = function () {
+            if (_this.cameraInterval != null) {
+                clearInterval(_this.cameraInterval);
+                _this.cameraInterval = null;
+            }
+            _this.cameraUrl = "http://";
+            var img = document.getElementById("camera");
+            img.onerror = function () {
+                _this.clockController.showClock();
+            };
+            img.src = _this.cameraUrl;
+        };
+        this.drawCameraAndGauges = function () {
+            fabric.Image.fromURL("http://", function (image) {
+                _this.cameraImage = image;
+                var ar = image.height / image.width;
+                image.left = 455;
+                image.top = 60;
+                //image.width = 500;
+                //image.height = 375; //image.width * ar;
+                _this.canvas.add(image);
+                _this.drawGauges();
+            });
+            _this.clockController.showClock();
+        };
+        this.drawLeftGauge = function () {
+            _this.leftGauge = new steelseries.Radial("gLeft", {
+                gaugeType: steelseries.GaugeType.TYPE3,
+                minValue: 0,
+                maxValue: 100,
+                size: 510,
+                ledVisible: false,
+                foregroundType: steelseries.ForegroundType.TYPE3,
+                //frameDesign: steelseries.FrameDesign.STEEL,
+                frameDesign: steelseries.FrameDesign.TILTED_BLACK,
+                knobStyle: steelseries.KnobStyle.SILVER,
+                pointerType: steelseries.PointerType.TYPE9,
+                lcdDecimals: 0,
+                threshold: 0,
+                tickLabelOrientation: steelseries.TickLabelOrientation.HORIZONTAL,
+                section: null,
+                area: null,
+                titleString: "Speed",
+                unitString: "%",
+                lcdVisible: true,
+                useOdometer: true,
+                odometerParams: { digits: 5 },
+                backgroundColor: steelseries.BackgroundColor.BLACK
+            });
+            var leftGaugeImage = new fabric.Image(document.getElementById("gLeft"), {
+                left: 0,
+                top: 0,
+                width: 510,
+                height: 510
+            });
+            _this.canvas.add(leftGaugeImage);
+        };
+        this.drawRightGauge = function () {
+            _this.rightGauge = new steelseries.RadialBargraph("gRight", {
+                gaugeType: steelseries.GaugeType.TYPE2,
+                minValue: 10,
+                maxValue: 90,
+                size: 510,
+                tickLabelOrientation: steelseries.TickLabelOrientation.HORIZONTAL,
+                foregroundType: steelseries.ForegroundType.TYPE3,
+                frameDesign: steelseries.FrameDesign.TILTED_BLACK,
+                ledVisible: false,
+                niceScale: false,
+                fractionalScaleDecimals: false,
+                useValueGradient: true,
+                section: null,
+                area: null,
+                lcdVisible: false,
+                backgroundColor: steelseries.BackgroundColor.BLACK
+            });
+            var rightGaugeImage = new fabric.Image(document.getElementById("gRight"), {
+                left: 898,
+                top: 0,
+                width: 510,
+                height: 510
+            });
+            _this.canvas.add(rightGaugeImage);
+        };
+        this.drawGauges = function () {
+            _this.drawLeftGauge();
+            _this.drawRightGauge();
+            _this.parkingControl.init(_this.canvas);
+        };
+        this.drawMiddleDisplay = function () {
+            _this.canvas.add(new fabric.Line([400, 59, 1000, 59], {
+                stroke: "gray",
+                strokeWidth: 2
+            }));
+            _this.canvas.add(new fabric.Line([400, 436, 1000, 436], {
+                stroke: "gray",
+                strokeWidth: 2
+            }));
+            var degreesText = new fabric.Text("22.5 °C", {
+                fontSize: 28,
+                textAlign: "center",
+                left: 890,
+                top: 25,
+                fontFamily: "Arial",
+                fill: "white"
+            });
+            _this.canvas.add(degreesText);
+        };
+        this.zoomIt = function (factor) {
+            _this.canvas.setHeight(_this.canvas.getHeight() * factor);
+            _this.canvas.setWidth(_this.canvas.getWidth() * factor);
+            if (_this.canvas.backgroundImage) {
+                // Need to scale background images as well
+                var bi = _this.canvas.backgroundImage;
+                bi.width = bi.width * factor;
+                bi.height = bi.height * factor;
+            }
+            var objects = _this.canvas.getObjects();
+            for (var i in objects) {
+                var scaleX = objects[i].scaleX;
+                var scaleY = objects[i].scaleY;
+                var left = objects[i].left;
+                var top_1 = objects[i].top;
+                var tempScaleX = scaleX * factor;
+                var tempScaleY = scaleY * factor;
+                var tempLeft = left * factor;
+                var tempTop = top_1 * factor;
+                objects[i].scaleX = tempScaleX;
+                objects[i].scaleY = tempScaleY;
+                objects[i].left = tempLeft;
+                objects[i].top = tempTop;
+                objects[i].setCoords();
+            }
+            _this.canvas.renderAll();
+            _this.canvas.calcOffset();
+        };
+        this.resizeCanvas = function () {
+            //return;
+            var clientWidth = window.innerWidth;
+            //var clientHeight = window.innerHeight;
+            _this.zoomFactor = clientWidth / _this.canvas.getWidth();
+            //debugger;
+            _this.zoomIt(_this.zoomFactor);
+        };
+        if (Dashboard.instance) {
+            throw new Error("Error - use Dashboard.getInstance()");
+        }
+    }
+    Dashboard.getInstance = function () {
+        Dashboard.instance = Dashboard.instance || new Dashboard();
+        return Dashboard.instance;
+    };
+    return Dashboard;
+})();
+var DashboardClockController = (function () {
+    function DashboardClockController(canvas) {
+        var _this = this;
+        this.hideClock = function () {
+            _this.canvas.remove(_this.clockGaugeImage);
+        };
+        this.showClock = function () {
+            _this.hideClock();
+            new steelseries.Clock("gClock", {
+                gaugeType: steelseries.GaugeType.TYPE4,
+                size: 170,
+                secondPointerVisible: true,
+                backgroundVisible: true,
+                backgroundColor: steelseries.BackgroundColor.BRUSHED_STAINLESS,
+                frameVisible: false,
+                frameDesign: steelseries.FrameDesign.TILTED_BLACK,
+                minValue: 20,
+                maxValue: 80,
+                value: 45,
+                niceScale: true,
+                pointerType: steelseries.PointerType.TYPE5,
+            });
+            var factor = Dashboard.getInstance().zoomFactor;
+            _this.clockGaugeImage = new fabric.Image(document.getElementById("gClock"), {
+                left: 579 * factor,
+                top: 120 * factor,
+                width: 250 * factor,
+                height: 250 * factor
+            });
+            _this.canvas.add(_this.clockGaugeImage);
+            _this.canvas.renderAll();
+        };
+        this.updateTime = function () {
+            var today = new Date();
+            var h = _this.checkTime(today.getHours());
+            var m = _this.checkTime(today.getMinutes());
+            _this.clockText.setText(h + ":" + m);
+        };
+        this.checkTime = function (i) {
+            if (i < 10) {
+                i = "0" + i;
+            }
+            ; // add zero in front of numbers < 10
+            return i;
+        };
+        this.canvas = canvas;
+        this.clockText = new fabric.Text("21:45", {
+            fontSize: 28,
+            textAlign: "center",
+            left: 420,
+            top: 25,
+            fontFamily: "Arial",
+            fill: "white"
+        });
+        this.canvas.add(this.clockText);
+        this.updateTime();
+    }
+    return DashboardClockController;
+})();
+var DashboardIcons;
+(function (DashboardIcons) {
+    DashboardIcons[DashboardIcons["SeatBelt"] = 0] = "SeatBelt";
+    DashboardIcons[DashboardIcons["Tempomat"] = 1] = "Tempomat";
+    DashboardIcons[DashboardIcons["FrontAssist"] = 2] = "FrontAssist";
+    DashboardIcons[DashboardIcons["Engine"] = 3] = "Engine";
+    DashboardIcons[DashboardIcons["Headlights"] = 4] = "Headlights";
+    DashboardIcons[DashboardIcons["LaneAssist"] = 5] = "LaneAssist";
+    DashboardIcons[DashboardIcons["ParkingBrake"] = 6] = "ParkingBrake";
+    DashboardIcons[DashboardIcons["ParkingSensors"] = 7] = "ParkingSensors";
+    DashboardIcons[DashboardIcons["WaterTemperature"] = 8] = "WaterTemperature";
+    DashboardIcons[DashboardIcons["TurnSignals"] = 9] = "TurnSignals";
+})(DashboardIcons || (DashboardIcons = {}));
+var DashboardIconsController = (function () {
+    function DashboardIconsController(canvas) {
+        // a dictionary holding all icons
+        this.icons = {};
+        this.canvas = canvas;
+    }
+    // show the specified icon
+    DashboardIconsController.prototype.showIcon = function (target) {
+        var _this = this;
+        var icon = this.icons[target];
+        if (icon != undefined && icon.isVisible) {
+            return;
+        }
+        else {
+            // mark it visible ASAP
+            this.icons[target] = { id: target, isVisible: true };
+        }
+        var path = null;
+        var left = -1;
+        var top = -1;
+        switch (target) {
+            case DashboardIcons.Engine:
+                path = "/images/Engine.svg";
+                left = 675;
+                top = 435;
+                break;
+            case DashboardIcons.FrontAssist:
+                path = "/images/Frontassist.svg";
+                left = 1230;
+                top = 300;
+                break;
+            case DashboardIcons.Headlights:
+                path = "/images/Headlights.svg";
+                left = 615;
+                top = 10;
+                break;
+            case DashboardIcons.LaneAssist:
+                path = "/images/Laneassist.svg";
+                left = 525;
+                top = 435;
+                break;
+            case DashboardIcons.ParkingBrake:
+                path = "/images/Parkingbrake.svg";
+                left = 840;
+                top = 435;
+                break;
+            case DashboardIcons.ParkingSensors:
+                path = "/images/Parkingsensors.svg";
+                left = 1030;
+                top = 300;
+                break;
+            case DashboardIcons.SeatBelt:
+                path = "/images/Seatbelt.svg";
+                left = 900;
+                top = 435;
+                break;
+            case DashboardIcons.Tempomat:
+                path = "/images/Tempomat.svg";
+                left = 465;
+                top = 435;
+                break;
+            case DashboardIcons.TurnSignals:
+                path = "/images/Turnsignal.svg";
+                left = 675;
+                top = 10;
+                break;
+            case DashboardIcons.WaterTemperature:
+                path = "/images/Temperature.svg";
+                left = 960;
+                top = 280;
+                break;
+        }
+        if (path !== null && left !== -1 && top !== -1) {
+            fabric.loadSVGFromURL(path, function (objects) {
+                var factor = Dashboard.getInstance().zoomFactor;
+                var result = new fabric.PathGroup(objects, {
+                    left: left * factor,
+                    top: top * factor
+                });
+                result.scaleX = 0.7 * factor;
+                result.scaleY = 0.7 * factor;
+                _this.canvas.add(result);
+                _this.icons[target] = { id: target, iconPath: result, isVisible: true };
+            });
+        }
+    };
+    // hide the specified icon
+    DashboardIconsController.prototype.hideIcon = function (target) {
+        var icon = this.icons[target];
+        if (icon != undefined && icon.isVisible) {
+            icon.isVisible = false;
+            this.canvas.remove(icon.iconPath);
+            //this.canvas.renderAll();
+            icon.iconPath = null;
+        }
+    };
+    // test: display all icons for 3 seconds
+    DashboardIconsController.prototype.showAllIcons = function () {
+        this.showIcon(DashboardIcons.Engine);
+        this.showIcon(DashboardIcons.FrontAssist);
+        this.showIcon(DashboardIcons.Headlights);
+        this.showIcon(DashboardIcons.LaneAssist);
+        this.showIcon(DashboardIcons.ParkingBrake);
+        this.showIcon(DashboardIcons.ParkingSensors);
+        this.showIcon(DashboardIcons.SeatBelt);
+        this.showIcon(DashboardIcons.Tempomat);
+        this.showIcon(DashboardIcons.TurnSignals);
+        this.showIcon(DashboardIcons.WaterTemperature);
+    };
+    DashboardIconsController.prototype.hideAllIcons = function () {
+        this.hideIcon(DashboardIcons.Engine);
+        this.hideIcon(DashboardIcons.FrontAssist);
+        this.hideIcon(DashboardIcons.Headlights);
+        this.hideIcon(DashboardIcons.LaneAssist);
+        this.hideIcon(DashboardIcons.ParkingBrake);
+        this.hideIcon(DashboardIcons.ParkingSensors);
+        this.hideIcon(DashboardIcons.SeatBelt);
+        this.hideIcon(DashboardIcons.Tempomat);
+        this.hideIcon(DashboardIcons.TurnSignals);
+        this.hideIcon(DashboardIcons.WaterTemperature);
+    };
+    return DashboardIconsController;
+})();
 //http://jsfiddle.net/xk6ny85d/15/
 var Parking = (function () {
     function Parking() {
         var _this = this;
-        this.colorOff = "whitesmoke";
+        this.colorOff = "lightGray";
         this.color1 = "yellow";
         this.color2 = "orange";
         this.color3 = "orangered";
         this.color4 = "red";
         this.colorLeftLine = "red";
         this.colorRightLine = "green";
-        this.canvas = null;
+        this.isOff = true;
         this.circle1 = null;
         this.circle2 = null;
         this.circle3 = null;
@@ -307,8 +768,7 @@ var Parking = (function () {
         this.right = null;
         this.lineLeft = null;
         this.lineRight = null;
-        this.distText = null;
-        //private parkingControl = null;
+        //private distText: fabric.IText = null;
         this.update = function (msg) {
             if (_this.canvas != null) {
                 _this.circle1.stroke = _this.colorOff;
@@ -320,11 +780,8 @@ var Parking = (function () {
                 _this.lineLeft.fill = _this.colorOff;
                 _this.lineRight.fill = _this.colorOff;
                 var dist = msg["d"];
-                if (dist < 999) {
-                    _this.distText.setText(dist.toString());
-                }
-                else {
-                    _this.distText.setText("");
+                if (!_this.isOff) {
+                    _this.miniDisplay.setValue(dist);
                 }
                 if (dist < 50 && dist >= 30) {
                     _this.circle1.stroke = _this.color1;
@@ -354,43 +811,23 @@ var Parking = (function () {
                 _this.canvas.renderAll();
             }
         };
-        this.hide = function () {
-            if (_this.canvas != null) {
-                _this.canvas.dispose();
-            }
+        this.turnOff = function () {
+            _this.isOff = true;
+            _this.update({ "d": 10000 });
+            _this.drawMiniDisplay();
         };
-        this.init = function () {
-            var resizeCanvas = function () {
-                if (_this.canvas == null)
-                    return;
-                _this.canvas.setHeight(0);
-                _this.canvas.setWidth(0);
-                _this.canvas.setHeight($("#main")[0].clientHeight);
-                _this.canvas.setWidth($("#main")[0].clientWidth);
-                _this.canvas.renderAll();
-                if (window.innerWidth < 800) {
-                    _this.canvas.setZoom(0.5);
-                }
-                else {
-                    _this.canvas.setZoom(1);
-                }
-            };
-            $(window).resize(resizeCanvas);
-            //var video1 = new fabric.Image($("#camera"), {
-            //    left: 350,
-            //    top: 300,
-            //    angle: -15,
-            //    originX: 'center',
-            //    originY: 'center'
-            //});
+        this.turnOn = function () {
+            _this.isOff = false;
+            _this.drawMiniDisplay();
+        };
+        this.init = function (canvas) {
             var startAngle = -2.618; // 30deg
             var endAngle = -0.5235;
             startAngle = -2.35619; // 45deg
             endAngle = -0.785398;
-            _this.canvas = new fabric.Canvas("parkingControl");
-            _this.canvas.selection = false;
+            _this.canvas = canvas; //new fabric.Canvas("parkingControl");
             _this.canvas.allowTouchScrolling = false;
-            _this.canvas.setZoom(0.5);
+            _this.canvas.setZoom(1);
             _this.circle1 = new fabric.Circle({
                 radius: 100,
                 left: -10,
@@ -503,7 +940,8 @@ var Parking = (function () {
                 fill: _this.colorOff,
                 selectable: false
             });
-            _this.distText = new fabric.Text("", {
+            /*
+            this.distText = new fabric.Text("", {
                 selectable: false,
                 originX: "center",
                 left: 98,
@@ -514,14 +952,15 @@ var Parking = (function () {
                 textAlign: "center",
                 fill: "white"
             });
+            */
             var parkingControl = new fabric.Group([
                 _this.circle1, _this.circle2, _this.circle3, _this.circle4, _this.left, _this.right,
-                body, wleft, wright, _this.lineLeft, _this.lineRight, _this.distText
+                body, wleft, wright, _this.lineLeft, _this.lineRight /*, this.distText*/
             ], {
-                left: 0,
-                top: 0,
-                width: 190,
-                height: 225,
+                left: 1078,
+                top: 140,
+                width: 150,
+                //height: 225,
                 scaleX: 1,
                 scaleY: 1,
                 lockScalingX: true,
@@ -531,20 +970,38 @@ var Parking = (function () {
                 hasControls: false
             });
             _this.canvas.add(parkingControl);
-            if (_this.canvas.requestFullScreen) {
-                _this.canvas.requestFullScreen();
+            _this.drawMiniDisplay();
+        };
+        this.drawMiniDisplay = function () {
+            if (_this.miniDisplayImage != null) {
+                _this.canvas.remove(_this.miniDisplayImage);
             }
-            else if (_this.canvas.webkitRequestFullScreen) {
-                _this.canvas.webkitRequestFullScreen();
+            if (_this.isOff) {
+                _this.miniDisplay = new steelseries.DisplaySingle("gMini", {
+                    width: 160,
+                    height: 60,
+                    valuesNumeric: false,
+                    value: "off ",
+                    lcdDecimals: 0
+                });
             }
-            else if (_this.canvas.mozRequestFullScreen) {
-                _this.canvas.mozRequestFullScreen();
+            else {
+                _this.miniDisplay = new steelseries.DisplaySingle("gMini", {
+                    width: 160,
+                    height: 60,
+                    unitString: "cm",
+                    lcdDecimals: 0,
+                    unitStringVisible: true
+                });
             }
-            //fabric.util.requestAnimFrame(function render() {
-            //    canvas.renderAll();
-            //    fabric.util.requestAnimFrame(render);
-            //});
-            resizeCanvas();
+            var factor = Dashboard.getInstance().zoomFactor;
+            _this.miniDisplayImage = new fabric.Image(document.getElementById("gMini"), {
+                left: 1073 * factor,
+                top: 360 * factor,
+                width: 160 * factor,
+                height: 60 * factor
+            });
+            _this.canvas.add(_this.miniDisplayImage);
         };
     }
     return Parking;
@@ -581,23 +1038,27 @@ var RobotControls = (function () {
     function RobotControls() {
         var _this = this;
         this.joystickLeft = null;
-        this.speedSlider = null;
+        this.accButton = null;
+        this.brakeButton = null;
+        this.currentSpeed = 40;
         this.showDirectionJoystick = function () {
             if (_this.joystickLeft != null)
                 return;
             //var evts = "dir:up plain:up dir:left plain:left dir:down plain:down dir:right plain:right";
             var evts = "plain:up";
             var currentDirectionAngle = 0;
+            Dashboard.getInstance().setCruiseControlSpeed(_this.currentSpeed);
             _this.joystickLeft = nipplejs.create({
                 maxNumberOfNipples: 1,
                 zone: document.getElementById("jLeft"),
-                mode: "static",
+                mode: "dynamic",
                 size: 120,
                 position: { left: "50%", top: "50%" },
                 color: "green"
             }).on("start end", function (evt, data) {
                 if (evt.type === "end") {
                     RequestsHelper.Current.put("motor/stop");
+                    Dashboard.getInstance().stop();
                 }
             }).on("move", function (evt, data) {
                 // ignore movement smaller than 10
@@ -607,49 +1068,54 @@ var RobotControls = (function () {
                     if (angle !== currentDirectionAngle) {
                         RequestsHelper.Current.put("motor/move/" + angle);
                         currentDirectionAngle = angle;
+                        Dashboard.getInstance().move();
+                        if ((angle > 100 && angle < 260) || angle < 80 || angle > 280) {
+                            Dashboard.getInstance().showIcon(DashboardIcons.TurnSignals);
+                        }
+                        else {
+                            Dashboard.getInstance().hideIcon(DashboardIcons.TurnSignals);
+                        }
                     }
                 }
             }).on(evts, function (evt, data) {
                 console.log(evt.type);
             });
         };
-        this.showSpeedSlider = function () {
-            _this.speedSlider = noUiSlider.create(document.getElementById("speedSlider"), {
-                start: 30,
-                step: 10,
-                connect: "lower",
-                tooltips: true,
-                direction: "rtl",
-                orientation: "vertical",
-                range: {
-                    "min": 0,
-                    "max": 100
-                },
-                format: wNumb({
-                    decimals: 0
-                }),
-            });
-            _this.speedSlider.on("change", function (value) {
-                var speed = Math.floor(value);
-                RequestsHelper.Current.put("motor/speed/" + speed);
-            });
-        };
     }
     RobotControls.prototype.init = function () {
+        var _this = this;
+        this.accButton = $("#accButton");
+        this.accButton.click(function () {
+            _this.modifySpeed(+10);
+        });
+        this.brakeButton = $("#brakeButton");
+        this.brakeButton.click(function () {
+            _this.modifySpeed(-10);
+        });
     };
     RobotControls.prototype.show = function () {
         this.showDirectionJoystick();
-        this.showSpeedSlider();
+        this.accButton.show();
+        this.brakeButton.show();
     };
     RobotControls.prototype.hide = function () {
         if (this.joystickLeft != null) {
             this.joystickLeft.destroy();
             this.joystickLeft = null;
         }
-        if (this.speedSlider != null) {
-            this.speedSlider.destroy();
-            this.speedSlider = null;
+        if (this.accButton != null) {
+            this.accButton.hide();
         }
+        if (this.brakeButton != null) {
+            this.brakeButton.hide();
+        }
+    };
+    RobotControls.prototype.modifySpeed = function (speed) {
+        var _this = this;
+        RequestsHelper.Current.put("motor/speed/" + (this.currentSpeed + speed), function (data) {
+            _this.currentSpeed = data["speed"];
+            Dashboard.getInstance().setCruiseControlSpeed(_this.currentSpeed);
+        });
     };
     return RobotControls;
 })();
@@ -697,6 +1163,7 @@ var Settings = (function () {
         };
     }
     Settings.prototype.getRobotIp = function () {
+        //this.robotIP = "raspberrypi";
         if (!this.checkRobotIp(this.robotIP)) {
             this.robotIP = Cookies.get(this.robotIpCookieName);
             if (!this.checkRobotIp(this.robotIP)) {

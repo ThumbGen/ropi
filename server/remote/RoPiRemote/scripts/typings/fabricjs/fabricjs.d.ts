@@ -975,7 +975,7 @@ declare module fabric {
      * Should be set via setBackgroundImage
      * <b>Backwards incompatibility note:</b> The "backgroundImageOpacity" and "backgroundImageStretch" properties are deprecated since 1.3.9.
      */
-    backgroundImage?: IImage | string;
+    backgroundImage?: any | IImage | string;
     backgroundImageOpacity?: number;
     backgroundImageStretch?: number;
     /**
@@ -1917,7 +1917,7 @@ declare module fabric {
      * @param {HTMLImageElement | String} element Image element
      * @param {Object} [options] Options object
      */
-    new (element: HTMLImageElement, objObjects: IObjectOptions): IImage;
+    new (element: any, objObjects: IObjectOptions): IImage;
     /**
      * Creates an instance of fabric.Image from an URL string
      * @param {String} url URL to create an image from
