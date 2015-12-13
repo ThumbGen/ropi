@@ -8,14 +8,13 @@ currentCommand = None
 
 
 def execute(cmd, arg = None):
-	global currentCommand
+	global currentCommand, currentSpeed
 	# if cmd is "speed" just execute adjustSpeed
 	if cmd != "move":
 		adjustSpeed(arg) # for 'move' the arg is the angle not the speed
 	if cmd == "speed":
-		if currentCommand != None and currentCommand != "stop":
-			execute(currentCommand)
-		return
+		if currentCommand != None and currentCommand != "stop" and currentCommand != "speed":
+			return execute(currentCommand)
 	currentCommand = None
 	if cmd == "stop":
 		stop()
@@ -33,6 +32,7 @@ def execute(cmd, arg = None):
 			arg = 90
 		move(arg)
 	currentCommand = cmd
+	return { "speed": currentSpeed }
 
 def forward():
 	global currentSpeed, currentCommand

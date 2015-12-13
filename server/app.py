@@ -123,9 +123,8 @@ def put_leds(cmd_str):
 @app.route(baseApi + 'motor/<string:cmd_motor>', methods=['PUT'], defaults={'cmd_speed': None})	
 @app.route(baseApi + 'motor/<string:cmd_motor>/<int:cmd_speed>', methods=['PUT'])	
 def put_motor(cmd_motor, cmd_speed):
-	if vsn == 1:
-		motor.execute(cmd_motor, cmd_speed)
-	return "OK"
+	res = motor.execute(cmd_motor, cmd_speed)
+	return jsonify(res)
 
 @app.route(baseApi + 'system/<string:cmd_system>', methods=['PUT'])
 def put_system(cmd_system):
