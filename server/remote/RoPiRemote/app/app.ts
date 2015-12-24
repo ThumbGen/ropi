@@ -12,7 +12,7 @@ class Application {
     private cameraControlsButton = null;
     private cameraControlsOff = null;
     private cameraControlsJoystick = null;
-    private cameraControlsButtons = null;
+    private cameraControlsSteppedJoystick = null;
 
     private robotControls = new RobotControls();
     private cameraControls = new CameraControls();
@@ -34,14 +34,11 @@ class Application {
         });
 
         this.cameraControlsButton = $("#controlsButtonOptions");
-        this.cameraControlsOff = $("#controlsOff").click(() => {
-            this.cameraControls.hide();
-        });
         this.cameraControlsJoystick = $("#controlsJoystick").click(() => {
-            this.cameraControls.show(CameraControl.Joystick);
+            this.cameraControls.selectMode(CameraControl.FollowMeJoystick);
         });
-        this.cameraControlsButtons = $("#controlsButtons").click(() => {
-            this.cameraControls.show(CameraControl.Buttons);
+        this.cameraControlsSteppedJoystick = $("#controlsSteppedJoystick").click(() => {
+            this.cameraControls.selectMode(CameraControl.SteppedJoystick);
         });
         this.disableControlsButton();
 
@@ -59,7 +56,7 @@ class Application {
 
     private getIsCameraActive = () => this.getToggleStatus(this.cameraButton);
 
-    private getIsControlsActive = () => this.cameraControls.currentCameraControls !== CameraControl.None;
+    private getIsControlsActive = () => true;
 
     private disableControlsButton = () => {
         this.cameraControls.hide();
@@ -68,9 +65,7 @@ class Application {
 
     private enableControlsButton = () => {
         this.cameraControlsButton.prop("disabled", false);
-        if (!this.getIsControlsActive()) {
-            this.cameraControls.show(CameraControl.Joystick);
-        }
+        this.cameraControls.show();
     }
 
     private connect = () => {
@@ -85,6 +80,9 @@ class Application {
         });
         this.socketio.on("parking", msg => {
             Dashboard.getInstance().parkingControl.update(msg);
+        });
+        this.socketio.on("sysinfo", msg => {
+            Dashboard.getInstance().update(msg);
         });
 
         this.socketio.on("error", msg => {
@@ -106,11 +104,6 @@ class Application {
 
     private processToggleControls = () => {
         if (!this.getIsCameraActive()) return;
-        if (this.getIsControlsActive()) {
-            this.cameraControls.show();
-        } else {
-            this.cameraControls.hide();
-        }
     }
 
     private processToggleCamera = () => {

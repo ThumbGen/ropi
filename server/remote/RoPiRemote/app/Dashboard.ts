@@ -176,6 +176,19 @@ class Dashboard {
         img.src = this.cameraUrl;
     }
 
+    public update = (msg) => {
+        if (this.canvas != null) {
+            var mPercent = msg["mp"];
+            var cpuPercent = msg["cp"];
+            var cpuTemp = msg["ct"];
+            
+            this.rightGauge.setValueAnimated(cpuTemp);
+
+            // sample: {'mp': mempercent }
+            //this.canvas.renderAll();
+        }
+    }
+
     private drawCameraAndGauges = () => {
 
         fabric.Image.fromURL("http://",
@@ -215,7 +228,7 @@ class Dashboard {
             lcdVisible: true,
             useOdometer: true,
             odometerParams: { digits: 5 },
-            backgroundColor: steelseries.BackgroundColor.BLACK
+            backgroundColor: steelseries.BackgroundColor.CARBON
         });
         var leftGaugeImage = new fabric.Image(document.getElementById("gLeft"), {
             left: 0,
@@ -242,7 +255,7 @@ class Dashboard {
             section: null,
             area: null,
             lcdVisible: false,
-            backgroundColor: steelseries.BackgroundColor.BLACK
+            backgroundColor: steelseries.BackgroundColor.CARBON
         });
         var rightGaugeImage = new fabric.Image(document.getElementById("gRight"), {
             left: 898,
