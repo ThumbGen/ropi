@@ -34,6 +34,7 @@ class CameraControls implements IControls {
         var centerX = 0;
         var centerY = 0;
         var currentInterval;
+        var steppedStart = false;
 
         this.hide();
 
@@ -65,9 +66,15 @@ class CameraControls implements IControls {
                 clearInterval(currentInterval);
 
                 if (evt.type === "start") {
-
+                    steppedStart = true;
                 } else {
-                    this.sendCameraCommand(`move/stop`);
+
+                    this.sendCameraCommand("move/stop");
+
+                    if (steppedStart) {
+                        steppedStart = false;
+                        this.sendCameraCommand("center");
+                    }
                 }
             }
         }).on("move", (evt, data) => {
@@ -95,7 +102,7 @@ class CameraControls implements IControls {
         }).on("dir", (evt, data) => {
 
             if (this.currentCameraControls === CameraControl.SteppedJoystick) {
-
+                steppedStart = false;
                 var direction = data["direction"]["angle"];
                 console.log(direction);
                 if (currentDirection === direction) {

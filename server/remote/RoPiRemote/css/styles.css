@@ -57,7 +57,7 @@ html {
     position: absolute;
 }
 
-#gLeft, #gRight, #gClock, #gMini {
+#gLeft, #gRight, #gClock, #gMini, #gMiniLeft, #gMiniRight {
     position: absolute;
     left: 0px;
     top: 0px;

@@ -174,6 +174,7 @@ var CameraControls = (function () {
         var centerX = 0;
         var centerY = 0;
         var currentInterval;
+        var steppedStart = false;
         this.hide();
         this.currentCameraControls = CameraControl.SteppedJoystick;
         if (this.joystickRight != null)
@@ -203,9 +204,14 @@ var CameraControls = (function () {
             else if (_this.currentCameraControls === CameraControl.SteppedJoystick) {
                 clearInterval(currentInterval);
                 if (evt.type === "start") {
+                    steppedStart = true;
                 }
                 else {
                     _this.sendCameraCommand("move/stop");
+                    if (steppedStart) {
+                        steppedStart = false;
+                        _this.sendCameraCommand("center");
+                    }
                 }
             }
         }).on("move", function (evt, data) {
@@ -227,6 +233,7 @@ var CameraControls = (function () {
             }
         }).on("dir", function (evt, data) {
             if (_this.currentCameraControls === CameraControl.SteppedJoystick) {
+                steppedStart = false;
                 var direction = data["direction"]["angle"];
                 console.log(direction);
                 if (currentDirection === direction) {
@@ -286,14 +293,19 @@ var Dashboard = (function () {
             _this.iconsController.showAllIcons();
             _this.leftGauge.setValue(100);
             _this.rightGauge.setValue(90);
+            _this.miniGaugeLeft.setValue(100);
+            _this.miniGaugeRight.setValue(100);
             setTimeout(function () {
                 _this.iconsController.hideAllIcons();
                 _this.leftGauge.setValue(0);
                 _this.rightGauge.setValue(0);
+                _this.miniGaugeLeft.setValue(0);
+                _this.miniGaugeRight.setValue(0);
                 _this.parkingControl.turnOn();
                 _this.showIcon(DashboardIcons.ParkingSensors);
                 _this.showIcon(DashboardIcons.Headlights);
                 _this.showIcon(DashboardIcons.ParkingBrake);
+                _this.showIcon(DashboardIcons.SeatBelt);
                 if (callback != null) {
                     callback();
                 }
@@ -302,6 +314,9 @@ var Dashboard = (function () {
         this.stopEngine = function (callback) {
             _this.iconsController.hideAllIcons();
             _this.parkingControl.turnOff();
+            _this.miniGaugeLeft.setValue(0);
+            _this.miniGaugeRight.setValue(0);
+            _this.rightGauge.setValueAnimated(0);
             if (callback != null) {
                 callback();
             }
@@ -378,10 +393,12 @@ var Dashboard = (function () {
         };
         this.update = function (msg) {
             if (_this.canvas != null) {
-                var mPercent = msg["mp"];
+                var memPercent = msg["mp"];
                 var cpuPercent = msg["cp"];
                 var cpuTemp = msg["ct"];
                 _this.rightGauge.setValueAnimated(cpuTemp);
+                _this.miniGaugeLeft.setValue(cpuPercent);
+                _this.miniGaugeRight.setValue(memPercent);
             }
         };
         this.drawCameraAndGauges = function () {
@@ -428,6 +445,52 @@ var Dashboard = (function () {
                 height: 510
             });
             _this.canvas.add(leftGaugeImage);
+            _this.miniGaugeLeft = new steelseries.Linear("gMiniLeft", {
+                gaugeType: steelseries.GaugeType.TYPE1,
+                backgroundVisible: false,
+                frameVisible: false,
+                minValue: 0,
+                maxValue: 100,
+                ledVisible: false,
+                thresholdVisible: false,
+                lcdVisible: false,
+                niceScale: false,
+                foregroundVisible: false,
+            });
+            var miniGaugeLeftImage = new fabric.Image(document.getElementById("gMiniLeft"), {
+                //left: 85,
+                //top: 340,
+                //width: 350,
+                //height: 80
+                left: 405,
+                top: 400,
+                width: 340,
+                height: 80
+            });
+            _this.canvas.add(miniGaugeLeftImage);
+            _this.miniGaugeRight = new steelseries.Linear("gMiniRight", {
+                gaugeType: steelseries.GaugeType.TYPE1,
+                backgroundVisible: false,
+                frameVisible: false,
+                minValue: 0,
+                maxValue: 100,
+                ledVisible: false,
+                lcdVisible: false,
+                niceScale: true,
+                thresholdVisible: false,
+                foregroundVisible: false,
+            });
+            var miniGaugeRightImage = new fabric.Image(document.getElementById("gMiniRight"), {
+                //left: 85,
+                //top: 360,
+                //width: 350,
+                //height: 80,
+                left: 660,
+                top: 400,
+                width: 340,
+                height: 80
+            });
+            _this.canvas.add(miniGaugeRightImage);
         };
         this.drawRightGauge = function () {
             _this.rightGauge = new steelseries.RadialBargraph("gRight", {
@@ -621,7 +684,7 @@ var DashboardIconsController = (function () {
             case DashboardIcons.Engine:
                 path = "/images/Engine.svg";
                 left = 675;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.FrontAssist:
                 path = "/images/Frontassist.svg";
@@ -636,12 +699,12 @@ var DashboardIconsController = (function () {
             case DashboardIcons.LaneAssist:
                 path = "/images/Laneassist.svg";
                 left = 525;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.ParkingBrake:
                 path = "/images/Parkingbrake.svg";
                 left = 840;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.ParkingSensors:
                 path = "/images/Parkingsensors.svg";
@@ -651,12 +714,12 @@ var DashboardIconsController = (function () {
             case DashboardIcons.SeatBelt:
                 path = "/images/Seatbelt.svg";
                 left = 900;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.Tempomat:
                 path = "/images/Tempomat.svg";
                 left = 465;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.TurnSignals:
                 path = "/images/Turnsignal.svg";

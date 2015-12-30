@@ -47,7 +47,7 @@ class DashboardIconsController {
             case DashboardIcons.Engine:
                 path = "/images/Engine.svg";
                 left = 675;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.FrontAssist:
                 path = "/images/Frontassist.svg";
@@ -62,12 +62,12 @@ class DashboardIconsController {
             case DashboardIcons.LaneAssist:
                 path = "/images/Laneassist.svg";
                 left = 525;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.ParkingBrake:
                 path = "/images/Parkingbrake.svg";
                 left = 840;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.ParkingSensors:
                 path = "/images/Parkingsensors.svg";
@@ -77,12 +77,12 @@ class DashboardIconsController {
             case DashboardIcons.SeatBelt:
                 path = "/images/Seatbelt.svg";
                 left = 900;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.Tempomat:
                 path = "/images/Tempomat.svg";
                 left = 465;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.TurnSignals:
                 path = "/images/Turnsignal.svg";
