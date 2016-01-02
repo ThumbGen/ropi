@@ -272,6 +272,7 @@ var Dashboard = (function () {
             _this.canvas.setWidth(_this.originalWidth);
             _this.clockController = new DashboardClockController(_this.canvas);
             _this.iconsController = new DashboardIconsController(_this.canvas);
+            _this.parkingControl.iconsController = _this.iconsController;
             _this.drawMiddleDisplay();
             _this.drawCameraAndGauges();
             setInterval(function () {
@@ -312,11 +313,11 @@ var Dashboard = (function () {
             }, 1500);
         };
         this.stopEngine = function (callback) {
-            _this.iconsController.hideAllIcons();
             _this.parkingControl.turnOff();
             _this.miniGaugeLeft.setValue(0);
             _this.miniGaugeRight.setValue(0);
             _this.rightGauge.setValueAnimated(0);
+            _this.iconsController.hideAllIcons();
             if (callback != null) {
                 callback();
             }
@@ -803,7 +804,6 @@ var Parking = (function () {
         this.right = null;
         this.lineLeft = null;
         this.lineRight = null;
-        //private distText: fabric.IText = null;
         this.update = function (msg) {
             if (_this.canvas != null) {
                 _this.circle1.stroke = _this.colorOff;
@@ -841,6 +841,13 @@ var Parking = (function () {
                 }
                 if (msg["rl"]) {
                     _this.lineRight.fill = _this.colorRightLine;
+                }
+                // front assist active?
+                if (msg["fa"]) {
+                    _this.iconsController.showIcon(DashboardIcons.FrontAssist);
+                }
+                else {
+                    _this.iconsController.hideIcon(DashboardIcons.FrontAssist);
                 }
                 // sample: {'d': dist, 'l': l, 'c': c,'r': r, 'll': ll, 'rl': rl}
                 _this.canvas.renderAll();

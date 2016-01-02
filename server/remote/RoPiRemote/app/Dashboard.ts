@@ -44,6 +44,7 @@ class Dashboard {
 
         this.clockController = new DashboardClockController(this.canvas);
         this.iconsController = new DashboardIconsController(this.canvas);
+        this.parkingControl.iconsController = this.iconsController;
 
         this.drawMiddleDisplay();
 
@@ -90,7 +91,7 @@ class Dashboard {
             this.showIcon(DashboardIcons.Headlights);
             this.showIcon(DashboardIcons.ParkingBrake);
             this.showIcon(DashboardIcons.SeatBelt);
-
+            
             if (callback != null) {
                 callback();
             }
@@ -98,11 +99,11 @@ class Dashboard {
     }
 
     public stopEngine = (callback: any) => {
-        this.iconsController.hideAllIcons();
         this.parkingControl.turnOff();
         this.miniGaugeLeft.setValue(0);
         this.miniGaugeRight.setValue(0);
         this.rightGauge.setValueAnimated(0);
+        this.iconsController.hideAllIcons();
         if (callback != null) {
             callback();
         }
