@@ -16,7 +16,7 @@ def poll_around():
 		c = pi2go.irCentre()
 		ll = pi2go.irLeftLine()
 		rl = pi2go.irRightLine()
-		if dist <= 10 or ll or rl or c:
+		if dist <= 10 or l or r or c:
 			isFrontAssistActive = True
 			motor.execute("stop", None)
 		else:
