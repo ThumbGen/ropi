@@ -1,7 +1,7 @@
 #!flask/bin/python
 
 from pi2go import pi2go
-import carLeds
+import carLeds, assistance
 
 currentSpeed = 30
 currentCommand = None
@@ -9,6 +9,13 @@ currentCommand = None
 
 def execute(cmd, arg = None):
 	global currentCommand, currentSpeed
+	# if frontassist is active don't allow 'forward' and 'move' with angle between 45 and 135
+	if assistance.isFrontAssistActive:
+		if cmd == "forward":
+			return { "speed": currentSpeed }
+		if cmd == "move" and arg > 45 and arg < 135:
+			return { "speed": currentSpeed }
+	
 	# if cmd is "speed" just execute adjustSpeed
 	if cmd != "move":
 		adjustSpeed(arg) # for 'move' the arg is the angle not the speed
