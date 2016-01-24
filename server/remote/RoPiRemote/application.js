@@ -304,9 +304,6 @@ var Dashboard = (function () {
             _this.drawMiddleDisplay();
             _this.drawCameraAndGauges();
             setInterval(function () {
-                //leftGauge.setValueAnimated(Math.random() * 100); 
-                //rightGauge.setValueAnimated(Math.random() * 100); 
-                //leftGauge.setOdoValue(Math.random() * 30000.2)
                 _this.clockController.updateTime();
                 if (_this.cameraInterval == null) {
                     _this.canvas.renderAll();
@@ -721,7 +718,6 @@ var DashboardIconsController = (function () {
             icon.iconPath = null;
         }
     };
-    // test: display all icons for 3 seconds
     DashboardIconsController.prototype.showAllIcons = function () {
         this.showIcon(DashboardIcons.Engine);
         this.showIcon(DashboardIcons.FrontAssist);
@@ -825,7 +821,7 @@ var Parking = (function () {
             var endAngle = -0.5235;
             startAngle = -2.35619; // 45deg
             endAngle = -0.785398;
-            _this.canvas = canvas; //new fabric.Canvas("parkingControl");
+            _this.canvas = canvas;
             _this.canvas.allowTouchScrolling = false;
             _this.canvas.setZoom(1);
             _this.circle1 = new fabric.Circle({

@@ -96,7 +96,7 @@ class Parking {
         startAngle = -2.35619; // 45deg
         endAngle = -0.785398;
 
-        this.canvas = canvas;//new fabric.Canvas("parkingControl");
+        this.canvas = canvas;
         this.canvas.allowTouchScrolling = false;
         this.canvas.setZoom(1);
 

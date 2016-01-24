@@ -123,7 +123,6 @@ class DashboardIconsController {
         }
     }
 
-    // test: display all icons for 3 seconds
     public showAllIcons() {
         this.showIcon(DashboardIcons.Engine);
         this.showIcon(DashboardIcons.FrontAssist);

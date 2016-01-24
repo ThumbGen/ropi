@@ -48,9 +48,6 @@ class Dashboard {
         this.drawCameraAndGauges();
 
         setInterval(() => { 
-            //leftGauge.setValueAnimated(Math.random() * 100); 
-            //rightGauge.setValueAnimated(Math.random() * 100); 
-            //leftGauge.setOdoValue(Math.random() * 30000.2)
             this.clockController.updateTime();
             if (this.cameraInterval == null) {
                 this.canvas.renderAll();
