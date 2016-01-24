@@ -11,7 +11,7 @@ var Application = (function () {
         this.cameraControlsButton = null;
         this.cameraControlsOff = null;
         this.cameraControlsJoystick = null;
-        this.cameraControlsButtons = null;
+        this.cameraControlsSteppedJoystick = null;
         this.robotControls = new RobotControls();
         this.cameraControls = new CameraControls();
         this.run = function () {
@@ -28,14 +28,11 @@ var Application = (function () {
                 _this.processRobotToggle();
             });
             _this.cameraControlsButton = $("#controlsButtonOptions");
-            _this.cameraControlsOff = $("#controlsOff").click(function () {
-                _this.cameraControls.hide();
-            });
             _this.cameraControlsJoystick = $("#controlsJoystick").click(function () {
-                _this.cameraControls.show(CameraControl.Joystick);
+                _this.cameraControls.selectMode(CameraControl.FollowMeJoystick);
             });
-            _this.cameraControlsButtons = $("#controlsButtons").click(function () {
-                _this.cameraControls.show(CameraControl.Buttons);
+            _this.cameraControlsSteppedJoystick = $("#controlsSteppedJoystick").click(function () {
+                _this.cameraControls.selectMode(CameraControl.SteppedJoystick);
             });
             _this.disableControlsButton();
             var settingsButton = $("#settingsButton");
@@ -47,16 +44,14 @@ var Application = (function () {
         this.getToggleStatus = function (toggle) { return (toggle != null && toggle.prop("checked")); };
         this.getIsConnected = function () { return _this.getToggleStatus(_this.connectButton); };
         this.getIsCameraActive = function () { return _this.getToggleStatus(_this.cameraButton); };
-        this.getIsControlsActive = function () { return _this.cameraControls.currentCameraControls !== CameraControl.None; };
+        this.getIsControlsActive = function () { return true; };
         this.disableControlsButton = function () {
             _this.cameraControls.hide();
             _this.cameraControlsButton.prop("disabled", true);
         };
         this.enableControlsButton = function () {
             _this.cameraControlsButton.prop("disabled", false);
-            if (!_this.getIsControlsActive()) {
-                _this.cameraControls.show(CameraControl.Joystick);
-            }
+            _this.cameraControls.show();
         };
         this.connect = function () {
             _this.socketio = io.connect(Settings.Current.getBaseServerUrl() + ":80/", { 'forceNew': true });
@@ -70,6 +65,9 @@ var Application = (function () {
             });
             _this.socketio.on("parking", function (msg) {
                 Dashboard.getInstance().parkingControl.update(msg);
+            });
+            _this.socketio.on("sysinfo", function (msg) {
+                Dashboard.getInstance().update(msg);
             });
             _this.socketio.on("error", function (msg) {
                 Dashboard.getInstance().showIcon(DashboardIcons.Engine);
@@ -87,12 +85,6 @@ var Application = (function () {
         this.processToggleControls = function () {
             if (!_this.getIsCameraActive())
                 return;
-            if (_this.getIsControlsActive()) {
-                _this.cameraControls.show();
-            }
-            else {
-                _this.cameraControls.hide();
-            }
         };
         this.processToggleCamera = function () {
             if (_this.getIsCameraActive()) {
@@ -132,31 +124,25 @@ var Application = (function () {
 })();
 var CameraControl;
 (function (CameraControl) {
-    CameraControl[CameraControl["None"] = 0] = "None";
-    CameraControl[CameraControl["Joystick"] = 1] = "Joystick";
-    CameraControl[CameraControl["Buttons"] = 2] = "Buttons";
+    CameraControl[CameraControl["SteppedJoystick"] = 0] = "SteppedJoystick";
+    CameraControl[CameraControl["FollowMeJoystick"] = 1] = "FollowMeJoystick";
 })(CameraControl || (CameraControl = {}));
 var CameraControls = (function () {
     function CameraControls() {
         var _this = this;
         this.joystickRight = null;
-        this.panLeftButton = null;
-        this.panRightButton = null;
-        this.tiltUpButton = null;
-        this.tiltDownButton = null;
-        this.centerButton = null;
         this.currentTilt = 95;
         this.currentPan = 90;
         this.step = 10;
         this.isBusy = false;
-        this.currentCameraControls = CameraControl.None;
+        this.currentCameraControls = CameraControl.SteppedJoystick;
         this.sendCameraCommand = function (command) {
             if (_this.isBusy && command !== "center") {
                 console.log("Skipped request...");
                 return;
             }
             _this.isBusy = true;
-            RequestsHelper.Current.put("servos/" + command, _this.processResult);
+            RequestsHelper.Current.put("servos/" + command, _this.processResult, function () { return _this.isBusy = false; });
         };
         this.processResult = function (data) {
             var pan = data["pan"];
@@ -173,33 +159,12 @@ var CameraControls = (function () {
         this.adjustPan = function (offset) { return (_this.currentPan + offset); };
     }
     CameraControls.prototype.init = function () {
-        var _this = this;
-        this.tiltUpButton = $("#tiltUpButton");
-        this.tiltUpButton.click(function () {
-            _this.sendCameraCommand("tilt/" + _this.adjustTilt(-_this.step));
-        });
-        this.tiltDownButton = $("#tiltDownButton");
-        this.tiltDownButton.click(function () {
-            _this.sendCameraCommand("tilt/" + _this.adjustTilt(+_this.step));
-        });
-        this.centerButton = $("#centerButton");
-        this.centerButton.click(function () {
-            _this.sendCameraCommand("center");
-        });
-        this.panLeftButton = $("#panLeftButton");
-        this.panLeftButton.click(function () {
-            _this.sendCameraCommand("pan/" + _this.adjustPan(+_this.step));
-        });
-        this.panRightButton = $("#panRightButton");
-        this.panRightButton.click(function () {
-            _this.sendCameraCommand("pan/" + _this.adjustPan(-_this.step));
-        });
     };
-    CameraControls.prototype.show = function (cameraControl) {
+    CameraControls.prototype.selectMode = function (cameraControl) {
+        this.currentCameraControls = cameraControl;
+    };
+    CameraControls.prototype.show = function () {
         var _this = this;
-        if (this.currentCameraControls === cameraControl) {
-            return;
-        }
         var currentDirection = null;
         var currentDistance = 0;
         var currentPanPercent = 0;
@@ -208,77 +173,83 @@ var CameraControls = (function () {
         var distanceMax = Math.floor(joystickSize / 2);
         var centerX = 0;
         var centerY = 0;
+        var currentInterval;
+        var steppedStart = false;
         this.hide();
-        switch (cameraControl) {
-            case CameraControl.Joystick:
-                this.currentCameraControls = CameraControl.Joystick;
-                if (this.joystickRight != null)
-                    return;
-                this.joystickRight = nipplejs.create({
-                    maxNumberOfNipples: 1,
-                    zone: document.getElementById("jRight"),
-                    size: joystickSize,
-                    mode: "static",
-                    position: { left: "50%", top: "50%" },
-                    color: "blue"
-                }).on("start end", function (evt, data) {
-                    if (evt.type === "start") {
-                        centerX = data["position"]["x"];
-                        centerY = data["position"]["y"];
-                        console.log("centerX:" + centerX + "  centerY:" + centerY);
-                    }
-                    else {
-                        centerX = 0;
-                        centerY = 0;
+        this.currentCameraControls = CameraControl.SteppedJoystick;
+        if (this.joystickRight != null)
+            return;
+        this.joystickRight = nipplejs.create({
+            maxNumberOfNipples: 1,
+            zone: document.getElementById("jRight"),
+            size: joystickSize,
+            mode: "dynamic",
+            position: { left: "50%", top: "50%" },
+            color: "blue"
+        }).on("start end", function (evt, data) {
+            if (_this.currentCameraControls === CameraControl.FollowMeJoystick) {
+                if (evt.type === "start") {
+                    centerX = data["position"]["x"];
+                    centerY = data["position"]["y"];
+                    console.log("centerX:" + centerX + "  centerY:" + centerY);
+                }
+                else {
+                    centerX = 0;
+                    centerY = 0;
+                    _this.sendCameraCommand("center");
+                }
+                currentDirection = null;
+                currentDistance = 0;
+            }
+            else if (_this.currentCameraControls === CameraControl.SteppedJoystick) {
+                clearInterval(currentInterval);
+                if (evt.type === "start") {
+                    steppedStart = true;
+                }
+                else {
+                    _this.sendCameraCommand("move/stop");
+                    if (steppedStart) {
+                        steppedStart = false;
                         _this.sendCameraCommand("center");
                     }
-                    currentDirection = null;
-                    currentDistance = 0;
-                }).on("move", function (evt, data) {
-                    if (data === null || data["direction"] === null || data["position"] === null)
-                        return;
-                    var panPercent = -Math.floor(((data["position"]["x"] - centerX) / distanceMax) * 100);
-                    var tiltPercent = Math.floor(((data["position"]["y"] - centerY) / distanceMax) * 100);
-                    if (panPercent > 100 || panPercent < -100 || tiltPercent > 100 || tiltPercent < -100) {
-                        return;
+                }
+            }
+        }).on("move", function (evt, data) {
+            if (_this.currentCameraControls === CameraControl.FollowMeJoystick) {
+                if (data === null || data["direction"] === null || data["position"] === null)
+                    return;
+                var panPercent = -Math.floor(((data["position"]["x"] - centerX) / distanceMax) * 100);
+                var tiltPercent = Math.floor(((data["position"]["y"] - centerY) / distanceMax) * 100);
+                if (panPercent > 100 || panPercent < -100 || tiltPercent > 100 || tiltPercent < -100) {
+                    return;
+                }
+                if (panPercent % 2 === 0 || tiltPercent % 2 === 0) {
+                    if (currentPanPercent !== panPercent || currentTiltPercent !== tiltPercent) {
+                        currentPanPercent = panPercent;
+                        currentTiltPercent = tiltPercent;
+                        _this.sendCameraCommand("percent/" + panPercent + "/" + tiltPercent);
                     }
-                    if (panPercent % 2 === 0 || tiltPercent % 2 === 0) {
-                        if (currentPanPercent !== panPercent || currentTiltPercent !== tiltPercent) {
-                            currentPanPercent = panPercent;
-                            currentTiltPercent = tiltPercent;
-                            _this.sendCameraCommand("percent/" + panPercent + "/" + tiltPercent);
-                        }
-                    }
-                });
-                break;
-            case CameraControl.Buttons:
-                this.currentCameraControls = CameraControl.Buttons;
-                this.tiltUpButton.show();
-                this.tiltDownButton.show();
-                this.centerButton.show();
-                this.panLeftButton.show();
-                this.panRightButton.show();
-                break;
-            default:
-                this.currentCameraControls = CameraControl.None;
-                break;
-        }
+                }
+            }
+        }).on("dir", function (evt, data) {
+            if (_this.currentCameraControls === CameraControl.SteppedJoystick) {
+                steppedStart = false;
+                var direction = data["direction"]["angle"];
+                console.log(direction);
+                if (currentDirection === direction) {
+                    return;
+                }
+                currentDirection = direction;
+                _this.sendCameraCommand("move/" + currentDirection);
+            }
+        });
     };
     CameraControls.prototype.hide = function () {
-        if (this.currentCameraControls === CameraControl.Joystick) {
-            if (this.joystickRight != null) {
-                this.joystickRight.destroy();
-                this.joystickRight = null;
-            }
+        if (this.joystickRight != null) {
+            this.joystickRight.destroy();
+            this.joystickRight = null;
         }
-        if (this.currentCameraControls === CameraControl.Buttons) {
-            this.tiltUpButton.hide();
-            this.tiltDownButton.hide();
-            this.centerButton.hide();
-            this.panLeftButton.hide();
-            this.panRightButton.hide();
-        }
-        this.currentCameraControls = CameraControl.None;
+        this.currentCameraControls = CameraControl.SteppedJoystick;
     };
     return CameraControls;
 })();
@@ -301,6 +272,7 @@ var Dashboard = (function () {
             _this.canvas.setWidth(_this.originalWidth);
             _this.clockController = new DashboardClockController(_this.canvas);
             _this.iconsController = new DashboardIconsController(_this.canvas);
+            _this.parkingControl.iconsController = _this.iconsController;
             _this.drawMiddleDisplay();
             _this.drawCameraAndGauges();
             setInterval(function () {
@@ -319,22 +291,30 @@ var Dashboard = (function () {
             _this.iconsController.showAllIcons();
             _this.leftGauge.setValue(100);
             _this.rightGauge.setValue(90);
+            _this.miniGaugeLeft.setValue(100);
+            _this.miniGaugeRight.setValue(100);
             setTimeout(function () {
                 _this.iconsController.hideAllIcons();
                 _this.leftGauge.setValue(0);
                 _this.rightGauge.setValue(0);
+                _this.miniGaugeLeft.setValue(0);
+                _this.miniGaugeRight.setValue(0);
                 _this.parkingControl.turnOn();
                 _this.showIcon(DashboardIcons.ParkingSensors);
                 _this.showIcon(DashboardIcons.Headlights);
                 _this.showIcon(DashboardIcons.ParkingBrake);
+                _this.showIcon(DashboardIcons.SeatBelt);
                 if (callback != null) {
                     callback();
                 }
             }, 1500);
         };
         this.stopEngine = function (callback) {
-            _this.iconsController.hideAllIcons();
             _this.parkingControl.turnOff();
+            _this.miniGaugeLeft.setValue(0);
+            _this.miniGaugeRight.setValue(0);
+            _this.rightGauge.setValueAnimated(0);
+            _this.iconsController.hideAllIcons();
             if (callback != null) {
                 callback();
             }
@@ -409,6 +389,16 @@ var Dashboard = (function () {
             };
             img.src = _this.cameraUrl;
         };
+        this.update = function (msg) {
+            if (_this.canvas != null) {
+                var memPercent = msg["mp"];
+                var cpuPercent = msg["cp"];
+                var cpuTemp = msg["ct"];
+                _this.rightGauge.setValueAnimated(cpuTemp);
+                _this.miniGaugeLeft.setValue(cpuPercent);
+                _this.miniGaugeRight.setValue(memPercent);
+            }
+        };
         this.drawCameraAndGauges = function () {
             fabric.Image.fromURL("http://", function (image) {
                 _this.cameraImage = image;
@@ -444,7 +434,7 @@ var Dashboard = (function () {
                 lcdVisible: true,
                 useOdometer: true,
                 odometerParams: { digits: 5 },
-                backgroundColor: steelseries.BackgroundColor.BLACK
+                backgroundColor: steelseries.BackgroundColor.CARBON
             });
             var leftGaugeImage = new fabric.Image(document.getElementById("gLeft"), {
                 left: 0,
@@ -453,6 +443,52 @@ var Dashboard = (function () {
                 height: 510
             });
             _this.canvas.add(leftGaugeImage);
+            _this.miniGaugeLeft = new steelseries.Linear("gMiniLeft", {
+                gaugeType: steelseries.GaugeType.TYPE1,
+                backgroundVisible: false,
+                frameVisible: false,
+                minValue: 0,
+                maxValue: 100,
+                ledVisible: false,
+                thresholdVisible: false,
+                lcdVisible: false,
+                niceScale: false,
+                foregroundVisible: false,
+            });
+            var miniGaugeLeftImage = new fabric.Image(document.getElementById("gMiniLeft"), {
+                //left: 85,
+                //top: 340,
+                //width: 350,
+                //height: 80
+                left: 405,
+                top: 400,
+                width: 340,
+                height: 80
+            });
+            _this.canvas.add(miniGaugeLeftImage);
+            _this.miniGaugeRight = new steelseries.Linear("gMiniRight", {
+                gaugeType: steelseries.GaugeType.TYPE1,
+                backgroundVisible: false,
+                frameVisible: false,
+                minValue: 0,
+                maxValue: 100,
+                ledVisible: false,
+                lcdVisible: false,
+                niceScale: true,
+                thresholdVisible: false,
+                foregroundVisible: false,
+            });
+            var miniGaugeRightImage = new fabric.Image(document.getElementById("gMiniRight"), {
+                //left: 85,
+                //top: 360,
+                //width: 350,
+                //height: 80,
+                left: 660,
+                top: 400,
+                width: 340,
+                height: 80
+            });
+            _this.canvas.add(miniGaugeRightImage);
         };
         this.drawRightGauge = function () {
             _this.rightGauge = new steelseries.RadialBargraph("gRight", {
@@ -470,7 +506,7 @@ var Dashboard = (function () {
                 section: null,
                 area: null,
                 lcdVisible: false,
-                backgroundColor: steelseries.BackgroundColor.BLACK
+                backgroundColor: steelseries.BackgroundColor.CARBON
             });
             var rightGaugeImage = new fabric.Image(document.getElementById("gRight"), {
                 left: 898,
@@ -646,7 +682,7 @@ var DashboardIconsController = (function () {
             case DashboardIcons.Engine:
                 path = "/images/Engine.svg";
                 left = 675;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.FrontAssist:
                 path = "/images/Frontassist.svg";
@@ -661,12 +697,12 @@ var DashboardIconsController = (function () {
             case DashboardIcons.LaneAssist:
                 path = "/images/Laneassist.svg";
                 left = 525;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.ParkingBrake:
                 path = "/images/Parkingbrake.svg";
                 left = 840;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.ParkingSensors:
                 path = "/images/Parkingsensors.svg";
@@ -676,12 +712,12 @@ var DashboardIconsController = (function () {
             case DashboardIcons.SeatBelt:
                 path = "/images/Seatbelt.svg";
                 left = 900;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.Tempomat:
                 path = "/images/Tempomat.svg";
                 left = 465;
-                top = 435;
+                top = 445;
                 break;
             case DashboardIcons.TurnSignals:
                 path = "/images/Turnsignal.svg";
@@ -764,7 +800,6 @@ var Parking = (function () {
         this.right = null;
         this.lineLeft = null;
         this.lineRight = null;
-        //private distText: fabric.IText = null;
         this.update = function (msg) {
             if (_this.canvas != null) {
                 _this.circle1.stroke = _this.colorOff;
@@ -802,6 +837,13 @@ var Parking = (function () {
                 }
                 if (msg["rl"]) {
                     _this.lineRight.fill = _this.colorRightLine;
+                }
+                // front assist active?
+                if (msg["fa"]) {
+                    _this.iconsController.showIcon(DashboardIcons.FrontAssist);
+                }
+                else {
+                    _this.iconsController.hideIcon(DashboardIcons.FrontAssist);
                 }
                 // sample: {'d': dist, 'l': l, 'c': c,'r': r, 'll': ll, 'rl': rl}
                 _this.canvas.renderAll();

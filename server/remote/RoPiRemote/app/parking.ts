@@ -24,6 +24,8 @@ class Parking {
     private lineRight: fabric.IRect = null;
     //private distText: fabric.IText = null;
 
+    public iconsController: DashboardIconsController;
+
     public update = (msg) => {
         if (this.canvas != null) {
             this.circle1.stroke = this.colorOff;
@@ -72,7 +74,12 @@ class Parking {
             if (msg["rl"]) {
                 this.lineRight.fill = this.colorRightLine;
             }
-
+            // front assist active?
+            if (msg["fa"]) {
+                this.iconsController.showIcon(DashboardIcons.FrontAssist);
+            } else {
+                this.iconsController.hideIcon(DashboardIcons.FrontAssist);
+            }
             // sample: {'d': dist, 'l': l, 'c': c,'r': r, 'll': ll, 'rl': rl}
             this.canvas.renderAll();
         }

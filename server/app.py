@@ -3,7 +3,7 @@ import time, atexit, threading, subprocess, os, sys, signal
 from flask import Flask, jsonify, request
 from flask_socketio import SocketIO, emit
 from pi2go import pi2go
-import carLeds, leds, ultrasonic, lights, pantilt, button, motor, camera, assistance
+import carLeds, leds, ultrasonic, lights, pantilt, button, motor, camera, assistance, systeminfo
 import RPi.GPIO as GPIO
 
 baseApi = '/ropi/api/v1.0/';
@@ -42,7 +42,8 @@ def init():
 	vsn = pi2go.version()
 	carLeds.init(app)
 	button.init(app)
-	pantilt.init()
+	pantilt.init(app)
+	systeminfo.init(app, socketio)
 	assistance.init(app, socketio)
 	print "app Init done - Initialized"
 	
@@ -52,6 +53,8 @@ def perform_cleanup():
 	button.cleanup(app)
 	carLeds.cleanup(app)
 	assistance.cleanup(app)	
+	systeminfo.cleanup(app)
+	pantilt.cleanup(app)
 	print "Cleaned"
 
 	
@@ -96,6 +99,13 @@ def set_servos_pan_tilt_percent(pan, tilt):
 	res = pantilt.setPanTiltPercent(int(pan), int(tilt))
 	return jsonify(res)	
 	
+# cmd indicates direction: left, right, up, down, stop
+@app.route(baseApi + 'servos/move/<string:cmd>', methods=['PUT'])
+def set_servos_move_direction(cmd):
+	res = pantilt.setMoveDirection(app, cmd)
+	return jsonify(res)	
+	
+	
 @app.route(baseApi + 'servos/center', methods=['PUT'])
 def set_servos_center():
 	res = pantilt.center()
@@ -123,9 +133,8 @@ def put_leds(cmd_str):
 @app.route(baseApi + 'motor/<string:cmd_motor>', methods=['PUT'], defaults={'cmd_speed': None})	
 @app.route(baseApi + 'motor/<string:cmd_motor>/<int:cmd_speed>', methods=['PUT'])	
 def put_motor(cmd_motor, cmd_speed):
-	if vsn == 1:
-		motor.execute(cmd_motor, cmd_speed)
-	return "OK"
+	res = motor.execute(cmd_motor, cmd_speed)
+	return jsonify(res)
 
 @app.route(baseApi + 'system/<string:cmd_system>', methods=['PUT'])
 def put_system(cmd_system):

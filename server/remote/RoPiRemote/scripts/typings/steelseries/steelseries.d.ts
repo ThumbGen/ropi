@@ -1,5 +1,6 @@
 ﻿declare module steelseries {
     function Radial(canvas: any, options: any): void;
+    function Linear(canvas: any, options: any): void;
     function RadialBargraph(canvas: any, options: any): void;
     function DisplaySingle(canvas: any, options: any): void;
     function Clock(canvas: any, options: any): void;

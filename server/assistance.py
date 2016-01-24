@@ -1,13 +1,14 @@
 #!flask/bin/python
 
 from pi2go import pi2go
-import backthread, time, ultrasonic, json, hashlib
+import backthread, time, ultrasonic, json, hashlib, motor
 
 socketio = None
 lastAroundChecksum = None
+isFrontAssistActive = False
 
 def poll_around():
-	global lastAroundChecksum
+	global lastAroundChecksum, isFrontAssistActive
 	if socketio != None:
 		dist = int(ultrasonic.getDistance())
 		l = pi2go.irLeft()
@@ -15,7 +16,12 @@ def poll_around():
 		c = pi2go.irCentre()
 		ll = pi2go.irLeftLine()
 		rl = pi2go.irRightLine()
-		data = {'d': dist, 'l': l, 'c': c,'r': r, 'll': ll, 'rl': rl}
+		if dist <= 10 or l or r or c:
+			isFrontAssistActive = True
+			motor.execute("stop", None)
+		else:
+			isFrontAssistActive = False
+		data = {'d': dist, 'l': l, 'c': c,'r': r, 'll': ll, 'rl': rl, 'fa': isFrontAssistActive}
 		checksum = hashlib.sha224(json.dumps(data)).hexdigest()
 		if lastAroundChecksum != checksum:
 			socketio.emit('parking', data)

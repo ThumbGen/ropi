@@ -42,7 +42,15 @@ html {
     position: absolute;
 }
 
-#gLeft, #gRight, #gClock, #gMini {
+#jRight {
+    min-height: 100%;
+    width: 50%;
+    right: 0px;
+    z-index: 20;
+    position: absolute;
+}
+
+#gLeft, #gRight, #gClock, #gMini, #gMiniLeft, #gMiniRight {
     position: absolute;
     left: 0px;
     top: 0px;
@@ -79,7 +87,7 @@ html {
 
 .footerButtons {
     height: 40px;
-    z-index: 15;
+    z-index: 25;
     position: fixed;
     bottom: 10px;
     right: 20px;

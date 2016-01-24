@@ -21,6 +21,8 @@ class Dashboard {
 
     private cameraInterval: any;
     private leftGauge;
+    private miniGaugeLeft;
+    private miniGaugeRight;
     private rightGauge;
     private iconSeatBelt: fabric.IPathGroup;
     private canvas = new fabric.StaticCanvas("dashboard");
@@ -42,6 +44,7 @@ class Dashboard {
 
         this.clockController = new DashboardClockController(this.canvas);
         this.iconsController = new DashboardIconsController(this.canvas);
+        this.parkingControl.iconsController = this.iconsController;
 
         this.drawMiddleDisplay();
 
@@ -68,17 +71,24 @@ class Dashboard {
         this.iconsController.showAllIcons();
         this.leftGauge.setValue(100);
         this.rightGauge.setValue(90);
+        this.miniGaugeLeft.setValue(100);
+        this.miniGaugeRight.setValue(100);
+
 
         setTimeout(() => {
             this.iconsController.hideAllIcons();
             this.leftGauge.setValue(0);
             this.rightGauge.setValue(0);
+            this.miniGaugeLeft.setValue(0);
+            this.miniGaugeRight.setValue(0);
+
 
             this.parkingControl.turnOn();
             this.showIcon(DashboardIcons.ParkingSensors);
             this.showIcon(DashboardIcons.Headlights);
             this.showIcon(DashboardIcons.ParkingBrake);
-
+            this.showIcon(DashboardIcons.SeatBelt);
+            
             if (callback != null) {
                 callback();
             }
@@ -86,8 +96,11 @@ class Dashboard {
     }
 
     public stopEngine = (callback: any) => {
-        this.iconsController.hideAllIcons();
         this.parkingControl.turnOff();
+        this.miniGaugeLeft.setValue(0);
+        this.miniGaugeRight.setValue(0);
+        this.rightGauge.setValueAnimated(0);
+        this.iconsController.hideAllIcons();
         if (callback != null) {
             callback();
         }
@@ -173,6 +186,21 @@ class Dashboard {
         img.src = this.cameraUrl;
     }
 
+    public update = (msg) => {
+        if (this.canvas != null) {
+            var memPercent = msg["mp"];
+            var cpuPercent = msg["cp"];
+            var cpuTemp = msg["ct"];
+            
+            this.rightGauge.setValueAnimated(cpuTemp);
+            this.miniGaugeLeft.setValue(cpuPercent);
+            this.miniGaugeRight.setValue(memPercent);
+
+            // sample: {'mp': mempercent }
+            //this.canvas.renderAll();
+        }
+    }
+
     private drawCameraAndGauges = () => {
 
         fabric.Image.fromURL("http://",
@@ -212,7 +240,7 @@ class Dashboard {
             lcdVisible: true,
             useOdometer: true,
             odometerParams: { digits: 5 },
-            backgroundColor: steelseries.BackgroundColor.BLACK
+            backgroundColor: steelseries.BackgroundColor.CARBON
         });
         var leftGaugeImage = new fabric.Image(document.getElementById("gLeft"), {
             left: 0,
@@ -221,6 +249,54 @@ class Dashboard {
             height: 510
         });
         this.canvas.add(leftGaugeImage);
+
+        this.miniGaugeLeft = new steelseries.Linear("gMiniLeft", {
+            gaugeType: steelseries.GaugeType.TYPE1,
+            backgroundVisible: false,
+            frameVisible: false,
+            minValue: 0,
+            maxValue: 100,
+            ledVisible: false,
+            thresholdVisible: false,
+            lcdVisible: false,
+            niceScale: false,
+            foregroundVisible: false,
+        });
+        var miniGaugeLeftImage = new fabric.Image(document.getElementById("gMiniLeft"), {
+            //left: 85,
+            //top: 340,
+            //width: 350,
+            //height: 80
+            left: 405,
+            top: 400,
+            width: 340,
+            height: 80
+        });
+        this.canvas.add(miniGaugeLeftImage);
+
+        this.miniGaugeRight = new steelseries.Linear("gMiniRight", {
+            gaugeType: steelseries.GaugeType.TYPE1,
+            backgroundVisible: false,
+            frameVisible: false,
+            minValue: 0,
+            maxValue: 100,
+            ledVisible: false,
+            lcdVisible: false,
+            niceScale: true,
+            thresholdVisible: false,
+            foregroundVisible: false,
+        });
+        var miniGaugeRightImage = new fabric.Image(document.getElementById("gMiniRight"), {
+            //left: 85,
+            //top: 360,
+            //width: 350,
+            //height: 80,
+            left: 660,
+            top: 400,
+            width: 340,
+            height: 80
+        });
+        this.canvas.add(miniGaugeRightImage);
     }
 
     private drawRightGauge = () => {
@@ -239,7 +315,7 @@ class Dashboard {
             section: null,
             area: null,
             lcdVisible: false,
-            backgroundColor: steelseries.BackgroundColor.BLACK
+            backgroundColor: steelseries.BackgroundColor.CARBON
         });
         var rightGaugeImage = new fabric.Image(document.getElementById("gRight"), {
             left: 898,

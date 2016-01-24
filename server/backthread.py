@@ -7,18 +7,18 @@ thr = None
 stop_event = threading.Event()
 ident = 0
 
-def execute(arg, logic_to_execute):
+def execute(interval, logic_to_execute):
 	t = threading.currentThread()
 	print "Thread started:", t.ident, "\r\n"
 	while(t.isAlive() and not stop_event.is_set()):
 		logic_to_execute()
-		stop_event.wait(0.5)
+		stop_event.wait(interval)
 		pass
 
-def start(app, logic_to_execute):
+def start(app, logic_to_execute, interval = 0.5):
 	with app.app_context():
 		#stop_event = threading.Event()
-		thr = threading.Thread(target=execute, args=(1, logic_to_execute))
+		thr = threading.Thread(target=execute, args=(interval, logic_to_execute))
 		thr.daemon = True
 		thr.start()
 		
