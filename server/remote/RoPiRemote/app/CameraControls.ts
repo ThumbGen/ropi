@@ -26,10 +26,10 @@ class CameraControls implements IControls {
     show() {
 
         var currentDirection = null;
-        var currentDistance = 0;
+        var currentDistance;
         var currentPanPercent = 0;
         var currentTiltPercent = 0;
-        var joystickSize = 120;
+        const joystickSize = 120;
         var distanceMax = Math.floor(joystickSize / 2);
         var centerX = 0;
         var centerY = 0;
@@ -48,12 +48,12 @@ class CameraControls implements IControls {
             mode: "dynamic",
             position: { left: "50%", top: "50%" },
             color: "blue"
-        }).on("start end", (evt, data) => {
+        }).on("start end", (evt: nipplejs.EventData, data: nipplejs.NippleInteractiveData) => {
 
             if (this.currentCameraControls === CameraControl.FollowMeJoystick) {
                 if (evt.type === "start") {
-                    centerX = data["position"]["x"];
-                    centerY = data["position"]["y"];
+                    centerX = data.position.x;
+                    centerY = data.position.y;
                     console.log(`centerX:${centerX}  centerY:${centerY}`);
                 } else {
                     centerX = 0;
@@ -64,26 +64,23 @@ class CameraControls implements IControls {
                 currentDistance = 0;
             } else if (this.currentCameraControls === CameraControl.SteppedJoystick) {
                 clearInterval(currentInterval);
-
                 if (evt.type === "start") {
                     steppedStart = true;
                 } else {
-
                     this.sendCameraCommand("move/stop");
-
                     if (steppedStart) {
                         steppedStart = false;
                         this.sendCameraCommand("center");
                     }
                 }
             }
-        }).on("move", (evt, data) => {
+        }).on("move", (evt: nipplejs.EventData, data: nipplejs.NippleInteractiveData) => {
 
             if (this.currentCameraControls === CameraControl.FollowMeJoystick) {
-                if (data === null || data["direction"] === null || data["position"] === null) return;
+                if (data == null || data.direction === null || data.position === null) return;
 
-                var panPercent = -Math.floor(((data["position"]["x"] - centerX) / distanceMax) * 100);
-                var tiltPercent = Math.floor(((data["position"]["y"] - centerY) / distanceMax) * 100);
+                const panPercent = -Math.floor(((data.position.x - centerX) / distanceMax) * 100);
+                const tiltPercent = Math.floor(((data.position.y - centerY) / distanceMax) * 100);
 
                 if (panPercent > 100 || panPercent < -100 || tiltPercent > 100 || tiltPercent < -100) {
                     return;
@@ -99,11 +96,11 @@ class CameraControls implements IControls {
                     }
                 }
             }
-        }).on("dir", (evt, data) => {
+        }).on("dir", (evt: nipplejs.EventData, data: nipplejs.NippleInteractiveData) => {
 
             if (this.currentCameraControls === CameraControl.SteppedJoystick) {
                 steppedStart = false;
-                var direction = data["direction"]["angle"];
+                const direction = data.direction.angle;
                 console.log(direction);
                 if (currentDirection === direction) {
                     return;

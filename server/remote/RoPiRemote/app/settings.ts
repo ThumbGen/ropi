@@ -68,6 +68,10 @@ class Settings {
         return `http://${this.getRobotIp() }:80/ropi/api/v1.0/`;
     }
 
+    getCameraUrl = () => {
+        return this.getBaseServerUrl() + ":8080/stream/video.mjpeg";
+    }
+
     private checkRobotIp(ip: string): boolean {
         return ip != null && ip !== "" && ip !== "undefined";
     }

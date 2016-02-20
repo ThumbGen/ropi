@@ -1,3 +1,4 @@
+
 class RobotControls implements IControls {
 
     private joystickLeft = null;
@@ -39,31 +40,27 @@ class RobotControls implements IControls {
     private showDirectionJoystick = () => {
         if (this.joystickLeft != null) return;
 
-        //var evts = "dir:up plain:up dir:left plain:left dir:down plain:down dir:right plain:right";
-        var evts = "plain:up";
-
         var currentDirectionAngle = 0;
 
         Dashboard.getInstance().setCruiseControlSpeed(this.currentSpeed);
 
         this.joystickLeft = nipplejs.create({
-
             maxNumberOfNipples: 1,
             zone: document.getElementById("jLeft"),
             mode: "dynamic",
             size: 120,
             position: { left: "50%", top: "50%" },
             color: "green"
-        }).on("start end", (evt, data) => {
+        }).on("start end", (evt: nipplejs.EventData, data: nipplejs.NippleInteractiveData) => {
             if (evt.type === "end") {
                 RequestsHelper.Current.put("motor/stop");
                 Dashboard.getInstance().stop();
             }
-        }).on("move", (evt, data) => {
+        }).on("move", (evt: nipplejs.EventData, data: nipplejs.NippleInteractiveData) => {
             // ignore movement smaller than 10
-            var dist = data["distance"];
+            var dist = data.distance;
             if (dist > 10) {
-                var angle = Math.floor(data["angle"]["degree"] / 10) * 10;
+                const angle = Math.floor(data.angle.degree / 10) * 10;
                 if (angle !== currentDirectionAngle) {
                     RequestsHelper.Current.put(`motor/move/${angle}`);
                     currentDirectionAngle = angle;
@@ -74,13 +71,8 @@ class RobotControls implements IControls {
                         Dashboard.getInstance().hideIcon(DashboardIcons.TurnSignals);
                     }
                 }
-
             }
-        }).on(evts,
-            (evt, data) => {
-                console.log(evt.type);
-            }
-            );
+        });
     }
     
     private modifySpeed(speed: number) {

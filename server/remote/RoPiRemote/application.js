@@ -166,7 +166,7 @@ var CameraControls = (function () {
     CameraControls.prototype.show = function () {
         var _this = this;
         var currentDirection = null;
-        var currentDistance = 0;
+        var currentDistance;
         var currentPanPercent = 0;
         var currentTiltPercent = 0;
         var joystickSize = 120;
@@ -189,8 +189,8 @@ var CameraControls = (function () {
         }).on("start end", function (evt, data) {
             if (_this.currentCameraControls === CameraControl.FollowMeJoystick) {
                 if (evt.type === "start") {
-                    centerX = data["position"]["x"];
-                    centerY = data["position"]["y"];
+                    centerX = data.position.x;
+                    centerY = data.position.y;
                     console.log("centerX:" + centerX + "  centerY:" + centerY);
                 }
                 else {
@@ -216,10 +216,10 @@ var CameraControls = (function () {
             }
         }).on("move", function (evt, data) {
             if (_this.currentCameraControls === CameraControl.FollowMeJoystick) {
-                if (data === null || data["direction"] === null || data["position"] === null)
+                if (data == null || data.direction === null || data.position === null)
                     return;
-                var panPercent = -Math.floor(((data["position"]["x"] - centerX) / distanceMax) * 100);
-                var tiltPercent = Math.floor(((data["position"]["y"] - centerY) / distanceMax) * 100);
+                var panPercent = -Math.floor(((data.position.x - centerX) / distanceMax) * 100);
+                var tiltPercent = Math.floor(((data.position.y - centerY) / distanceMax) * 100);
                 if (panPercent > 100 || panPercent < -100 || tiltPercent > 100 || tiltPercent < -100) {
                     return;
                 }
@@ -234,7 +234,7 @@ var CameraControls = (function () {
         }).on("dir", function (evt, data) {
             if (_this.currentCameraControls === CameraControl.SteppedJoystick) {
                 steppedStart = false;
-                var direction = data["direction"]["angle"];
+                var direction = data.direction.angle;
                 console.log(direction);
                 if (currentDirection === direction) {
                     return;
@@ -265,7 +265,6 @@ var Dashboard = (function () {
         this.isCameraVisible = false;
         this.cruiseControlSpeed = 0;
         this.isMoving = false;
-        this.cameraUrl = null;
         this.show = function () {
             _this.canvas.setBackgroundColor("black", function () { });
             _this.canvas.setHeight(_this.originalHeight);
@@ -360,8 +359,6 @@ var Dashboard = (function () {
             _this.iconsController.hideIcon(icon);
         };
         this.startCamera = function () {
-            //this.cameraUrl = "http://img.izismile.com/img/img5/20120809/video/definitely_not_what_youd_expect_to_see_from_a_russian_dashcam_400x300_01.jpg";
-            _this.cameraUrl = Settings.Current.getBaseServerUrl() + ":8080/stream/video.mjpeg";
             var img = document.getElementById("camera");
             img.onload = function () {
                 _this.clockController.hideClock();
@@ -372,7 +369,7 @@ var Dashboard = (function () {
             img.onerror = function () {
                 _this.clockController.showClock();
             };
-            img.src = _this.cameraUrl;
+            img.src = Settings.Current.getCameraUrl();
             _this.cameraInterval = setInterval(function () {
                 _this.canvas.renderAll();
             }, 250);
@@ -382,12 +379,11 @@ var Dashboard = (function () {
                 clearInterval(_this.cameraInterval);
                 _this.cameraInterval = null;
             }
-            _this.cameraUrl = "http://";
             var img = document.getElementById("camera");
             img.onerror = function () {
                 _this.clockController.showClock();
             };
-            img.src = _this.cameraUrl;
+            img.src = "http://";
         };
         this.update = function (msg) {
             if (_this.canvas != null) {
@@ -571,7 +567,6 @@ var Dashboard = (function () {
         this.resizeCanvas = function () {
             //return;
             var clientWidth = window.innerWidth;
-            //var clientHeight = window.innerHeight;
             _this.zoomFactor = clientWidth / _this.canvas.getWidth();
             //debugger;
             _this.zoomIt(_this.zoomFactor);
@@ -1082,8 +1077,6 @@ var RobotControls = (function () {
         this.showDirectionJoystick = function () {
             if (_this.joystickLeft != null)
                 return;
-            //var evts = "dir:up plain:up dir:left plain:left dir:down plain:down dir:right plain:right";
-            var evts = "plain:up";
             var currentDirectionAngle = 0;
             Dashboard.getInstance().setCruiseControlSpeed(_this.currentSpeed);
             _this.joystickLeft = nipplejs.create({
@@ -1100,9 +1093,9 @@ var RobotControls = (function () {
                 }
             }).on("move", function (evt, data) {
                 // ignore movement smaller than 10
-                var dist = data["distance"];
+                var dist = data.distance;
                 if (dist > 10) {
-                    var angle = Math.floor(data["angle"]["degree"] / 10) * 10;
+                    var angle = Math.floor(data.angle.degree / 10) * 10;
                     if (angle !== currentDirectionAngle) {
                         RequestsHelper.Current.put("motor/move/" + angle);
                         currentDirectionAngle = angle;
@@ -1115,8 +1108,6 @@ var RobotControls = (function () {
                         }
                     }
                 }
-            }).on(evts, function (evt, data) {
-                console.log(evt.type);
             });
         };
     }
@@ -1198,6 +1189,9 @@ var Settings = (function () {
         };
         this.getBaseAPIUrl = function () {
             return "http://" + _this.getRobotIp() + ":80/ropi/api/v1.0/";
+        };
+        this.getCameraUrl = function () {
+            return _this.getBaseServerUrl() + ":8080/stream/video.mjpeg";
         };
     }
     Settings.prototype.getRobotIp = function () {

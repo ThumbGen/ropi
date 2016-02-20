@@ -33,7 +33,6 @@ class Dashboard {
     private tempInterval;
     private cruiseControlSpeed = 0;
     private isMoving = false;
-    private cameraUrl = null;
     private cameraImage;
 
     public show = () => {
@@ -152,9 +151,6 @@ class Dashboard {
 
     public startCamera = () => {
 
-        //this.cameraUrl = "http://img.izismile.com/img/img5/20120809/video/definitely_not_what_youd_expect_to_see_from_a_russian_dashcam_400x300_01.jpg";
-        this.cameraUrl = Settings.Current.getBaseServerUrl() + ":8080/stream/video.mjpeg";
-
         var img = <HTMLImageElement>document.getElementById("camera");
         img.onload = () => {
             this.clockController.hideClock();
@@ -165,7 +161,7 @@ class Dashboard {
         img.onerror = () => {
             this.clockController.showClock();
         }
-        img.src = this.cameraUrl;
+        img.src = Settings.Current.getCameraUrl();
 
         this.cameraInterval = setInterval(() => { 
             this.canvas.renderAll();
@@ -178,12 +174,12 @@ class Dashboard {
             clearInterval(this.cameraInterval);
             this.cameraInterval = null;
         }
-        this.cameraUrl = "http://";
+        
         var img = <HTMLImageElement>document.getElementById("camera");
         img.onerror = () => {
             this.clockController.showClock();
         }
-        img.src = this.cameraUrl;
+        img.src = "http://";
     }
 
     public update = (msg) => {
@@ -385,14 +381,10 @@ class Dashboard {
     }
 
     private resizeCanvas = () => {
-        
         //return;
 
         var clientWidth = window.innerWidth;
-        //var clientHeight = window.innerHeight;
-
         this.zoomFactor = clientWidth / this.canvas.getWidth();
-
         //debugger;
         this.zoomIt(this.zoomFactor);
     };
