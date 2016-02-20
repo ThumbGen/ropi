@@ -1,6 +1,6 @@
 #!flask/bin/python
 import time
-from pi2go import pi2go
+import robot
 import leds, backthread
 
 LEDon = 2095
@@ -30,57 +30,43 @@ def init(app):
 	BackStatus = Off
 	FrontStatus = Off
 	standby()
-	#backthread.start(app, lights_logic)
 		
 def cleanup(app):
 	backthread.stop(app)	
 
 def standby():
-	pi2go.setLED(Left, LEDoff, LEDonLow, LEDoff)
-	pi2go.setLED(Right, LEDoff, LEDonLow, LEDoff)
+	robot.setLED(Left, LEDoff, LEDonLow, LEDoff)
+	robot.setLED(Right, LEDoff, LEDonLow, LEDoff)
 
 def alert():
-	pi2go.setLED(Left, LEDoff, LEDon, LEDoff)
-	pi2go.setLED(Right, LEDoff, LEDon, LEDoff)
+	robot.setLED(Left, LEDoff, LEDon, LEDoff)
+	robot.setLED(Right, LEDoff, LEDon, LEDoff)
 	time.sleep(2)
 	standby()
-	
-def lights_logic():
-	global light_threshold, FrontStatus, BackStatus
-	if pi2go.getLight(2) < light_threshold:
-		#execute("dimmed")
-		pass
-	else:
-		if BackStatus != Custom and FrontStatus != Custom:
-			FrontStatus = Off
-			BackStatus = Off
-			front()
-			back()
-	time.sleep(2)
-	
+
 def allOff():
 	global BackStatus, FrontStatus
 	BackStatus = Off
 	FrontStatus = Off
-	pi2go.setAllLEDs(LEDoff, LEDoff, LEDoff)
+	robot.setAllLEDs(LEDoff, LEDoff, LEDoff)
 		
 def back():
 	global BackStatus
 	if BackStatus == Off:
-		pi2go.setLED(Back, LEDoff, LEDoff, LEDoff)
+		robot.setLED(Back, LEDoff, LEDoff, LEDoff)
 	if BackStatus == Dimmed:
-		pi2go.setLED(Back, LEDonDimmed, LEDoff, LEDoff)
+		robot.setLED(Back, LEDonDimmed, LEDoff, LEDoff)
 	if BackStatus == Full:
-		pi2go.setLED(Back, LEDon, LEDoff, LEDoff)
+		robot.setLED(Back, LEDon, LEDoff, LEDoff)
 
 def front():
 	global FrontStatus
 	if FrontStatus == Off:
-		pi2go.setLED(Front, LEDoff, LEDoff, LEDoff)
+		robot.setLED(Front, LEDoff, LEDoff, LEDoff)
 	if FrontStatus == Dimmed:
-		pi2go.setLED(Front, LEDonDimmed2, LEDonDimmed2, LEDonDimmed2)
+		robot.setLED(Front, LEDonDimmed2, LEDonDimmed2, LEDonDimmed2)
 	if FrontStatus == Full:
-		pi2go.setLED(Front, LEDon, LEDon, LEDon)
+		robot.setLED(Front, LEDon, LEDon, LEDon)
 
 def execute(cmd_str, LEDData = None, source = None):
 	global BackStatus, FrontStatus

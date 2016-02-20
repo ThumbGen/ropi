@@ -1,6 +1,6 @@
 #!flask/bin/python
 
-from pi2go import pi2go
+import robot
 import backthread, time, ultrasonic, json, hashlib, motor
 
 socketio = None
@@ -11,11 +11,11 @@ def poll_around():
 	global lastAroundChecksum, isFrontAssistActive
 	if socketio != None:
 		dist = int(ultrasonic.getDistance())
-		l = pi2go.irLeft()
-		r = pi2go.irRight()
-		c = pi2go.irCentre()
-		ll = pi2go.irLeftLine()
-		rl = pi2go.irRightLine()
+		l = robot.irLeft()
+		r = robot.irRight()
+		c = robot.irCentre()
+		ll = robot.irLeftLine()
+		rl = robot.irRightLine()
 		if dist <= 10 or l or r or c:
 			isFrontAssistActive = True
 			motor.execute("stop", None)

@@ -2,7 +2,7 @@
 import time, atexit, threading, subprocess, os, sys, signal
 from flask import Flask, jsonify, request
 from flask_socketio import SocketIO, emit
-from pi2go import pi2go
+import robot
 import carLeds, leds, ultrasonic, lights, pantilt, button, motor, camera, assistance, systeminfo
 import RPi.GPIO as GPIO
 
@@ -10,10 +10,7 @@ baseApi = '/ropi/api/v1.0/';
 
 app = Flask(__name__, static_folder='remote/RoPiRemote')
 app.debug = False
-#app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-
-vsn = 1 # robot version
 
 @app.after_request
 def after_request(response):
@@ -38,8 +35,7 @@ def init():
 	global switchStatus
 	switchStatus = False
 	GPIO.setwarnings(False)
-	pi2go.init()
-	vsn = pi2go.version()
+	robot.init()
 	carLeds.init(app)
 	button.init(app)
 	pantilt.init(app)
@@ -49,7 +45,7 @@ def init():
 	
 def perform_cleanup():
 	print "Cleaning..."
-	pi2go.cleanup()
+	robot.cleanup()
 	button.cleanup(app)
 	carLeds.cleanup(app)
 	assistance.cleanup(app)	
@@ -117,16 +113,15 @@ def get_lights():
 	
 @app.route(baseApi + 'leds/<string:cmd_str>', methods=['PUT'])	
 def put_leds(cmd_str):
-	if vsn == 1:
-		print 'received leds request'
-		socketio.emit('ultrasonic', {'dist': '123'})
-		json = None
-		try:
-			json = request.get_json(force=True)
-		except:
-			pass
-		print 'data:', json
-		carLeds.execute(cmd_str, json)
+	print 'received leds request'
+	socketio.emit('ultrasonic', {'dist': '123'})
+	json = None
+	try:
+		json = request.get_json(force=True)
+	except:
+		pass
+	print 'data:', json
+	carLeds.execute(cmd_str, json)
 	return "OK"
 
 #speed argument can be either speed or angle (for 'move' is angle)

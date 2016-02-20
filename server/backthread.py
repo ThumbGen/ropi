@@ -1,7 +1,6 @@
 #!flask/bin/python
 
 import threading, time
-from pi2go import pi2go
 
 thr = None
 stop_event = threading.Event()

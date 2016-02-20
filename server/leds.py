@@ -1,6 +1,6 @@
 #!flask/bin/python
 
-from pi2go import pi2go
+import robot
 
 def checkIndex(idx):
 	if idx < 0 or idx > 3:
@@ -30,7 +30,7 @@ def set(config):
 		blue = led['blue']
 		if not checkColor(blue):
 			continue
-		pi2go.setLED(idx, red, green, blue)
+		robot.setLED(idx, red, green, blue)
 	
 #[
 #            {

@@ -1,6 +1,6 @@
 #!flask/bin/python
 
-from pi2go import pi2go
+import robot
 import carLeds, assistance
 
 currentSpeed = 30
@@ -43,28 +43,28 @@ def execute(cmd, arg = None):
 
 def forward():
 	global currentSpeed, currentCommand
-	pi2go.forward(currentSpeed)
+	robot.forward(currentSpeed)
 	carLeds.execute("forward")
 	#print "Forward ", currentSpeed
 	
 def reverse():
 	global currentSpeed, currentCommand
-	pi2go.reverse(currentSpeed)
+	robot.reverse(currentSpeed)
 	#print "Reverse ", currentSpeed
 	
 def left():
 	global currentSpeed, currentCommand
-	pi2go.spinLeft(currentSpeed)
+	robot.spinLeft(currentSpeed)
 	#print "Left ", currentSpeed
 	
 def right():
 	global currentSpeed, currentCommand
-	pi2go.spinRight(currentSpeed)
+	robot.spinRight(currentSpeed)
 	#print "Right ", currentSpeed
 	
 def stop():
 	global currentCommand
-	pi2go.stop()
+	robot.stop()
 	carLeds.execute("brake")
 	#print "Stopped"
 	
@@ -84,7 +84,7 @@ def move(angle):
 		#print "full right"
 	
 	if angle > 10 and angle < 80:
-		pi2go.turnForward(1.2*currentSpeed, currentSpeed * angle2SpeedPercent(angle))
+		robot.turnForward(1.2*currentSpeed, currentSpeed * angle2SpeedPercent(angle))
 		#print "forward right"
 
 	if angle >= 80 and angle <= 100:
@@ -92,7 +92,7 @@ def move(angle):
 		#print "full forward"
 
 	if angle > 100 and angle < 170:
-		pi2go.turnForward(currentSpeed * angle2SpeedPercent(angle), 1.2*currentSpeed)
+		robot.turnForward(currentSpeed * angle2SpeedPercent(angle), 1.2*currentSpeed)
 		#print "forward left"
 
 	if angle >= 170 and angle <= 190:
@@ -100,7 +100,7 @@ def move(angle):
 		#print "full left"
 
 	if angle > 190 and angle < 260:
-		pi2go.turnReverse(currentSpeed * angle2SpeedPercent(angle), 1.2*currentSpeed)
+		robot.turnReverse(currentSpeed * angle2SpeedPercent(angle), 1.2*currentSpeed)
 		#print "backward left"
 
 	if angle >= 260 and angle <= 280:
@@ -108,7 +108,7 @@ def move(angle):
 		#print "full backward"
 
 	if angle > 280 and angle < 350:
-		pi2go.turnReverse(1.2*currentSpeed, currentSpeed * angle2SpeedPercent(angle))
+		robot.turnReverse(1.2*currentSpeed, currentSpeed * angle2SpeedPercent(angle))
 		#print "backward right"
 	
 # convert a deg angle to percent of currentSpeed depending on the current quadrant

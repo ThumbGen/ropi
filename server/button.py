@@ -1,11 +1,11 @@
 #!flask/bin/python
 
-import time, os, emailer
-from pi2go import pi2go
+import time, os, emailer, sys
+import robot
 import backthread, carLeds
 
 def button_logic():
-	if pi2go.getSwitch():
+	if robot.getSwitch():
 		print "Send IP"
 		inform_ip()
 		carLeds.alert()
@@ -22,4 +22,16 @@ def inform_ip():
 	f = os.popen('ifconfig wlan0 | grep "inet\ addr" | cut -d: -f2 | cut -d" " -f1')
 	ip=f.read()
 	print ip
-	emailer.send_email("raspig8@gmail.com", "G4T3C0NTR0L", "rvacaru@gmail.com", "Robot IP", "RoPiRemote: http://" + ip + "\r\n\r\n" + ip)
+	
+	try:
+		fo = open('email_config.txt', "r")
+		lines = fo.readlines()
+		fo.close()
+		
+		sourceEmail = lines[0]
+		sourcePass = lines[1]
+		destEmail = lines[2]
+		
+		emailer.send_email(sourceEmail, sourcePass, destEmail, "Robot IP", "RoPiRemote: http://" + ip + "\r\n\r\n" + ip)
+	except:
+		print "Unexpected error:", sys.exc_info()[0]
