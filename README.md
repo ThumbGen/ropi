@@ -61,8 +61,17 @@ By tapping on the left area (or on mouse down) a green virtual joystick will app
 
 By tapping on the right area (or on mouse down) a blue virtual joystick will appear and the camera will pan and tilt accordingly to the joystick movements. By removing the finger from the screen (or mouse up) the camera will center (if the "Follow me" mode is currently selected).
 
+#### Settings Menu
 
+![alt text](https://github.com/ThumbGen/ropi/blob/master/RoPi_settings.jpg?raw=true "Settings")
 
+The Robot IP or Host entry is automatically populated with the address of the robot where the web interface is currently connected. This address is used for pushing robot data to the remote (socket.io) and for the camera stream. By modifying this address is possible to connect to the camera stream of a different robot (if needed).
+
+ - The *Shutdown Robot* button will trigger a graceful shutdown of the Raspberry Pi's operating system. NOTE: You still need to manually switch off the robot itself.
+
+ - The *Reboot Robot* button will trigger a restart of the Raspberry Pi's operating system.
+
+ - The *Stop Server* button is usually used to stop the RoPi server running on the Raspberry (useful when debugging).
 
 ### Installation
 
