@@ -21,10 +21,18 @@ All the user has to do in order to control the robot (after installing the softw
 
 Clicking the toggle button labeled "Off" will "turn on" the robot by establishing a duplex (socket.io) connection with the server.
 
+#### Screen Layout
+
 The screen is split in 3 main areas:
   - the left gauge: it is a speedometer displaying the current speed (in percent) and indicates the "cruising control" speed with a red triangle
   - the right gauge: it combines a temperature indicator (10-90 degrees Celsius) with a "parking sensor" indicator.
   - between both gauges there is either an analog clock (when the camera is off) or the video stream of the PI's camera displayed
+
+On the bottom right corner there are two buttons ( - and + ) used to decrease/increase the "cruising speed" of the robot.
+
+#### Indicators
+
+#### Controlling the Robot and the Camera
 
 ### Installation
 
