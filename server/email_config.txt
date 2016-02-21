@@ -1,3 +1,0 @@
-<from-email>
-<pass>
-<to-email>
