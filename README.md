@@ -17,6 +17,15 @@
 
 ![alt text](https://github.com/ThumbGen/ropi/blob/master/RoPi_moving.jpg?raw=true "RoPi Remote in action")
 
+All the user has to do in order to control the robot (after installing the software on the robot) is to type the robot's address in a web browser. By default the web interface is available on port 80.
+
+Clicking the toggle button labeled "Off" will "turn on" the robot by establishing a duplex (socket.io) connection with the server.
+
+The screen is split in 3 main areas:
+  - the left gauge: it is a speedometer displaying the current speed (in percent) and indicates the "cruising control" speed with a red triangle
+  - the right gauge: it combines a temperature indicator (10-90 degrees Celsius) with a "parking sensor" indicator.
+  - between both gauges there is either an analog clock (when the camera is off) or the video stream of the PI's camera displayed
+
 ### Installation
 
 ```sh
