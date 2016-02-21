@@ -26,11 +26,23 @@ Clicking the toggle button labeled "Off" will "turn on" the robot by establishin
 The screen is split in 3 main areas:
   - the left gauge: it is a speedometer displaying the current speed (in percent) and indicates the "cruising control" speed with a red triangle
   - the right gauge: it combines a temperature indicator (10-90 degrees Celsius) with a "parking sensor" indicator.
-  - between both gauges there is either an analog clock (when the camera is off) or the video stream of the PI's camera displayed
+  - between both gauges there is either an analog clock (when the camera is off) or the video stream of the PI's camera displayed; under the camera there are two "progressbar-like" indicators for the CPU load and memory load respectively
 
 On the bottom right corner there are two buttons ( - and + ) used to decrease/increase the "cruising speed" of the robot.
 
 #### Indicators
+
+All available indicators are visible in the screenshot below:
+
+![alt text](https://github.com/ThumbGen/ropi/blob/master/RoPi_indicators.jpg?raw=true "Startup test sequence RoPi Remote")
+
+| Indicator     | Description   |
+| ------------- |:-------------|
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Engine.svg "Engine")      | Indicates a broken socket.io link with the server |
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Frontassist.svg "Frontassist")      | Indicates the Front-assist feature is activated (less than 10cm to detected obstacle. The robot can be moved only to the left, right or backwards      |
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Headlights.svg "Headlights")      | Indicates the the car is moving forward and the front-lights are on      |
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Headlights.svg "Headlights")      | Indicates the the car is moving forward and the front-lights are on      |
+
 
 #### Controlling the Robot and the Camera
 
