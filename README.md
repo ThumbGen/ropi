@@ -39,10 +39,14 @@ All available indicators are visible in the screenshot below:
 | Indicator     | Description   |
 | ------------- |:-------------|
 | ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Engine.svg "Engine")      | Indicates a broken socket.io link with the server |
-| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Frontassist.svg "Frontassist")      | Indicates the Front-assist feature is activated (less than 10cm to detected obstacle. The robot can be moved only to the left, right or backwards      |
-| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Headlights.svg "Headlights")      | Indicates the the car is moving forward and the front-lights are on      |
-| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Headlights.svg "Headlights")      | Indicates the the car is moving forward and the front-lights are on      |
-
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Frontassist.svg "Frontassist")      | Indicates that the Front-assist feature is activated (less than 10cm to detected obstacle. The robot can be moved only to the left, right or backwards      |
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Headlights.svg "Headlights")      | Indicates that the car is moving forward and the front-lights are on      |
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Parkingbrake.svg "Parkingbrake")      | Indicates that the car is stopped (handbrake)      |
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Parkingsensors.svg "Parkingsensors")      | Indicates that the ultrasonic sensor is activated (front parking sensors)      |
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Seatbelt.svg "Seatbelt")      | Dummy seat belt indicator      |
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Temperature.svg "Temperature")      | Indicates that the Raspberry Pi's temperature is too high (overheating)      |
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Tempomat.svg "Tempomat")      | Indicates that the cruise control is activated and a certain speed is set      |
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Turnsignal.svg "Turnsignal")      | Indicates that the robot is moving either to the left or to the right      |
 
 #### Controlling the Robot and the Camera
 
