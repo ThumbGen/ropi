@@ -21,6 +21,8 @@ All the user has to do in order to control the robot (after installing the softw
 
 Clicking the toggle button labeled "Off" will "turn on" the robot by establishing a duplex (socket.io) connection with the server.
 
+Note: A demo video will be uploaded soon...
+
 #### Screen Layout
 
 The screen is split in 3 main areas:
