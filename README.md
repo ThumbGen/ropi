@@ -48,6 +48,11 @@ All available indicators are visible in the screenshot below:
 | ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Tempomat.svg "Tempomat")      | Indicates that the cruise control is activated and a certain speed is set      |
 | ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Turnsignal.svg "Turnsignal")      | Indicates that the robot is moving either to the left or to the right      |
 
+The Parking Control indicator informs about the distance to the next obstacle (in cm) and indicates visually the proximity to that object. It also displays information about the 2 sensors used for following a line.
+
+Above the camera there is a working digital clock and a dummy outside temperature display.
+Under the camera there are 2 progress bars indicating the current CPU and memory load.
+
 #### Controlling the Robot and the Camera
 
 The screen is split into two logical areas. The left area is for controlling the robot's movement and the right area is for controlling the pan & tilt of the camera (if installed and activated).
