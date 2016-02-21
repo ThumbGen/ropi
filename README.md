@@ -61,11 +61,13 @@ By tapping on the right area (or on mouse down) a blue virtual joystick will app
 
 ### Installation
 
+#### Setup the Server
 ```sh
 $ git clone [git-repo-url] ropi
 $ cd ropi
 $ ./app.py
 ```
+#### Setup the Camera
 
 ## Technical Details
 
