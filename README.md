@@ -15,6 +15,8 @@
 
 ### Introduction
 
+![alt text](https://github.com/ThumbGen/ropi/blob/master/RoPi_moving.jpg?raw=true "RoPi Remote in action")
+
 ### Installation
 
 ```sh
