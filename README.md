@@ -7,7 +7,7 @@
   - Support for using the Raspberry Pi Camera module
 
 <p align="center">
-<img src="https://github.com/ThumbGen/ropi/blob/master/Pi2GoRobot.jpg?raw=true" width="300"/>
+<img src="https://github.com/ThumbGen/ropi/blob/master/Pi2GoRobot.jpg?raw=true" width="400"/>
 </p>
 
 > The reason behind implementing RoPi was offering the end user
