@@ -1,13 +1,13 @@
 # RoPi Remote Controlled Robot
 
-*RoPi* is a complete software solution for controlling a Raspberry Pi based robot:
+*RoPi* is a software solution for controlling a Raspberry Pi based robot:
 
   - Python based backend and webserver
   - Web interface for remote controlling it from any browser
   - Support for using the Raspberry Pi Camera module
 
 > The reason behind implementing RoPi was offering the end user
-> an easy to install and use solution for controlling the Raspberry Pi robot.
+> an easy to use solution for controlling the Raspberry Pi robot.
 > It was implemented with the Pi2Go robot in mind but can be easily extended to support any
 > other Raspberry Pi robot.
 
