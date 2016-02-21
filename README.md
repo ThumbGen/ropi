@@ -6,6 +6,8 @@
   - Web interface for remote controlling it from any browser
   - Support for using the Raspberry Pi Camera module
 
+![alt text](https://github.com/ThumbGen/ropi/blob/master/Pi2GoRobot.jpg?raw=true "Pi2Go")
+
 > The reason behind implementing RoPi was offering the end user
 > an easy to use solution for controlling the Raspberry Pi robot.
 > It was implemented with the Pi2Go robot in mind but can be easily extended to support any
