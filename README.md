@@ -78,6 +78,7 @@ The Robot IP or Host entry is automatically populated with the address of the ro
 ### Installation
 
 #### Setup the Server
+Under construction...
 ```sh
 $ git clone [git-repo-url] ropi
 $ cd ropi
