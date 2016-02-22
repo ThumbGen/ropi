@@ -100,6 +100,31 @@ $ ./app.py
 
 ### Robot Interface
 
+In order to be able to use the server with various robots a facade file named "robot.py" is used.
+All RoPi code references the robot.py and calls its functions. The provided robot.py file works with the Pi2Go robot. If you need to interface a different robot type all you have to do is to make a backup copy of the provided file and then implement each of the required methods by calling your robots specific functions.
+
+
+* **init()** - called once during the server's startup
+* **cleanup()** - called once during the server's shutdown
+* **setLED(led, red, green, blue)**
+* **setAllLEDs(red, green, blue)**
+* **irLeft()**
+* **irRight()**
+* **irCentre()**
+* **irLeftLine()**
+* **irRightLine()**
+* **getSwitch()**
+* **getLight(index)**
+* **forward(speed)**
+* **reverse(speed)**
+* **spinLeft(speed)**
+* **spinRight(speed)**
+* **stop()** - stop motors
+* **turnForward(leftSpeed, rightSpeed)**
+* **turnreverse(leftSpeed, rightSpeed)**
+* **getDistance()** - returns the distance (in cm) measured by the ultrasonic sensor
+
+
 ### Refs
 
 RoPi uses a number of open source projects to work properly:
