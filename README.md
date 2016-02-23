@@ -89,7 +89,12 @@ $ cd ropi
 $ ./app.py
 ```
 #### Setup the Camera
-
+Under construction...
+```sh
+$ git clone [git-repo-url] ropi
+$ cd ropi
+$ ./app.py
+```
 ## Technical Details
 
 ### Remote Control
