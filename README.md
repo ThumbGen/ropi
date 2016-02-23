@@ -136,6 +136,7 @@ RoPi uses a number of open source projects to work properly:
 * [bootstrap toggle] - highly flexible Bootstrap plugin that converts checkboxes into toggles
 * [nippleJS] - a virtual joystick for touch capable interfaces
 * [socket.io] - enables real-time bidirectional event-based communication
+* [SteelSeries-Canvas] - the HTML5 Canvas port of the SteelSeries component library (gauges)
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
@@ -146,6 +147,8 @@ RoPi uses a number of open source projects to work properly:
    [bootstrap-toggle]: <http://www.bootstraptoggle.com/>
    [nippleJS]: <http://yoannmoinet.github.io/nipplejs/>
    [socket.io]: <http://http://socket.io/>
+   [SteelSeries-Canvas]: <https://github.com/HanSolo/SteelSeries-Canvas/>
+   
    
    
 
