@@ -130,7 +130,12 @@ All RoPi code references the robot.py and calls its functions. The provided robo
 RoPi uses a number of open source projects to work properly:
 
 * [Twitter Bootstrap] - great UI boilerplate for modern web apps
-* [jQuery] - duh
+* [jQuery] - fast, small, and feature-rich JavaScript library
+* [JavaScript Cookie] - a simple, lightweight JavaScript API for handling cookies
+* [fabric.js] - powerful and simple Javascript HTML5 canvas library
+* [bootstrap toggle] - highly flexible Bootstrap plugin that converts checkboxes into toggles
+* [nippleJS] - a virtual joystick for touch capable interfaces
+* [socket.io] - enables real-time bidirectional event-based communication
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
@@ -138,6 +143,10 @@ RoPi uses a number of open source projects to work properly:
    [Twitter Bootstrap]: <http://twitter.github.com/bootstrap/>
    [jQuery]: <http://jquery.com>
    [fabric.js]: <http://fabricjs.com>
+   [bootstrap-toggle]: <http://www.bootstraptoggle.com/>
+   [nippleJS]: <http://yoannmoinet.github.io/nipplejs/>
+   [socket.io]: <http://http://socket.io/>
+   
    
 
 
