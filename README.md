@@ -133,7 +133,7 @@ RoPi uses a number of open source projects to work properly:
 * [jQuery] - fast, small, and feature-rich JavaScript library
 * [JavaScript Cookie] - a simple, lightweight JavaScript API for handling cookies
 * [fabric.js] - powerful and simple Javascript HTML5 canvas library
-* [bootstrap toggle] - highly flexible Bootstrap plugin that converts checkboxes into toggles
+* [bootstrap-toggle] - highly flexible Bootstrap plugin that converts checkboxes into toggles
 * [nippleJS] - a virtual joystick for touch capable interfaces
 * [socket.io] - enables real-time bidirectional event-based communication
 * [SteelSeries-Canvas] - the HTML5 Canvas port of the SteelSeries component library (gauges)
