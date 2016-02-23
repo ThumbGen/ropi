@@ -104,25 +104,25 @@ In order to be able to use the server with various robots a facade file named "r
 All RoPi code references the robot.py and calls its functions. The provided robot.py file works with the Pi2Go robot. If you need to interface a different robot type all you have to do is to make a backup copy of the provided file and then implement each of the required methods by calling your robots specific functions.
 
 
-* **init()** - called once during the server's startup
-* **cleanup()** - called once during the server's shutdown
-* **setLED(led, red, green, blue)**
-* **setAllLEDs(red, green, blue)**
-* **irLeft()**
-* **irRight()**
-* **irCentre()**
-* **irLeftLine()**
-* **irRightLine()**
-* **getSwitch()**
-* **getLight(index)**
-* **forward(speed)**
-* **reverse(speed)**
-* **spinLeft(speed)**
-* **spinRight(speed)**
+* **init()** - called once during the server's startup (used for initialising GPIO pins, switching motors and LEDs off, etc)
+* **cleanup()** - called once during the server's shutdown (used to set all motors and LEDs off and set GPIO to standard values)
+* **setLED(led, red, green, blue)** - set the LED specified to required RGB value (0 >= LED <= 4; 0 <= R,G,B <= 4095)
+* **setAllLEDs(red, green, blue)** - set all LEDs to required RGB (0 <= R,G,B <= 4095)
+* **irLeft()** - return the state of the left IR obstacle sensor
+* **irRight()** - return the state of the right IR obstacle sensor
+* **irCentre()** - return the state of the middle IR obstacle sensor
+* **irLeftLine()** - return state of the left IR line sensor
+* **irRightLine()** - return state of the right IR line sensor
+* **getSwitch()** - return the value of the switch (pressed == true)
+* **getLight(index)** - returns the value 0..1023 for the selected light sensor (0 <= index <= 3)
+* **forward(speed)** - set all motors to move forward at speed (0 <= speed <= 100)
+* **reverse(speed)** - set all motors to reverse at speed (0 <= speed <= 100)
+* **spinLeft(speed)** - sets motors to turn opposite directions at speed (0 <= speed <= 100)
+* **spinRight(speed)** - sets motors to turn opposite directions at speed (0 <= speed <= 100)
 * **stop()** - stop motors
-* **turnForward(leftSpeed, rightSpeed)**
-* **turnreverse(leftSpeed, rightSpeed)**
-* **getDistance()** - returns the distance (in cm) measured by the ultrasonic sensor
+* **turnForward(leftSpeed, rightSpeed)** - move forwards in an arc by setting different speeds(0 <= leftSpeed,rightSpeed <= 100)
+* **turnreverse(leftSpeed, rightSpeed)** - move backwards in an arc by setting different speeds(0 <= leftSpeed,rightSpeed <= 100)
+* **getDistance()** - return the distance (in cm) to the nearest reflecting object (0 == no object)
 
 
 ### Refs
