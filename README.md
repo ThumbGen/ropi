@@ -83,6 +83,25 @@ The Robot IP or Host entry is automatically populated with the address of the ro
 
 ### Installation
 
+#### Finding the Robot in Your Network (optional)
+
+If the robot has a user-customizable push button (like the Pi2Go for example) this could be used to ask the robot to send its IP address via email. This is useful when the robot is configured to use a dynamically assigned IP address.
+
+Currently the button is configured to search for a file called "email_config.txt" in the folder where the Python files are.
+The file must contain 3 rows each separated by a CRLF:
+* first row contains the Gmail address from which to send the IP
+* second row contains the password for the above email
+* third row contains the destination email address
+
+Example:
+
+```
+myrobot@gmail.com
+mypassword
+destination@xyz.com
+```
+NOTE: The robot sends the email using the Gmail service therefore the sender email address must be a Google email one.
+
 #### Setup the Server
 Under construction...
 ```sh
