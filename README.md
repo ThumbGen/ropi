@@ -1,5 +1,7 @@
 # RoPi Remote Controlled Robot
 
+### Under Construction! This documentation will be updated during the next days. 
+
 *RoPi* is a software solution for controlling a Raspberry Pi based robot:
 
   - Python based backend and webserver
