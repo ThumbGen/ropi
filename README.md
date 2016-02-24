@@ -93,7 +93,7 @@ The file must contain 3 rows each separated by a CRLF:
 * second row contains the password for the above email
 * third row contains the destination email address
 
-Example:
+Example *email_config.txt* file:
 
 ```
 myrobot@gmail.com
