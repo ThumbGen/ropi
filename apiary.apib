@@ -1,0 +1,73 @@
+FORMAT: 1A
+HOST: http://polls.apiblueprint.org/
+
+# RoPi Robot API
+
+RoPi is a simple API allowing consumers to remotely control a Raspberry Pi Robot.
+The RoPi project is hosted at https://github.com/ThumbGen/ropi
+
+
+*THIS DOCUMENTATION IS WORK IN PROGRESS*
+
+## Light sensors [/ropi/api/v1.0/lights]
+
+
+### Get light sensors status [GET]
+
+Returns the values of up to 4 light sensors
+
++ Response 200 (application/json)
+
+        { 
+            "0": 1000, 
+            "1": 1000, 
+            "2": 1000, 
+            "3": 1000 
+        }
+        
+
+## Controlling LEDs [/ropi/api/v1.0/leds/{cmd}]
+
+### Change LEDs status [PUT]
+
+You may send status for all LEDs or individual ones. The request body must be provided only for the "set" command.
+
++ Parameters
+    + cmd (required, string, `set`) ... Can be one of the following values: 
+        * "set": specify the color for each led individually (see below for the required request body)
+        * "off": switch all LEDs off
+        * "brake": switch on the rear LEDs by using a red color
+        * "dimmed": switch on front and rear LEDs by using a white color
+        * "flash": switch on front LEDs for 1 second by using strong white color
+        * "forward": switch on front LEDs by using strong white color
+
++ Request (application/json) 
+
+        [
+            {
+                "led": 0,
+                "red": 1000,
+                "green": 1000,
+                "blue": 1000,
+            },
+            {
+                "led": 1,
+                "red": 1000,
+                "green": 1000,
+                "blue": 1000,
+            },
+            {
+                "led": 2,
+                "red": 1000,
+                "green": 1000,
+                "blue": 1000,
+            },
+            {
+                "led": 3,
+                "red": 1000,
+                "green": 1000,
+                "blue": 1000,
+            }
+        ]
+
++ Response 200 (application/json)
