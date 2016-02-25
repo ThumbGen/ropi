@@ -4,9 +4,9 @@
 
 ### Table of Contents
 
-	- [How To Use It](#)
-		- [Introduction](#)
-			- [Screen Layout](#)
+	- [How To Use It](#how-to-use-it)
+		- [Introduction](#introduction)
+			- [Screen Layout](#screen-layout)
 			- [Indicators](#)
 			- [Controlling the Robot and the Camera](#)
 			- [Settings Menu](#)
