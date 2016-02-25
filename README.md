@@ -178,7 +178,9 @@ Coming soon...
 
 ### Server API
 
-The RoPi server can be used with a different web interface (or even native mobile apps) by accessing its API. A complete and comprehensive API reference can be found here: coming soon.
+The RoPi server can be used with a different web interface (or even native mobile apps) by accessing its API. 
+
+[Click here for the server API](http://docs.ropi.apiary.io/)
 
 ### Remote Control Web Interface
 
