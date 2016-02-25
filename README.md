@@ -2,6 +2,26 @@
 
 ### Under Construction! This documentation will be updated during the next days. 
 
+### Table of Contents
+
+	- [How To Use It](#)
+		- [Introduction](#)
+			- [Screen Layout](#)
+			- [Indicators](#)
+			- [Controlling the Robot and the Camera](#)
+			- [Settings Menu](#)
+		- [Installation](#)
+			- [Finding the Robot in Your Network (optional)](#)
+			- [Setup the Server](#)
+			- [Setup the Camera](#)
+	- [Technical Details](#)
+		- [Robot API](#)
+		- [Server](#)
+		- [Server API](#)
+		- [Remote Control Web Interface](#)
+		- [Pending ToDos](#)
+		- [Refs](#)
+
 *RoPi* is a software solution for controlling a Raspberry Pi based robot:
 
   - Python based backend and webserver
