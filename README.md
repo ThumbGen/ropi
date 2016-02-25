@@ -47,7 +47,7 @@ All available indicators are visible in the screenshot below:
 | Indicator     | Description   |
 | ------------- |:-------------|
 | ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Engine.svg "Engine")      | Indicates a broken socket.io link with the server |
-| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Frontassist.svg "Frontassist")      | Indicates that the Front-assist feature is activated (less than 10cm to detected obstacle. The robot can be moved only to the left, right or backwards      |
+| ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Frontassist.svg "Frontassist")      | Indicates that the Front-assist feature is activated (less than 10cm to detected obstacle). The robot can be moved only to the left, right or backwards      |
 | ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Headlights.svg "Headlights")      | Indicates that the car is moving forward and the front-lights are on      |
 | ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Parkingbrake.svg "Parkingbrake")      | Indicates that the car is stopped (handbrake)      |
 | ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Parkingsensors.svg "Parkingsensors")      | Indicates that the ultrasonic sensor is activated (front parking sensors)      |
@@ -59,7 +59,7 @@ All available indicators are visible in the screenshot below:
 The Parking Control indicator informs about the distance to the next obstacle (in cm) and indicates visually the proximity to that object. It also displays information about the 2 sensors used for following a line.
 
 Above the camera there is a working digital clock and a dummy outside temperature display.
-Under the camera there are 2 progress bars indicating the current CPU and memory load.
+Under the camera there are 2 progress bars indicating the *current CPU and memory load*.
 
 #### Controlling the Robot and the Camera
 
@@ -118,16 +118,18 @@ $ ./app.py
 ```
 ## Technical Details
 
-### Remote Control
+Conceptual diagram..coming soon.
 
-### Server
+The RoPi "architecture" is very simple and straightforward:
+* the **robot** layer contains the robot specific Python code and it is responsible for interfacing the robot's hardware with the next layer
+* the **server** layer contains logical modules implementing robot's "features" and a Python (Flask) web server offering a simple API for remote control
+* the **remote control** layer is a web-based interface designed around a car dashboard-concept; implementing it as a web application offers a great degree of portability: almost all browsers are supported and there is no "deployment" needed for the client
 
-### Server API
 
-### Robot Interface
+### Robot API
 
 In order to be able to use the server with various robots a facade file named "robot.py" is used.
-All RoPi code references the robot.py and calls its functions. The provided robot.py file works with the Pi2Go robot. If you need to interface a different robot type all you have to do is to make a backup copy of the provided file and then implement each of the required methods by calling your robots specific functions.
+All RoPi code references the robot.py and calls its functions. The provided robot.py file works with the *Pi2Go* robot. If you need to interface a different robot type all you have to do is to make a backup copy of the provided file and then implement each of the required methods by calling your robots specific functions.
 
 
 * **init()** - called once during the server's startup (used for initialising GPIO pins, switching motors and LEDs off, etc)
@@ -149,6 +151,23 @@ All RoPi code references the robot.py and calls its functions. The provided robo
 * **turnForward(leftSpeed, rightSpeed)** - move forwards in an arc by setting different speeds(0 <= leftSpeed,rightSpeed <= 100)
 * **turnreverse(leftSpeed, rightSpeed)** - move backwards in an arc by setting different speeds(0 <= leftSpeed,rightSpeed <= 100)
 * **getDistance()** - return the distance (in cm) to the nearest reflecting object (0 == no object)
+
+### Server
+
+Coming soon...
+
+### Server API
+
+The RoPi server can be used with a different web interface (or even native mobile apps) by accessing its API. A complete and comprehensive API reference can be found here: coming soon.
+
+### Remote Control Web Interface
+
+Coming soon...
+
+### Pending ToDos
+* make it work with the GoPiGo robot
+* refactor the web interface to work without Visual Studio
+* refactor the Python backend to allow easier integration of various robots
 
 
 ### Refs
