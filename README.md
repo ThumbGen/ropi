@@ -7,20 +7,20 @@
 - [How To Use It](#how-to-use-it)
 	- [Introduction](#introduction)
 		- [Screen Layout](#screen-layout)
-		- [Indicators](#)
-		- [Controlling the Robot and the Camera](#)
-		- [Settings Menu](#)
-	- [Installation](#)
-		- [Finding the Robot in Your Network (optional)](#)
-		- [Setup the Server](#)
-		- [Setup the Camera](#)
-- [Technical Details](#)
-	- [Robot API](#)
-	- [Server](#)
-	- [Server API](#)
-	- [Remote Control Web Interface](#)
-	- [Pending ToDos](#)
-	- [Refs](#)
+		- [Indicators](#indicators)
+		- [Controlling the Robot and the Camera](#controlling-the-robot-and-the-camera)
+		- [Settings Menu](#settings-menu)
+	- [Installation](#installation)
+		- [Finding the Robot in Your Network](#finding-the-Robot-in-Your-Network)
+		- [Setup the Server](#setup-the-server)
+		- [Setup the Camera](#setup-the-camera)
+- [Technical Details](#technical-details)
+	- [Robot API](#robot-api)
+	- [Server](#server)
+	- [Server API](#server-api)
+	- [Remote Control Web Interface](#remote-control-web-interface)
+	- [Pending ToDos](#peding-todos)
+	- [References](#references)
 
 *RoPi* is a software solution for controlling a Raspberry Pi based robot:
 
@@ -103,7 +103,7 @@ The Robot IP or Host entry is automatically populated with the address of the ro
 
 ### Installation
 
-#### Finding the Robot in Your Network (optional)
+#### Finding the Robot in Your Network
 
 If the robot has a user-customizable push button (like the Pi2Go for example) this could be used to ask the robot to send its IP address via email. This is useful when the robot is configured to use a dynamically assigned IP address.
 
@@ -190,7 +190,7 @@ Coming soon...
 * refactor the Python backend to allow easier integration of various robots
 
 
-### Refs
+### References
 
 RoPi uses a number of open source projects to work properly:
 
