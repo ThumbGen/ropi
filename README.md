@@ -125,9 +125,10 @@ NOTE: The robot sends the email using the Gmail service therefore the sender ema
 #### Setup the Server
 Under construction...
 ```sh
-$ git clone [git-repo-url] ropi
+$ cd /home/pi
+$ git clone https://github.com/ThumbGen/ropi.git
 $ cd ropi
-$ ./app.py
+$ sudo ./app.py
 ```
 #### Setup the Camera
 Under construction...
