@@ -117,7 +117,7 @@ The Robot IP or Host entry is automatically populated with the address of the ro
 
 If the robot has a user-customizable push button (like the Pi2Go for example) this could be used to ask the robot to send its IP address via email. This is useful when the robot is configured to use a dynamically assigned IP address.
 
-Currently the button is configured to search for a file called "email_config.txt" in the folder where the Python files are.
+Currently the button is configured to search for a file called "email_config.txt" in the *ropi* folder.
 The file must contain 3 rows each separated by a CRLF:
 * first row contains the Gmail address from which to send the IP
 * second row contains the password for the above email
@@ -216,7 +216,7 @@ Coming soon...
 
 The RoPi server can be used with a different web interface (or even native mobile apps) by accessing its API. 
 
-[Click here for the server API](http://docs.ropi.apiary.io/)
+[Click here for the server API documentation](http://docs.ropi.apiary.io/)
 
 ### Remote Control Web Interface
 
@@ -224,7 +224,7 @@ Coming soon...
 
 ### Pending ToDos
 * make it work with the GoPiGo robot
-* refactor the web interface to work without Visual Studio
+* refactor the web interface to work without Visual Studio (ideally with Visual Studio Code or Atom)
 * refactor the Python backend to allow easier integration of various robots
 
 
