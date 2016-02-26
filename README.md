@@ -5,6 +5,7 @@
 ### Table of Contents
 
 - [How To Use It](#how-to-use-it)
+    - [Prerequisites](#prerequisites)
 	- [Introduction](#introduction)
 		- [Screen Layout](#screen-layout)
 		- [Indicators](#indicators)
@@ -38,6 +39,15 @@
 > other Raspberry Pi robot.
 
 ## How To Use It
+
+### Prerequisites
+* A Raspberry Pi 2 based Robot
+  * Pi2Go - Supported
+  * GoPiGo - Planned
+* WiFi connection
+* Remote Access to the Raspberry Pi (eg. TightVNC) for installing RoPi
+* A device running a web-browser for remote controlling the robot
+  * Known issue: by default the RoPi configuration pulls a MJPEG stream from the camera (does not work in Internet Explorer)
 
 ### Introduction
 
@@ -123,20 +133,45 @@ destination@xyz.com
 NOTE: The robot sends the email using the Gmail service therefore the sender email address must be a Google email one.
 
 #### Setup the Server
-Under construction...
+
+##### Install the RoPi files
+Fetch the RoPi repository to a *ropi* folder on your Raspberry Pi:
 ```sh
 $ cd /home/pi
 $ git clone https://github.com/ThumbGen/ropi.git
 $ cd ropi
 $ sudo ./app.py
 ```
+##### Configure RoPi to autostart during boot
+1. Create a *ropi* file for the startup script:
+```
+$ sudo nano /etc/init.d/ropi
+```
+2. Write the content below in that file:
+```
+#!/bin/sh
+
+cd /home/pi/ropi/server
+sudo ./api.py
+
+esac
+
+exit 0
+```
+3. Save and exit: Ctrl+X, Y, Enter
+
+4. Make the script executable:
+```
+$ sudo chmod 755 /etc/init.d/ropi
+```
+5. Register script to be run at startup:
+```
+$ sudo update-rc.d ropi defaults
+```
+
 #### Setup the Camera
 Under construction...
-```sh
-$ git clone [git-repo-url] ropi
-$ cd ropi
-$ ./app.py
-```
+
 ## Technical Details
 
 Conceptual diagram..coming soon.
