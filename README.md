@@ -51,13 +51,21 @@
 
 ### Introduction
 
+After installing the RoPi software on the robot and rebooting the Raspberry Pi the robot should be ready to play (on the Pi2Go the *ready* state is signaled by the side-LEDs turning on green).
+Typing the robot's address in a web browser will start the RoPi dashboard:
+
 ![alt text](https://github.com/ThumbGen/ropi/blob/master/RoPi_moving.jpg?raw=true "RoPi Remote in action")
 
-All the user has to do in order to control the robot (after installing the software on the robot) is to type the robot's address in a web browser. By default the web interface is available on port 80.
+NOTE: By default the web interface is available on port 80.
 
-Clicking the toggle button labeled "Off" will "turn on" the robot by establishing a duplex (socket.io) connection with the server.
+Clicking the toggle button labeled "Off" will turn on the robot:
+* it is ready to receive commands
+* it starts pushing informations to the dashboard (distance to obstacles, temperature, CPU load, etc.)
+* if there is a Camera configured it starts streaming ("Cam On" toggle will be automatically activated)
 
-Note: A demo video will be uploaded soon...
+It is possible for more than one person to watch the camera stream. In this scenario the one who controls the robot will start both the robot (green toggle shows "On") and the camera (blue toggle shows "Cam On"; the others will switch only the camera on (blue toggle "Cam On"). 
+
+A demo video will be uploaded soon...
 
 #### Screen Layout
 
