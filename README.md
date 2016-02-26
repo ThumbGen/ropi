@@ -88,6 +88,8 @@ All available indicators are visible in the screenshot below:
 
 The Parking Control indicator informs about the distance to the next obstacle (in cm) and indicates visually the proximity to that object. It also displays information about the 2 sensors used for following a line.
 
+The odometer displayed inside the speed gauge is not working for now. It is planned to display there the distance traveled by the robot :)
+
 Above the camera there is a working digital clock and a dummy outside temperature display.
 Under the camera there are 2 progress bars indicating the *current CPU and memory load*.
 
