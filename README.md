@@ -99,9 +99,9 @@ Under the camera there are two progress bars indicating the **current CPU and me
 
 The screen is split into two logical areas. The left area is for controlling the robot's movement and the right area is for controlling the pan & tilt of the camera (if installed and activated).
 
-By tapping on the left area (or on mouse down) a green virtual joystick will appear (see image above) and the robot will start moving accordingly to the joystick movements. By removing the finger from the screen (or mouse up) the robot will stop moving.
+By tapping on the left area (or on mouse down) **a green virtual joystick** will appear (see image above) and the robot will start moving accordingly to the joystick movements. By removing the finger from the screen (or mouse up) the robot will stop moving.
 
-By tapping on the right area (or on mouse down) a blue virtual joystick will appear and the camera will pan and tilt accordingly to the joystick movements. By removing the finger from the screen (or mouse up) the camera will center (if the "Follow me" mode is currently selected).
+By tapping on the right area (or on mouse down) **a blue virtual joystick** will appear and the camera will pan and tilt accordingly to the joystick movements. By removing the finger from the screen (or mouse up) the camera will center (if the "Follow me" mode is currently selected).
 
 #### Settings Menu
 
