@@ -33,10 +33,7 @@
 <img src="https://github.com/ThumbGen/ropi/blob/master/Pi2GoRobot.jpg?raw=true" width="400"/>
 </p>
 
-> The reason behind implementing RoPi was offering the end user
-> an easy to use solution for controlling the Raspberry Pi robot.
-> It was implemented with the Pi2Go robot in mind but can be easily extended to support any
-> other Raspberry Pi robot.
+The reason behind implementing RoPi was offering the end user an easy to use solution for controlling the Raspberry Pi robot. It was implemented with the Pi2Go robot in mind but can be easily extended to support any other Raspberry Pi based robot.
 
 ## How To Use It
 
