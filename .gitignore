@@ -206,8 +206,12 @@ FakesAssemblies/
 # Visual Studio 6 workspace options file
 *.opt
 
+# python pyc files
+*.pyc 
+
 # LightSwitch generated files
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+
 /server/email_config.txt
