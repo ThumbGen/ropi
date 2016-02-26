@@ -62,9 +62,9 @@ Note: A demo video will be uploaded soon...
 #### Screen Layout
 
 The screen is split in 3 main areas:
-  - the left gauge: it is a speedometer displaying the current speed (in percent) and indicates the "cruising control" speed with a red triangle
-  - the right gauge: it combines a temperature indicator (10-90 degrees Celsius) with a "parking sensor" indicator.
-  - between both gauges there is either an analog clock (when the camera is off) or the video stream of the PI's camera displayed; under the camera there are two "progressbar-like" indicators for the CPU load and memory load respectively
+  - the left gauge: it is a speedometer displaying the current speed (in percent), indicating the "cruising control" speed with a red triangle and showing a dummy (for now) odometer
+  - the right gauge: it combines a temperature indicator with a "parking sensor"-like indicator below
+  - between both gauges there is either an analog clock (when the camera is off) or the video stream of the PI's camera displayed
 
 On the bottom right corner there are two buttons ( - and + ) used to decrease/increase the "cruising speed" of the robot.
 
@@ -86,12 +86,14 @@ All available indicators are visible in the screenshot below:
 | ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Tempomat.svg "Tempomat")      | Indicates that the cruise control is activated and a certain speed is set      |
 | ![alt text](https://cdn.rawgit.com/thumbgen/ropi/master/server/remote/RoPiRemote/images/Turnsignal.svg "Turnsignal")      | Indicates that the robot is moving either to the left or to the right      |
 
-The Parking Control indicator informs about the distance to the next obstacle (in cm) and indicates visually the proximity to that object. It also displays information about the 2 sensors used for following a line.
+The **Parking Control** indicator informs about the distance to the next obstacle (in cm) and indicates visually the proximity to that object. It also displays information about the 2 sensors used for following a line.
 
-The odometer displayed inside the speed gauge is not working for now. It is planned to display there the distance traveled by the robot :)
+Above the parking control there is a temperature indicator for the **current Raspberry Pi temperature**.
 
-Above the camera there is a working digital clock and a dummy outside temperature display.
-Under the camera there are 2 progress bars indicating the *current CPU and memory load*.
+The **Odometer** displayed inside the speed gauge is not working for now. It is planned to display there the distance traveled by the robot :)
+
+Above the camera there is a **working digital clock** and a dummy outside temperature display.
+Under the camera there are two progress bars indicating the **current CPU and memory load**.
 
 #### Controlling the Robot and the Camera
 
