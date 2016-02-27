@@ -143,7 +143,13 @@ NOTE: The robot sends the email using the Gmail service therefore the sender ema
 
 #### Setup the Server
 
-##### Install the RoPi files
+##### Interactive installation
+An interactive installation script will be available soon.
+
+##### Manual installation
+
+* **Install the RoPi files**
+
 Fetch the RoPi repository to a *ropi* folder on your Raspberry Pi:
 ```sh
 $ cd /home/pi
@@ -151,7 +157,7 @@ $ git clone https://github.com/ThumbGen/ropi.git
 $ cd ropi
 $ sudo ./app.py
 ```
-##### Configure RoPi to autostart during boot
+* **Configure RoPi to autostart during boot**
 1. Create a *ropi* file for the startup script:
 ```
 $ sudo nano /etc/init.d/ropi
