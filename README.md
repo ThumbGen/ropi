@@ -159,11 +159,11 @@ $ sudo ./app.py
 ```
 * **Configure RoPi to autostart during boot**
 
- 1. Create a *ropi* file for the startup script:
+1 Create a *ropi* file for the startup script:
 ```
 $ sudo nano /etc/init.d/ropi
 ```
- 2. Write the content below in that file:
+2 Write the content below in that file:
 ```
 #!/bin/sh
 
@@ -174,13 +174,13 @@ esac
 
 exit 0
 ```
- 3. Save and exit: Ctrl+X, Y, Enter
+3 Save and exit: Ctrl+X, Y, Enter
 
- 4. Make the script executable:
+4 Make the script executable:
 ```
 $ sudo chmod 755 /etc/init.d/ropi
 ```
- 5. Register script to be run at startup:
+5 Register script to be run at startup:
 ```
 $ sudo update-rc.d ropi defaults
 ```
