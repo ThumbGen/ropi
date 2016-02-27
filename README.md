@@ -158,6 +158,7 @@ $ cd ropi
 $ sudo ./app.py
 ```
 * **Configure RoPi to autostart during boot**
+
 1. Create a *ropi* file for the startup script:
 ```
 $ sudo nano /etc/init.d/ropi
