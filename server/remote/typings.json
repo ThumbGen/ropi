@@ -1,0 +1,15 @@
+{
+  "name": "remo",
+  "dependencies": {},
+  "devDependencies": {},
+  "ambientDependencies": {
+    "bootstrap": "github:DefinitelyTyped/DefinitelyTyped/bootstrap/bootstrap.d.ts#4de74cb527395c13ba20b438c3a7a419ad931f1c",
+    "bootstrap-dialog": "file:typings\\custom\\bootstrap-dialog.d.ts",
+    "fabricjs": "github:DefinitelyTyped/DefinitelyTyped/fabricjs/fabricjs.d.ts#33a79667e06b2b65336b79178a807ce751a9654c",
+    "jquery": "github:DefinitelyTyped/DefinitelyTyped/jquery/jquery.d.ts#470954c4f427e0805a2d633636a7c6aa7170def8",
+    "js-cookie": "github:DefinitelyTyped/DefinitelyTyped/js-cookie/js-cookie.d.ts#bb370b898e6a1528c5959932b4e238a574f22869",
+    "nipplejs": "file:typings\\custom\\nipplejs.d.ts",
+    "socket.io-client": "github:DefinitelyTyped/DefinitelyTyped/socket.io-client/socket.io-client.d.ts#495f2734927a644e913f9ed8f4d7d903f276f41d",
+    "steelseries": "file:typings\\custom\\steelseries.d.ts"
+  }
+}

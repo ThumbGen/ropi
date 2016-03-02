@@ -215,3 +215,8 @@ _Pvt_Extensions/
 ModelManifest.xml
 
 /server/email_config.txt
+
+/server/remote/typings/browser/
+/server/remote/typings/main/
+/server/remote/typings/browser.d.ts
+/server/remote/typings/main.d.ts
