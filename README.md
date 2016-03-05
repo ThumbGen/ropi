@@ -16,7 +16,7 @@
 		- [Setup the Server](#setup-the-server)
 		- [Setup the Camera](#setup-the-camera)
 - [Technical Details](#technical-details)
-	- [Robot API and Multiple Robot Types](#robot-api-and-Multiple-Robot-Types)
+	- [Robot API and Multiple Robot Types](#robot-api-and-multiple-robot-types)
 	- [Server](#server)
 	- [Server API](#server-api)
 	- [Remote Control Web Interface](#remote-control-web-interface)
