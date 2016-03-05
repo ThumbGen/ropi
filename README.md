@@ -239,9 +239,8 @@ The RoPi server can be used with a different web interface (or even native mobil
 Coming soon...
 
 ### Pending ToDos
-* make it work with the GoPiGo robot
-* refactor the web interface to work without Visual Studio (ideally with Visual Studio Code or Atom)
 * refactor the Python backend to allow easier integration of various robots
+* make it work with the GoPiGo robot
 
 
 ### References
