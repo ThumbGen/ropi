@@ -2,9 +2,15 @@
 import time, atexit, threading, subprocess, os, sys, signal
 from flask import Flask, jsonify, request
 from flask_socketio import SocketIO, emit
-import robot
-import carLeds, leds, ultrasonic, lights, pantilt, button, motor, camera, assistance, systeminfo
 import RPi.GPIO as GPIO
+
+# IMPORTANT: import the configuration loader BEFORE all robot related imports!!
+import configLoader
+# IMPORTANT: perform the config load; from this moment the 'robot' module is globally available with the correct robot functions loaded
+configLoader.load()	
+# importing robot and the other modules will use the currently configured robot
+import robot, carLeds, leds, ultrasonic, lights, pantilt, button, motor, camera, assistance, systeminfo
+
 
 baseApi = '/ropi/api/v1.0/';
 
@@ -22,7 +28,7 @@ def after_request(response):
 #@socketio.on('connect', namespace='/test')
 @socketio.on('connect')
 def handle_connect():
-	socketio.emit('connected', { 'data' : 'Welcome to RoPi!' })
+	socketio.emit('connected', { 'data' : 'Welcome to RoPi!', 'title' : configLoader.getTitle(), 'robotType' : configLoader.getRobotType() })
 	print "Got a connect request"
 
 @socketio.on_error_default
