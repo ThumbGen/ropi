@@ -1,7 +1,5 @@
 # RoPi Remote Controlled Robot
 
-### Under Construction! This documentation will be updated during the next days. 
-
 ### Table of Contents
 
 - [How To Use It](#how-to-use-it)
