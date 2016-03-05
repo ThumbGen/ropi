@@ -16,7 +16,7 @@
 		- [Setup the Server](#setup-the-server)
 		- [Setup the Camera](#setup-the-camera)
 - [Technical Details](#technical-details)
-	- [Robot API](#robot-api)
+	- [Robot API and Multiple Robot Types](#robot-api-and-Multiple-Robot-Types)
 	- [Server](#server)
 	- [Server API](#server-api)
 	- [Remote Control Web Interface](#remote-control-web-interface)
@@ -198,11 +198,33 @@ The RoPi "architecture" is very simple and straightforward:
 * the **remote control** layer is a web-based interface designed around a car dashboard-concept; implementing it as a web application offers a great degree of portability: almost all browsers are supported and there is no "deployment" needed for the client
 
 
-### Robot API
+### Robot API and Multiple Robot Types
 
-In order to be able to use the server with various robots a facade file named "robot.py" is used.
-All RoPi code references the robot.py and calls its functions. The provided robot.py file works with the *Pi2Go* robot. If you need to interface a different robot type all you have to do is to make a backup copy of the provided file and then implement each of the required methods by calling your robots specific functions.
+In order to be able to use the server with various robots there is a very simple infrastructure prepared.
+Firstly during the startup of the server a configuration loader searches for a file named **robotConfig.json** in the folder where all other Python files reside.
+For now the file contains the minimum required information in order to properly choose the right robot.
 
+Example for the Pi2Go robot:
+```
+{
+  "title":"RoPiRemote",
+  "robotType":"Pi2Go",
+  "robotFile":"Pi2GoRobot.py"
+}
+```
+Example for the GoPiGo robot:
+```
+{
+  "title":"GoPiGo Remote",
+  "robotType":"GoPiGo",
+  "robotFile":"GoPiGoRobot.py"
+}
+```
+* title - will be displayed in the web interface as a badge
+* robotType - indicates the type of the robot currently configured
+* robotFile - indicates the file where the robot interface is implemented; this file will be loaded during startup and used for the communication with the robot's hardware
+
+The interface the files **Pi2GoRobot.py** and **GoPiGo.py** file MUST implement is listed below:
 
 * **init()** - called once during the server's startup (used for initialising GPIO pins, switching motors and LEDs off, etc)
 * **cleanup()** - called once during the server's shutdown (used to set all motors and LEDs off and set GPIO to standard values)
@@ -226,7 +248,8 @@ All RoPi code references the robot.py and calls its functions. The provided robo
 
 ### Server
 
-Coming soon...
+The server runs a very simple Python implementation. There are files containing isolated logic for various features of the robot.
+By using Flask a simplistic API was published for being used remotely.
 
 ### Server API
 
@@ -239,7 +262,6 @@ The RoPi server can be used with a different web interface (or even native mobil
 Coming soon...
 
 ### Pending ToDos
-* refactor the Python backend to allow easier integration of various robots
 * make it work with the GoPiGo robot
 
 
