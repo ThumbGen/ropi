@@ -71,10 +71,12 @@ class Application {
     private connect = () => {
         this.socketio = io.connect(Settings.Current.getBaseServerUrl() + ":80/", { 'forceNew': true });
         this.socketio.on("connected", msg => {
+            $("#badge").text(msg.title + ' ' + msg.robotType);
             //updateConnectionStatus(true, msg);
             Dashboard.getInstance().hideIcon(DashboardIcons.Engine);
         });
         this.socketio.on("disconnected", msg => {
+            $("#badge").text('offline');
             this.connectButton.bootstrapToggle("off");
             this.cameraButton.bootstrapToggle("off");
         });
@@ -130,6 +132,7 @@ class Application {
             });
         } else {
             Dashboard.getInstance().stopEngine(() => {
+                $("#badge").text('offline');
                 this.robotControls.hide();
                 this.disconnect();
                 if (!this.getIsCameraActive()) {
