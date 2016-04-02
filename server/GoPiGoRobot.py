@@ -1,4 +1,4 @@
-from gopigo import gopigo
+from gopigo import *
 
 def init():
 	pass
