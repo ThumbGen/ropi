@@ -152,7 +152,7 @@ Fetch the RoPi repository to a *ropi* folder on your Raspberry Pi:
 ```sh
 $ cd /home/pi
 $ git clone https://github.com/ThumbGen/ropi.git
-$ cd ropi
+$ cd ropi/server
 $ sudo ./app.py
 ```
 * **Configure RoPi to autostart during boot**
