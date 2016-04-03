@@ -38,7 +38,7 @@ The reason behind implementing RoPi was offering the end user an easy to use sol
 ### Prerequisites
 * A Raspberry Pi 2 based Robot
   * Pi2Go - Supported
-  * GoPiGo - Planned
+  * GoPiGo - In progress
 * WiFi connection
 * Remote Access to the Raspberry Pi (eg. TightVNC) for installing RoPi
 * A device running a web-browser for remote controlling the robot
