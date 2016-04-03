@@ -222,6 +222,8 @@ Example for the GoPiGo robot:
 * robotType - indicates the type of the robot currently configured
 * robotFile - indicates the file where the robot interface is implemented; this file will be loaded during startup and used for the communication with the robot's hardware
 
+A script allowing to switch between various robot types will be provided soon. It will help during debugging/programming for different types of robots.
+
 The interface the files **Pi2GoRobot.py** and **GoPiGo.py** file MUST implement is listed below:
 
 * **init()** - called once during the server's startup (used for initialising GPIO pins, switching motors and LEDs off, etc)
