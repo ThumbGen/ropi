@@ -36,13 +36,13 @@ The reason behind implementing RoPi was offering the end user an easy to use sol
 ## How To Use It
 
 ### Prerequisites
-* A Raspberry Pi 2 based Robot
+* A Raspberry Pi based Robot
   * Pi2Go - Supported
   * GoPiGo - In progress
 * WiFi connection
 * Remote Access to the Raspberry Pi (eg. TightVNC) for installing RoPi
 * A device running a web-browser for remote controlling the robot
-  * Known issue: by default the RoPi configuration pulls a MJPEG stream from the camera (does not work in Internet Explorer)
+  * Known issue: the RoPi remote interface pulls a MJPEG stream from the camera (does not work in Internet Explorer)
 
 ### Introduction
 
