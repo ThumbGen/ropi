@@ -1,5 +1,16 @@
 from gopigo import *
 
+# publics
+PANOFFSET = 40
+TILTOFFSET = 40
+PANMAX = 130
+PANMIN = 40
+TILTMAX = 180
+TILTMIN = 0
+
+PANCENTER = 90
+TILTCENTER = 95
+
 def init():
 	pass
 	
@@ -56,3 +67,6 @@ def turnreverse(leftSpeed, rightSpeed):
 	
 def getDistance():
 	return 0
+	
+def turn(tiltOrPan,angle):
+	pass

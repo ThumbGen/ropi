@@ -41,6 +41,7 @@ def init():
 	global switchStatus
 	switchStatus = False
 	GPIO.setwarnings(False)
+	# important to init the robot before any logic which uses it
 	robot.init()
 	carLeds.init(app)
 	button.init(app)

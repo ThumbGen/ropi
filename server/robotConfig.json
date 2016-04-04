@@ -1,5 +1,5 @@
 {
-  "title":"RoPiRemote",
-  "robotType":"Pi2Go",
-  "robotFile":"Pi2GoRobot.py"
+  "title":"GoPiGo Remote",
+  "robotType":"GoPiGo",
+  "robotFile":"GoPiGoRobot.py"
 }

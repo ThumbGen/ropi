@@ -1,34 +1,20 @@
 #!flask/bin/python
 
 import time, backthread
-from pi2go.Adafruit_PWM_Servo_Driver import PWM
+from robot import *
 
-# Define pins for Pan/Tilt
-PAN = 15
-TILT = 14
-
-PANOFFSET = 40
-TILTOFFSET = 40
-PANMAX = 130
-PANMIN = 40
-TILTMAX = 180
-TILTMIN = 0
-
-PANCENTER = 90
-TILTCENTER = 95
-
-servo = None
+IS_PAN = True
+IS_TILT = False
 
 step = 5
 
 currentCommand = None
-currentPan = PANCENTER
-currentTilt = TILTCENTER
+currentPan = None
+currentTilt = None
 
 def init(app):
-	global servo
-	servo = PWM(0x40)
-	servo.setPWMFreq(50)
+	currentPan = PANCENTER
+	currentTilt = TILTCENTER
 	backthread.start(app, stepPanOrTilt, 0.25)
 	
 def center():
@@ -41,7 +27,7 @@ def setPanValue(deg):
 	global currentPan
 	if deg < PANMIN or deg > PANMAX:
 		return { "pan": -1 }
-	turn(PAN, PANOFFSET + deg)
+	turn(IS_PAN, PANOFFSET + deg)
 	currentPan = deg
 	return { "pan": deg }
 	#print "pan:", deg
@@ -50,7 +36,7 @@ def setTiltValue(deg):
 	global currentTilt
 	if deg < TILTMIN or deg > TILTMAX:
 		return { "tilt": -1 }
-	turn(TILT, TILTOFFSET + deg)
+	turn(IS_TILT, TILTOFFSET + deg)
 	currentTilt = deg
 	return { "tilt": deg }
 	#print "tilt:", deg
@@ -119,13 +105,8 @@ def stepPanOrTilt():
 	#print "Done"
 	return
 	
-def turn(pin,deg):
-	pwm = 570.0 + ((deg/180.0) * 1700.0)
-
-	pwm = (4096.0/20000.0) * pwm
-	pwm = int(pwm)
-
-	servo.setPWM(pin, 0, pwm)
-	
+def turn(isPan,angle):
+	robot.turn(isPan, angle)
+		
 def cleanup(app):
 	backthread.stop(app)
