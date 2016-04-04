@@ -68,5 +68,5 @@ def turnreverse(leftSpeed, rightSpeed):
 def getDistance():
 	return 0
 	
-def turn(tiltOrPan,angle):
+def moveServo(tiltOrPan,angle):
 	pass

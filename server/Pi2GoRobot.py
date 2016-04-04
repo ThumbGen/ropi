@@ -84,7 +84,7 @@ def getDistance():
 	return pi2go.getDistance()
 
 # servo
-def turn(isPan,angle):
+def moveServo(isPan,angle):
 	pin = PIN_TILT
 	if isPan:
 		pin = PIN_PAN
@@ -93,5 +93,5 @@ def turn(isPan,angle):
 
 	pwm = (4096.0/20000.0) * pwm
 	pwm = int(pwm)
-
+	
 	servo.setPWM(pin, 0, pwm)
