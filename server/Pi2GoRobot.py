@@ -27,6 +27,16 @@ def init():
 def cleanup():
 	pi2go.cleanup()
 	
+def isInstalled():
+	try:
+		pi2go.cleanup()
+		print "Pi2Go robot detected"
+		return True
+	except:
+		print "Pi2Go robot NOT detected"
+		return False
+	
+	
 def setLED(led, red, green, blue):
 	pi2go.setLED(led, red, green, blue)	
 

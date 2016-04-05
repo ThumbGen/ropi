@@ -19,6 +19,15 @@ def init():
 def cleanup():
 	pass
 	
+def isInstalled():
+	try:
+		version = fw_ver()
+		print "GoPiGo robot detected; version ", version
+		return True
+	except:
+		print "GoPiGo robot NOT detected"
+		return False
+	
 def setLED(led, red, green, blue):
 	pass
 
