@@ -9,10 +9,11 @@ IS_TILT = False
 step = 5
 
 currentCommand = None
-currentPan = None
-currentTilt = None
+currentPan = 0
+currentTilt = 0
 
 def init(app):
+	global currentPan, currentTilt
 	currentPan = PANCENTER
 	currentTilt = TILTCENTER
 	backthread.start(app, stepPanOrTilt, 0.25)
@@ -106,7 +107,7 @@ def stepPanOrTilt():
 	return
 	
 def turn(isPan,angle):
-	robot.turn(isPan, angle)
+	moveServo(isPan, angle)
 		
 def cleanup(app):
 	backthread.stop(app)

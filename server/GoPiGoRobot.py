@@ -74,5 +74,5 @@ def getDistance():
 		print str(e)
 		return 0
 	
-def turn(tiltOrPan,angle):
+def moveServo(tiltOrPan,angle):
 	pass
