@@ -11,6 +11,8 @@ TILTMIN = 0
 PANCENTER = 90
 TILTCENTER = 95
 
+PIN_PAN = 15
+
 def init():
 	pass
 	
@@ -66,7 +68,11 @@ def turnreverse(leftSpeed, rightSpeed):
 	pass
 	
 def getDistance():
-	return 0
+	try:
+		return us_dist(PIN_PAN)
+	except Exception,e:
+		print str(e)
+		return 0
 	
 def turn(tiltOrPan,angle):
 	pass
