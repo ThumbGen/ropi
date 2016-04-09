@@ -64,7 +64,7 @@ def right():
 	
 def stop():
 	global currentCommand
-	robot.stop()
+	robot.stopRobot()
 	carLeds.execute("brake")
 	#print "Stopped"
 	
@@ -113,9 +113,7 @@ def move(angle):
 	
 # convert a deg angle to percent of currentSpeed depending on the current quadrant
 def angle2SpeedPercent(angle):
-	p = 1.0 *(angle % 90) / 70
-	print p
-	return p
+	return 1.0 *(angle % 90) / 70
 	
 def adjustSpeed(speed):
 	global currentSpeed, currentCommand

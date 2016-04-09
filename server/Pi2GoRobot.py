@@ -1,5 +1,6 @@
 from pi2go import pi2go
 from pi2go.Adafruit_PWM_Servo_Driver import PWM
+from sgh_PCF8591P import sgh_PCF8591P
 
 # publics
 PANOFFSET = 40
@@ -27,10 +28,13 @@ def init():
 def cleanup():
 	pi2go.cleanup()
 	
+def getVersion():
+	return ""
+	
 def isInstalled():
 	try:
-		pi2go.cleanup()
-		print "Pi2Go robot detected"
+		pcfADC = sgh_PCF8591P(1) #i2c, 0x48)
+        print "Pi2Go robot detected"
 		return True
 	except:
 		print "Pi2Go robot NOT detected"
@@ -80,14 +84,17 @@ def spinLeft(speed):
 def spinRight(speed):
 	pi2go.spinRight(speed)
 	
-def stop():
+def stopRobot():
 	pi2go.stop()
 	
 def turnForward(leftSpeed, rightSpeed): 
 	pi2go.turnForward(leftSpeed, rightSpeed)
 
-def turnreverse(leftSpeed, rightSpeed): 
+def turnReverse(leftSpeed, rightSpeed): 
 	pi2go.turnReverse(leftSpeed, rightSpeed)
+
+def getVoltage():
+	return 0
 	
 #ultrasonic	
 def getDistance():

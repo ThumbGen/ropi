@@ -11,7 +11,6 @@ configLoader.load()
 # importing robot and the other modules will use the currently configured robot
 import robot, carLeds, leds, ultrasonic, lights, pantilt, button, motor, camera, assistance, systeminfo
 
-
 baseApi = '/ropi/api/v1.0/';
 
 app = Flask(__name__, static_folder='remote/RoPiRemote')
@@ -22,13 +21,18 @@ socketio = SocketIO(app)
 def after_request(response):
   response.headers.add('Access-Control-Allow-Origin', '*')
   response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,Accept')
-  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTION')
   return response
 
 #@socketio.on('connect', namespace='/test')
 @socketio.on('connect')
 def handle_connect():
-	socketio.emit('connected', { 'data' : 'Welcome to RoPi!', 'title' : configLoader.getTitle(), 'robotType' : configLoader.getRobotType() })
+	socketio.emit('connected', 
+	{ 'data' : 'Welcome to RoPi!', 
+      'title' : configLoader.getRobotType() + " " + robot.getVersion(), 
+	  'robotType' : configLoader.getRobotType(),
+	  'logoUrl' : 'images/' + configLoader.getRobotLogo()
+	  })
 	print "Got a connect request"
 
 @socketio.on_error_default

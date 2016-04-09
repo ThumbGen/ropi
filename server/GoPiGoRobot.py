@@ -1,23 +1,32 @@
 from gopigo import *
+import time
 
 # publics
-PANOFFSET = 40
-TILTOFFSET = 40
-PANMAX = 130
+PANOFFSET = 0
+TILTOFFSET = 0
+PANMAX = 180
 PANMIN = 40
 TILTMAX = 180
 TILTMIN = 0
 
-PANCENTER = 90
-TILTCENTER = 95
+PANCENTER = 110
+TILTCENTER = 90
 
 PIN_ULTRASONIC = 15
 
+LEDoff = 0
+
+# start region - robot interface
+
 def init():
-	pass
-	
+	led_off(0)
+	led_off(1)
+		
 def cleanup():
 	pass
+	
+def getVersion():
+	return str(fw_ver())
 	
 def isInstalled():
 	try:
@@ -29,11 +38,16 @@ def isInstalled():
 		return False
 	
 def setLED(led, red, green, blue):
-	pass
-
-def setAllLEDs(red, green, blue):
-	pass
+	setAllLEDs(red, green, blue)
 	
+def setAllLEDs(red, green, blue):
+	if red == LEDoff and green == LEDoff and blue == LEDoff:
+		led_off(0)
+		led_off(1)
+	else:
+		led_on(0)
+		led_on(1)
+		
 def irLeft():
 	return False
 	
@@ -56,25 +70,44 @@ def getLight(index):
 	return 0
 	
 def forward(speed):
-	pass
+	#stop()
+	adjustSpeed(speed)
+	fwd()
 	
 def reverse(speed):
-	pass
+	#stop()
+	adjustSpeed(speed)
+	bwd()
 	
 def spinLeft(speed):
+	
+	#left_rot()
 	pass
 
 def spinRight(speed):
+	
+	#right_rot()
 	pass
 	
-def stop():
-	pass
+def stopRobot():
+	stop()
 	
 def turnForward(leftSpeed, rightSpeed): 
+	return
+	if leftSpeed < rightSpeed:
+		left()
+	else:
+		right()
+
+def turnReverse(leftSpeed, rightSpeed): 
 	pass
 
-def turnreverse(leftSpeed, rightSpeed): 
-	pass
+def getVoltage():
+	try:
+		return volt()
+	except Exception,e:
+		print str(e)
+		return 0
 	
 def getDistance():
 	try:
@@ -84,4 +117,13 @@ def getDistance():
 		return 0
 	
 def moveServo(isPan,angle):
-	pass
+	if isPan:
+		servo(angle)
+	
+# end region - robot interface
+
+# received a speed percent between 0 and 100 and converts it to speed value  0 to 250
+def adjustSpeed(speedPercent):
+	speed = int((1.0 * speedPercent / 100) * 250)
+	set_speed(speed)
+	time.sleep(0.1)

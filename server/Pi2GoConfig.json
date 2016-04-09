@@ -1,0 +1,5 @@
+{
+  "robotType":"Pi2Go",
+  "robotFile":"Pi2GoRobot.py",
+  "robotLogo":"Pi2GoLogo.png"
+}

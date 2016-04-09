@@ -26,7 +26,7 @@ def poll_around():
 		if lastAroundChecksum != checksum:
 			socketio.emit('parking', data)
 			lastAroundChecksum = checksum
-	time.sleep(0.25)
+	time.sleep(0.2)
 
 def init(app, sio):
 	global socketio
