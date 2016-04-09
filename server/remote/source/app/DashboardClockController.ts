@@ -28,6 +28,7 @@
     
     public hideClock = () => {
         this.canvas.remove(this.clockGaugeImage);
+        this.canvas.renderAll();
         this.visible = false;
     }
 

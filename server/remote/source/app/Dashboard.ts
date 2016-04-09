@@ -19,7 +19,7 @@ class Dashboard {
     private clockController: DashboardClockController;
     private iconsController: DashboardIconsController;
     private dummyVoltageValue = "22.5 °C";
-    private tempWarningLimit = 60;
+    private tempWarningLimit = 60; // show temperature warning over 60 degrees
     //private logoUrl = "http://dexterind.wpengine.com/wp-content/uploads/2015/07/dexter-logo-sm.png";
     //private logoUrl = "Pi2GoLogo.png";
     private logoUrl = null;
@@ -102,6 +102,8 @@ class Dashboard {
     }
 
     public stopEngine = (callback: any) => {
+        this.setLogoUrl(null);
+        this.showClockOrLogo();
         this.parkingControl.turnOff();
         this.miniGaugeLeft.setValue(0);
         this.miniGaugeRight.setValue(0);
@@ -161,7 +163,8 @@ class Dashboard {
 
         var img = <HTMLImageElement>document.getElementById("camera");
         img.onload = () => {
-            this.hideClockOrLogo();
+            this.hideLogo();
+            this.hideClock();
             this.cameraImage.setElement(img);
             this.cameraImage.width = 500;
             this.cameraImage.height = 375;
@@ -219,16 +222,17 @@ class Dashboard {
         this.logoUrl = logo;
     }
 
+    private hideLogo = () =>{
+        this.canvas.remove(this.logoImage);
+        this.canvas.renderAll();
+    }
 
-    private hideClockOrLogo = () => {
-        if(this.logoUrl !== null) {
-            this.canvas.remove(this.logoImage);
-        } else {
-            this.clockController.hideClock();
-        }
+    private hideClock = () => {
+        this.clockController.hideClock();
     }
 
     private showClockOrLogo = () => {
+        this.clockController.hideClock();
         if(this.logoUrl !== null){
             fabric.Image.fromURL(this.logoUrl,
                 (image) => {
@@ -242,6 +246,7 @@ class Dashboard {
                     this.canvas.renderAll();
                 });
         } else {
+            this.hideLogo();
             this.clockController.showClock();
         }
     }

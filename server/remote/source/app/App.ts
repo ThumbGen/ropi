@@ -71,7 +71,7 @@ class Application {
     private connect = () => {
         this.socketio = io.connect(Settings.Current.getBaseServerUrl() + ":80/", { 'forceNew': true });
         this.socketio.on("connected", msg => {
-            $("#badge").text(msg.title + ' ' + msg.robotType);
+            $("#badge").text(msg.title);
             //updateConnectionStatus(true, msg);
             Dashboard.getInstance().hideIcon(DashboardIcons.Engine);
             // must synchronize the speed
