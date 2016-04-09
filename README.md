@@ -166,7 +166,7 @@ $ sudo nano /etc/init.d/ropi
 #!/bin/sh
 
 cd /home/pi/ropi/server
-sudo ./api.py
+sudo ./app.py
 
 esac
 
