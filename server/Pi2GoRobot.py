@@ -1,6 +1,6 @@
 from pi2go import pi2go
 from pi2go.Adafruit_PWM_Servo_Driver import PWM
-from sgh_PCF8591P import sgh_PCF8591P
+from pi2go.sgh_PCF8591P import sgh_PCF8591P
 
 # publics
 PANOFFSET = 40
@@ -29,12 +29,13 @@ def cleanup():
 	pi2go.cleanup()
 	
 def getVersion():
-	return ""
+	return "1.0"
 	
 def isInstalled():
 	try:
+		print "Check if installed"
 		pcfADC = sgh_PCF8591P(1) #i2c, 0x48)
-        print "Pi2Go robot detected"
+		print "Pi2Go robot detected"
 		return True
 	except:
 		print "Pi2Go robot NOT detected"
