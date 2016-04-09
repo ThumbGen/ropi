@@ -19,7 +19,11 @@ class Dashboard {
     private clockController: DashboardClockController;
     private iconsController: DashboardIconsController;
     private dummyVoltageValue = "22.5 °C";
+
     private tempWarningLimit = 60; // show temperature warning over 60 degrees
+    private warningTemperatureColor = steelseries.ColorDef.RED;
+    private normalTemperatureColor = steelseries.ColorDef.RAITH;
+    
     //private logoUrl = "http://dexterind.wpengine.com/wp-content/uploads/2015/07/dexter-logo-sm.png";
     //private logoUrl = "Pi2GoLogo.png";
     private logoUrl = null;
@@ -77,6 +81,7 @@ class Dashboard {
         this.iconsController.showAllIcons();
         this.leftGauge.setValue(100);
         this.rightGauge.setValue(90);
+        this.rightGauge.setValueColor(this.normalTemperatureColor);
         this.miniGaugeLeft.setValue(100);
         this.miniGaugeRight.setValue(100);
 
@@ -108,6 +113,7 @@ class Dashboard {
         this.miniGaugeLeft.setValue(0);
         this.miniGaugeRight.setValue(0);
         this.rightGauge.setValueAnimated(0);
+        this.rightGauge.setValueColor(this.normalTemperatureColor);
         this.iconsController.hideAllIcons();
         this.voltageText.setText(this.dummyVoltageValue);
         if (callback != null) {
@@ -206,8 +212,10 @@ class Dashboard {
             // if cpu temp > tempWarningLimit => show warning
             if (cpuTemp > this.tempWarningLimit) {
                 this.iconsController.showIcon(DashboardIcons.WaterTemperature);
+                this.rightGauge.setValueColor(this.warningTemperatureColor);
             } else {
                 this.iconsController.hideIcon(DashboardIcons.WaterTemperature);
+                this.rightGauge.setValueColor(this.normalTemperatureColor);
             }
             // voltage
             if(msg["v"] !== "0"){
@@ -357,6 +365,7 @@ class Dashboard {
             minValue: 10,
             maxValue: 90,
             size: 510,
+            valueColor: this.normalTemperatureColor,
             tickLabelOrientation: steelseries.TickLabelOrientation.HORIZONTAL,
             foregroundType: steelseries.ForegroundType.TYPE3,
             frameDesign: steelseries.FrameDesign.TILTED_BLACK,
