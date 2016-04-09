@@ -74,6 +74,12 @@ class Application {
             $("#badge").text(msg.title + ' ' + msg.robotType);
             //updateConnectionStatus(true, msg);
             Dashboard.getInstance().hideIcon(DashboardIcons.Engine);
+            // must synchronize the speed
+            this.robotControls.modifySpeed(0);
+            // set eventually a logo
+            if(msg.hasOwnProperty("logoUrl")){
+                Dashboard.getInstance().setLogoUrl(msg.logoUrl);
+            }
         });
         this.socketio.on("disconnected", msg => {
             $("#badge").text('offline');
@@ -114,8 +120,10 @@ class Application {
             this.enableControlsButton();
         } else {
             Dashboard.getInstance().stopCamera();
-            this.cameraControls.hide();
-            this.disableControlsButton();
+            if (!this.getIsConnected()) {
+                this.cameraControls.hide();
+                this.disableControlsButton();
+            }
         }
     }
 
@@ -137,6 +145,7 @@ class Application {
                 this.disconnect();
                 if (!this.getIsCameraActive()) {
                     this.disableControlsButton();
+                    this.cameraControls.hide();
                 }
             });
         }

@@ -75,7 +75,7 @@ class RobotControls implements IControls {
         });
     }
     
-    private modifySpeed(speed: number) {
+    modifySpeed(speed: number) {
         RequestsHelper.Current.put(`motor/speed/${this.currentSpeed + speed}`, (data) => {
             this.currentSpeed = data["speed"];
             Dashboard.getInstance().setCruiseControlSpeed(this.currentSpeed);

@@ -3,7 +3,8 @@
     private canvas: fabric.IStaticCanvas;
     private clockGaugeImage: fabric.IImage;
     private clockText: fabric.IText;
-
+    private visible: boolean;
+    
     constructor(canvas: fabric.IStaticCanvas) {
         this.canvas = canvas;
 
@@ -21,8 +22,13 @@
         this.updateTime();
     }
     
+    public isVisible = () =>{
+        return this.visible;
+    }
+    
     public hideClock = () => {
         this.canvas.remove(this.clockGaugeImage);
+        this.visible = false;
     }
 
     public showClock = () => {
@@ -52,6 +58,7 @@
         });
         this.canvas.add(this.clockGaugeImage);
         this.canvas.renderAll();
+        this.visible = true;
     }
 
     public updateTime = () => {

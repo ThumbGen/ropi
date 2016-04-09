@@ -18,13 +18,18 @@ class Dashboard {
     public parkingControl = new Parking();
     private clockController: DashboardClockController;
     private iconsController: DashboardIconsController;
-
+    private dummyVoltageValue = "22.5 °C";
+    private tempWarningLimit = 60;
+    //private logoUrl = "http://dexterind.wpengine.com/wp-content/uploads/2015/07/dexter-logo-sm.png";
+    //private logoUrl = "Pi2GoLogo.png";
+    private logoUrl = null;
+    private logoImage;
     private cameraInterval: any;
     private leftGauge;
     private miniGaugeLeft;
     private miniGaugeRight;
     private rightGauge;
-    private iconSeatBelt: fabric.IPathGroup;
+    private voltageText: fabric.IText;
     private canvas = new fabric.StaticCanvas("dashboard");
     public zoomFactor = 1;
     private originalWidth = 1408;
@@ -49,10 +54,12 @@ class Dashboard {
 
         this.drawCameraAndGauges();
 
-        setInterval(() => { 
-            this.clockController.updateTime();
-            if (this.cameraInterval == null) {
-                this.canvas.renderAll();
+        setInterval(() => {
+            if(this.clockController.isVisible()) { 
+                this.clockController.updateTime();
+                if (this.cameraInterval == null) {
+                    this.canvas.renderAll();
+                }
             }
         }, 1000);
 
@@ -100,6 +107,7 @@ class Dashboard {
         this.miniGaugeRight.setValue(0);
         this.rightGauge.setValueAnimated(0);
         this.iconsController.hideAllIcons();
+        this.voltageText.setText(this.dummyVoltageValue);
         if (callback != null) {
             callback();
         }
@@ -153,13 +161,13 @@ class Dashboard {
 
         var img = <HTMLImageElement>document.getElementById("camera");
         img.onload = () => {
-            this.clockController.hideClock();
+            this.hideClockOrLogo();
             this.cameraImage.setElement(img);
             this.cameraImage.width = 500;
             this.cameraImage.height = 375;
         }
         img.onerror = () => {
-            this.clockController.showClock();
+            this.showClockOrLogo();
         }
         img.src = Settings.Current.getCameraUrl();
 
@@ -177,7 +185,7 @@ class Dashboard {
         
         var img = <HTMLImageElement>document.getElementById("camera");
         img.onerror = () => {
-            this.clockController.showClock();
+            this.showClockOrLogo();
         }
         img.src = "http://";
     }
@@ -192,8 +200,49 @@ class Dashboard {
             this.miniGaugeLeft.setValue(cpuPercent);
             this.miniGaugeRight.setValue(memPercent);
 
-            // sample: {'mp': mempercent }
-            //this.canvas.renderAll();
+            // if cpu temp > tempWarningLimit => show warning
+            if (cpuTemp > this.tempWarningLimit) {
+                this.iconsController.showIcon(DashboardIcons.WaterTemperature);
+            } else {
+                this.iconsController.hideIcon(DashboardIcons.WaterTemperature);
+            }
+            // voltage
+            if(msg["v"] !== "0"){
+                this.voltageText.setText(msg["v"] + " V");
+            } else{
+                this.voltageText.setText(this.dummyVoltageValue);
+            }
+        }
+    }
+
+    public setLogoUrl = (logo) => {
+        this.logoUrl = logo;
+    }
+
+
+    private hideClockOrLogo = () => {
+        if(this.logoUrl !== null) {
+            this.canvas.remove(this.logoImage);
+        } else {
+            this.clockController.hideClock();
+        }
+    }
+
+    private showClockOrLogo = () => {
+        if(this.logoUrl !== null){
+            fabric.Image.fromURL(this.logoUrl,
+                (image) => {
+                    this.logoImage = image;
+                    var ar = image.height / image.width;
+                    image.width = 200 * this.zoomFactor;
+                    image.left = 705 * this.zoomFactor - image.width / 2;
+                    image.height = image.width * ar;
+                    image.top = 220 * this.zoomFactor - image.height / 2;
+                    this.canvas.add(image);
+                    this.canvas.renderAll();
+                });
+        } else {
+            this.clockController.showClock();
         }
     }
 
@@ -211,7 +260,7 @@ class Dashboard {
             this.drawGauges();
         });
         
-        this.clockController.showClock();
+        this.showClockOrLogo();
     }
 
     private drawLeftGauge = () => {
@@ -246,6 +295,16 @@ class Dashboard {
         });
         this.canvas.add(leftGaugeImage);
 
+        this.voltageText = new fabric.Text(this.dummyVoltageValue, {
+            fontSize: 28,
+            textAlign: "center",
+            left: 890,
+            top: 25,
+            fontFamily: "Arial",
+            fill: "white"
+        });
+        this.canvas.add(this.voltageText);
+
         this.miniGaugeLeft = new steelseries.Linear("gMiniLeft", {
             gaugeType: steelseries.GaugeType.TYPE1,
             backgroundVisible: false,
@@ -259,10 +318,6 @@ class Dashboard {
             foregroundVisible: false,
         });
         var miniGaugeLeftImage = new fabric.Image(document.getElementById("gMiniLeft"), {
-            //left: 85,
-            //top: 340,
-            //width: 350,
-            //height: 80
             left: 405,
             top: 400,
             width: 340,
@@ -283,10 +338,6 @@ class Dashboard {
             foregroundVisible: false,
         });
         var miniGaugeRightImage = new fabric.Image(document.getElementById("gMiniRight"), {
-            //left: 85,
-            //top: 360,
-            //width: 350,
-            //height: 80,
             left: 660,
             top: 400,
             width: 340,
@@ -320,6 +371,15 @@ class Dashboard {
             height: 510
         });
         this.canvas.add(rightGaugeImage);
+        var degreesSymbol = new fabric.Text("°C", {
+            fontSize: 28,
+            textAlign: "center",
+            left: 1317,
+            top: 270,
+            fontFamily: "Arial",
+            fill: "white"
+        });
+        this.canvas.add(degreesSymbol);
     }
 
     private drawGauges = () => {
@@ -337,15 +397,6 @@ class Dashboard {
             stroke: "gray",
             strokeWidth: 2
         }));
-        var degreesText = new fabric.Text("22.5 °C", {
-            fontSize: 28,
-            textAlign: "center",
-            left: 890,
-            top: 25,
-            fontFamily: "Arial",
-            fill: "white"
-        });
-        this.canvas.add(degreesText);
     };
 
     private zoomIt = (factor) => {
