@@ -16,6 +16,10 @@ PIN_ULTRASONIC = 15
 
 LEDoff = 0
 
+# private
+
+motorCommand = None
+
 # start region - robot interface
 
 def init():
@@ -70,36 +74,60 @@ def getLight(index):
 	return 0
 	
 def forward(speed):
-	#stop()
-	adjustSpeed(speed)
-	fwd()
+	global motorCommand
+	print "forward"
+	if motorCommand != "fwd":
+		motorCommand = "fwd"
+		adjustSpeed(speed)
+		fwd()
 	
 def reverse(speed):
-	#stop()
-	adjustSpeed(speed)
-	bwd()
+	global motorCommand
+	print "reverse"
+	if motorCommand != "bwd":
+		motorCommand = "bwd"
+		adjustSpeed(speed)
+		bwd()
 	
 def spinLeft(speed):
-	adjustSpeed(speed)
-	left_rot()
+	global motorCommand
+	print "spinLeft"
+	if motorCommand != "sl":
+		motorCommand = "sl"
+		adjustSpeed(speed)
+		left()
 	
 def spinRight(speed):
-	adjustSpeed(speed)
-	right_rot()
+	global motorCommand
+	print "spinRight"
+	if motorCommand != "sr":
+		motorCommand = "sr"
+		adjustSpeed(speed)
+		right()
 	
 def stopRobot():
+	global motorCommand
+	print "stop"
+	motorCommand = "stop"
 	stop()
 	
 def turnForward(leftSpeed, rightSpeed, angle): 
+	global motorCommand
 	if angle > 100 and angle < 170:
+		print "left"
 		#adjustSpeed(leftSpeed)
-		left()
+		if motorCommand != "lft":
+			motorCommand = "lft"
+			left()
 	if angle > 10 and angle < 80:
 		#adjustSpeed(rightSpeed)
-		right()
+		print "right"
+		if motorCommand != "rgt":
+			motorCommand = "rgt"
+			right()
 
 def turnReverse(leftSpeed, rightSpeed, angle): 
-	pass
+	reverse(speed)
 
 def getVoltage():
 	try:
