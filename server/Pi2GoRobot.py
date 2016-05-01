@@ -88,10 +88,10 @@ def spinRight(speed):
 def stopRobot():
 	pi2go.stop()
 	
-def turnForward(leftSpeed, rightSpeed): 
+def turnForward(leftSpeed, rightSpeed, angle): 
 	pi2go.turnForward(leftSpeed, rightSpeed)
 
-def turnReverse(leftSpeed, rightSpeed): 
+def turnReverse(leftSpeed, rightSpeed, angle): 
 	pi2go.turnReverse(leftSpeed, rightSpeed)
 
 def getVoltage():

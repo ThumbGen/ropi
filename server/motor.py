@@ -84,7 +84,7 @@ def move(angle):
 		#print "full right"
 	
 	if angle > 10 and angle < 80:
-		robot.turnForward(1.2*currentSpeed, currentSpeed * angle2SpeedPercent(angle))
+		robot.turnForward(1.2*currentSpeed, currentSpeed * angle2SpeedPercent(angle), angle)
 		#print "forward right"
 
 	if angle >= 80 and angle <= 100:
@@ -92,7 +92,7 @@ def move(angle):
 		#print "full forward"
 
 	if angle > 100 and angle < 170:
-		robot.turnForward(currentSpeed * angle2SpeedPercent(angle), 1.2*currentSpeed)
+		robot.turnForward(currentSpeed * angle2SpeedPercent(angle), 1.2*currentSpeed, angle)
 		#print "forward left"
 
 	if angle >= 170 and angle <= 190:
@@ -100,7 +100,7 @@ def move(angle):
 		#print "full left"
 
 	if angle > 190 and angle < 260:
-		robot.turnReverse(currentSpeed * angle2SpeedPercent(angle), 1.2*currentSpeed)
+		robot.turnReverse(currentSpeed * angle2SpeedPercent(angle), 1.2*currentSpeed, angle)
 		#print "backward left"
 
 	if angle >= 260 and angle <= 280:
@@ -108,7 +108,7 @@ def move(angle):
 		#print "full backward"
 
 	if angle > 280 and angle < 350:
-		robot.turnReverse(1.2*currentSpeed, currentSpeed * angle2SpeedPercent(angle))
+		robot.turnReverse(1.2*currentSpeed, currentSpeed * angle2SpeedPercent(angle), angle)
 		#print "backward right"
 	
 # convert a deg angle to percent of currentSpeed depending on the current quadrant

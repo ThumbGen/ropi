@@ -80,26 +80,25 @@ def reverse(speed):
 	bwd()
 	
 def spinLeft(speed):
+	adjustSpeed(speed)
+	left_rot()
 	
-	#left_rot()
-	pass
-
 def spinRight(speed):
-	
-	#right_rot()
-	pass
+	adjustSpeed(speed)
+	right_rot()
 	
 def stopRobot():
 	stop()
 	
-def turnForward(leftSpeed, rightSpeed): 
-	return
-	if leftSpeed < rightSpeed:
+def turnForward(leftSpeed, rightSpeed, angle): 
+	if angle > 100 and angle < 170:
+		#adjustSpeed(leftSpeed)
 		left()
-	else:
+	if angle > 10 and angle < 80:
+		#adjustSpeed(rightSpeed)
 		right()
 
-def turnReverse(leftSpeed, rightSpeed): 
+def turnReverse(leftSpeed, rightSpeed, angle): 
 	pass
 
 def getVoltage():
