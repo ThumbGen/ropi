@@ -3,7 +3,7 @@ Flask==0.10.1
 Flask-SocketIO==1.0
 greenlet==0.4.9
 itsdangerous==0.24
-Jinja2==2.8
+Jinja2>=2.10.1
 MarkupSafe==0.23
 psutil==3.3.0
 pycparser==2.14
